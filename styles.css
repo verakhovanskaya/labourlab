@@ -68,13 +68,6 @@ header, nav, main, footer {
         
         }
 
-        header p {
-            font-family: 'Trim', sans-serif;
-            /*font-style: italic;*/
-            margin: 0;
-            font-size: 1.2em;
-        }
-
         nav {
             text-align: center;
             margin: 20px 0;
