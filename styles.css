@@ -6,17 +6,6 @@
     --text-color: #333;
 }
 
-html {
-    scroll-behavior: smooth;
-}
-
-body {
-    font-family: 'Georgia', serif;
-    color: var(--text-color);
-    margin: 0;
-    padding: 0;
-}
-
 /* Custom Fonts */
 @font-face {
     font-family: 'T1';
@@ -28,6 +17,18 @@ body {
     font-family: 'T2';
     src: url('fonts/LabGrotesque-LightItalic.woff2') format('woff2');
     src: url('fonts/LabGrotesque-LightItalic.woff') format('woff');
+}
+
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Georgia', sans-serif;
+    color: var(--text-color);
+    margin: 0;
+    padding: 0;
 }
 
 /* Background Canvas */
