@@ -13,13 +13,13 @@ body {
 
 /* Custom Fonts */
 @font-face {
-    font-family: 'Eksell';
-    src: url('fonts/EksellSansTRIAL-Large.otf') format('opentype');
+    font-family: 'T1';
+    src: url('fonts/LabAntiquaTRIAL-Medium.otf') format('opentype');
 }
 
 @font-face {
-    font-family: 'Trim';
-    src: url('fonts/TrimPosterTRIAL-Lanky.otf') format('opentype');
+    font-family: 'T2';
+    src: url('fonts/LabGrotesqueTRIAL-LightItalic.otf') format('opentype');
 }
 
 /* Background Canvas */
@@ -48,15 +48,15 @@ header {
 }
 
 header h1 {
-    font-family: 'Eksell', serif;
-    font-size: 4em;
+    font-family: 'T1', serif;
+    font-size: 5em;
     margin: 0;
 }
 
 header p {
-    font-family: 'Trim', sans-serif;
+    font-family: 'T2', sans-serif;
     text-transform: uppercase;
-    letter-spacing: 0.04em;
+    /*letter-spacing: 0.04em;*/
     font-size: 1.1em;
     font-weight: lighter;
     margin: 0;
@@ -91,17 +91,18 @@ main {
 }
 
 main h2, main h3 {
-    font-family: Arial, sans-serif;
     color: #000066;
     text-transform: uppercase;
 }
 
 main h2 {
+    font-family: "T1";
     font-size: 1.8em;
     font-weight: bold;
 }
 
 main h3 {
+    font-family: "T2";
     font-size: 1.1em;
     font-style: italic;
 }
