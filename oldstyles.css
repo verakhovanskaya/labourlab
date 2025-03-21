@@ -1,18 +1,11 @@
 /* Global Styles */
-:root {
-    --primary-color: #000066;
-    --secondary-color: #0000cc;
-    --highlight-color: #ffff00;
-    --text-color: #333;
-}
-
 html {
     scroll-behavior: smooth;
 }
 
 body {
     font-family: 'Georgia', serif;
-    color: var(--text-color);
+    color: #333;
     margin: 0;
     padding: 0;
 }
@@ -33,20 +26,23 @@ body {
     position: fixed;
     inset: 0;
     z-index: -1;
+    width: 100%;
+    height: 100%;
 }
 
 /* Content Sections */
 header {
-    background: rgba(0, 0, 204, 0.9);
+    background: rgba(0, 0, 204, 0.8);
     color: white;
     text-align: center;
-    padding: 3rem 0;
-    border-bottom: 2px solid var(--primary-color);
+    padding: 30px 0;
+    border-bottom: 2px solid #000066;
+    backdrop-filter: blur(2px);
 }
 
 header h1 {
     font-family: 'T1', serif;
-    font-size: clamp(3rem, 6vw, 5.5rem);
+    font-size: 5em;
     margin: 0;
 }
 
@@ -54,6 +50,8 @@ header p {
     font-family: 'T2', sans-serif;
     text-transform: uppercase;
     font-size: 1.1em;
+    font-weight: lighter;
+    margin: 0;
 }
 
 /* Navigation */
@@ -63,52 +61,47 @@ nav {
 }
 
 nav a {
-    color: var(--primary-color);
+    color: #000066;
     text-decoration: none;
+    font-family: 'T2', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
     font-weight: bold;
-    padding: 5px 10px;
-    position: relative;
 }
 
-nav a::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: -3px;
-    width: 100%;
-    height: 2px;
-    background: var(--primary-color);
-    transform: scaleX(0);
-    transition: transform 0.2s ease-in-out;
-}
-
-nav a:hover::after {
-    transform: scaleX(1);
+nav a:hover {
+    background: #ffff00;
+    color: #002244;
+    border-radius: 5px;
 }
 
 /* Main Content */
 main {
-    padding: clamp(20px, 5vw, 40px);
+    padding: 40px 20px;
     max-width: 800px;
     margin: auto;
 }
 
+main h2, main h3 {
+    color: #000066;
+    text-transform: uppercase;
+}
+
 main h2 {
-    font-family: 'T1', serif;
+    font-family: "T1";
     font-size: 1.8em;
     font-weight: bold;
-    color: var(--primary-color);
 }
 
 main h3 {
-    font-family: 'T2', sans-serif;
+    font-family: "T2";
     font-size: 1.1em;
     font-style: italic;
 }
 
 .highlight {
-    background: var(--highlight-color);
-    border-left: 2px solid var(--primary-color);
+    background: #ffff00;
+    border-left: 2px solid #000066;
     padding: 15px;
     margin: 20px 0;
     font-style: italic;
@@ -116,15 +109,22 @@ main h3 {
 
 /* Footer */
 footer {
-    color: var(--primary-color);
+    color: #0000cc;
     text-align: center;
     padding: 15px 0;
     margin-top: 40px;
 }
 
-footer p {
-    margin: 0;
-    font-size: 0.9em;
+/* Links */
+a {
+    color: #0000cc;
+    text-decoration: underline;
+    transition: background 0.2s, color 0.2s;
+}
+
+a:hover {
+    background: #ffff00;
+    color: #002244;
 }
 
 /* Team Section */
@@ -132,6 +132,19 @@ footer p {
     filter: grayscale(100%);
     border-radius: 50%;
     max-width: 150px;
-    display: block;
     margin: 0 auto;
+    display: block;
+}
+
+#team p a {
+    color: #0000cc;
+    text-decoration: none;
+    transition: background 0.2s, color 0.2s;
+}
+
+#team p a:hover {
+    background: #ffff00;
+    color: #002244;
+    border-radius: 3px;
+    padding: 2px 5px;
 }
