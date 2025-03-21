@@ -18,6 +18,13 @@ body {
     height: 100%;
 }
 
+@font-face {
+    font-family: 'Capitaine';
+    src: url('fonts/CapitaineTRIAL-Regular.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
 header, nav, main, footer {
     position: relative;
     z-index: 1; /* Ensures content stays above the canvas */
@@ -45,13 +52,13 @@ header, nav, main, footer {
         }
 
         header h1 {
-            /*font-family: 'Garamond', Times, serif;*/
-            font-family: 'Capitaine';
-    src: url('fonts/CapitaineTRIAL-Regular.otf') format('opentype');
-            font-size: 5em;
+            /*font-family: 'Garamond', Times, serif;
             letter-spacing: -.04em;
+            font-weight: lighter;*/
+            font-family: 'Capitaine', serif;
+            font-size: 5em;
             margin: 0;
-            font-weight: lighter;
+        
         }
 
         header p {
