@@ -95,6 +95,12 @@ main h3 {
     text-transform: uppercase;
 }
 
+#contact h3 {
+    background: var(--highlight-color);
+    padding: 5px;
+    display: inline-block;
+}
+
 .highlight {
     background: var(--highlight-color);
     border-left: 2px solid var(--primary-color);
