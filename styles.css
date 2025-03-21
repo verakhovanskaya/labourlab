@@ -54,6 +54,9 @@ header p {
     font-family: 'T2', sans-serif;
     text-transform: uppercase;
     font-size: 1.3em;
+}
+
+.word-space {
     word-spacing: 5px;
 }
 
