@@ -45,7 +45,9 @@ header, nav, main, footer {
         }
 
         header h1 {
-            font-family: 'Garamond', Times, serif;
+            /*font-family: 'Garamond', Times, serif;*/
+            font-family: 'Capitaine';
+    src: url('fonts/CapitaineTRIAL-Regular.otf') format('opentype');
             font-size: 5em;
             letter-spacing: -.04em;
             margin: 0;
