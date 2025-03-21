@@ -3,7 +3,7 @@
     --primary-color: #000066;
     --secondary-color: #0000cc;
     --highlight-color: #ffff00;
-    --text-color: #333;
+    --text-color: #222244;
 }
 
 /* Custom Fonts */
@@ -29,6 +29,7 @@ body {
     color: var(--text-color);
     margin: 0;
     padding: 0;
+    line-height: 1.6; 
 }
 
 /* Background Canvas */
@@ -90,6 +91,10 @@ main {
     padding: clamp(20px, 5vw, 40px);
     max-width: 800px;
     margin: auto;
+}
+
+main h2, main h3 {
+    margin-top: 1.5rem; /* Increased from default */
 }
 
 main h2 {
