@@ -148,3 +148,9 @@ footer p {
     display: block;
     margin: 0 auto;
 }
+
+@media (max-width: 768px) { 
+    header {
+        background: rgb(0, 0, 204); /* Fully opaque on small screens */
+    }
+}
