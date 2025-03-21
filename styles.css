@@ -1,188 +1,168 @@
+/* Global Styles */
 html {
     scroll-behavior: smooth;
 }
-body {
-            font-family: 'Georgia', serif;
-            background-color: transparent;
-            color: #333;
-            margin: 0;
-            padding: 0;
-        }
 
-        #pixelCanvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: -1; /* Ensures it stays behind the content */
-    width: 100%;
-    height: 100%;
+body {
+    font-family: 'Georgia', serif;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    background: transparent;
 }
 
+/* Custom Fonts */
 @font-face {
     font-family: 'Eksell';
     src: url('EksellDisplayTRIAL-Large.otf') format('opentype');
-    font-weight: normal;
-    font-style: normal;
 }
 
 @font-face {
     font-family: 'Trim';
     src: url('TrimPosterTRIAL-Lanky.otf') format('opentype');
-    font-weight: normal;
-    font-style: normal;
 }
 
+/* Background Canvas */
+#pixelCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+}
+
+/* Content Sections */
 header, nav, main, footer {
     position: relative;
-    z-index: 1; /* Ensures content stays above the canvas */
-    /*background-color: #fff; /* Optional: Adds contrast for readability */
+    z-index: 1;
 }
 
+header {
+    background: rgba(0, 0, 204, 0.8);
+    color: white;
+    text-align: center;
+    padding: 30px 0;
+    border-bottom: 2px solid #000066;
+    backdrop-filter: blur(2px);
+}
 
-        header {
-            /*background-color: #0000cc;*/
-            background-color: rgba(0, 0, 204, 0.8); /* Slightly transparent blue */
-            color: #fff;
-            text-align: center;
-            padding: 30px 0;
-            border-bottom: 2px solid #000066;
-            backdrop-filter: blur(2px); /* Optional: adds a blurred glass effect */
-        }
+header h1 {
+    font-family: 'Eksell', serif;
+    font-size: 4em;
+    margin: 0;
+}
 
-        header p {
-            font-family: 'Trim', sans-serif;
-            text-transform: uppercase;
-            letter-spacing: .04em;
-            margin: 0;
-            font-size: .5em;
-            font-weight: lighter;
-        }
+header p {
+    font-family: 'Trim', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-size: 0.5em;
+    font-weight: lighter;
+    margin: 0;
+}
 
-        header h1 {
-            /*font-family: 'Garamond', Times, serif;
-            letter-spacing: -.04em;
-            font-weight: lighter;*/
-            font-family: 'Eksell', serif;
-            font-size: 4em;
-            margin: 0;
-        
-        }
+nav {
+    text-align: center;
+    margin: 20px 0;
+}
 
-        nav {
-            text-align: center;
-            margin: 20px 0;
-        }
+nav a {
+    color: #000066;
+    text-decoration: none;
+    font-family: Arial, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: bold;
+}
 
-        nav a {
-            color: #000066;
-            text-decoration: none;
-            font-family: 'Arial', sans-serif;
-            text-transform: uppercase;
-            letter-spacing: .05em;
-            margin: 0;
-            font-size: 1em;
-            font-weight: bold;
+nav a:hover {
+    background: #ffff00;
+    color: #002244;
+    border-radius: 5px;
+}
 
-        }
+/* Main Content */
+main {
+    padding: 40px 20px;
+    max-width: 800px;
+    margin: auto;
+    background: transparent;
+}
 
-        nav a:hover {
-            text-decoration: none; /* Optional: Keep the text-decoration clean */
-            background-color: #ffff00; /* Highlight color */
-            border-radius: 5px; /* Optional: Make it look smoother with rounded edges */
-            color: #002244; /* Optional: Change text color for better contrast */
-        }
+main h2, main h3 {
+    font-family: Arial, sans-serif;
+    color: #000066;
+    text-transform: uppercase;
+}
 
-        main {
-            padding: 40px 20px;
-            max-width: 800px;
-            margin: auto;
-            /*background-color: #fff;*/
-            background-color: transparent;
-            border-radius: 10px;
-        }
+main h2 {
+    font-size: 1.8em;
+    font-weight: bold;
+}
 
-        main h2 {
-            font-family: 'Arial', sans-serif;
-            font-size: 1.8em;
-            color: #000066;
-            text-transform: uppercase;
-            font-weight: bold;
-        }
+main h3 {
+    font-size: 1.1em;
+    font-style: italic;
+}
 
-        main h3 {
-            font-family: 'Arial', sans-serif;
-            font-size: 1.1em;
-            color: #000066;
-            text-transform: uppercase;
-            font-style: italic;
-            display: inline;
-        }
+main p {
+    margin-top: -1px;
+}
 
-        main p {
-            /*line-height: 1.6;*/
-            margin-top:-1px;
-        }
+.highlight {
+    background: #ffff00;
+    border-left: 2px solid #000066;
+    padding: 15px;
+    margin: 20px 0;
+    font-style: italic;
+}
 
-        .highlight {
-            background-color: #ffff00;
-            border-left: 2px solid #000066;
-            padding: 15px;
-            margin: 20px 0;
-            font-style: italic;
-        }
+/* Footer */
+footer {
+    background: transparent;
+    color: #0000cc;
+    text-align: center;
+    padding: 15px 0;
+    margin-top: 40px;
+}
 
-        footer {
-            /*background-color: #0000cc;*/
-            background-color: transparent;
-            color: #0000cc;
-            text-align: center;
-            padding: 15px 0;
-            margin-top: 40px;
-        }
+footer p {
+    margin: 0;
+    font-size: 0.9em;
+}
 
-        footer p {
-            margin: 0;
-            font-size: 0.9em;
-        }
-
-/* Default link styles */
+/* Links */
 a {
-    color: #0000cc; /* Main blue */
+    color: #0000cc;
     text-decoration: underline;
-    text-decoration-thickness: 1px; /* Adjust underline thickness if needed */
-    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+    transition: background 0.2s, color 0.2s;
 }
 
-/* Hover effect: yellow highlight */
 a:hover {
-    background-color: #ffff00; /* Yellow highlight */
-    color: #002244; /* Dark blue for contrast */
-    border-radius: 3px; /* Optional: smooth edges */
-   /* padding: 2px 5px;  Optional: slight padding */
+    background: #ffff00;
+    color: #002244;
+    border-radius: 3px;
 }
 
+/* Team Section */
 #team img {
-     -webkit-filter: grayscale(1);  /* Webkit */
-  filter: gray;  /* IE6-9 */
-  filter: grayscale(1);  /* W3C */
-  border-radius: 50%; /* Optional: Makes images circular */
-  max-width: 150px;   /* Controls size of team member images */
-  margin: 0 auto;
-  display: block;
+    filter: grayscale(1);
+    border-radius: 50%;
+    max-width: 150px;
+    margin: 0 auto;
+    display: block;
 }
 
 #team p a {
-    color: #0000cc; /* Main blue */
-    text-decoration: underline;
+    color: #0000cc;
     text-decoration: none;
-    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+    transition: background 0.2s, color 0.2s;
 }
 
 #team p a:hover {
-    background-color: #ffff00; /* Yellow highlight */
-    text-decoration: underline;
-    color: #002244; /* Dark blue for contrast */
-    border-radius: 3px; /* Optional: smooth look */
-    padding: 2px 5px; /* Optional: slight padding for readability */
-    
+    background: #ffff00;
+    color: #002244;
+    border-radius: 3px;
+    padding: 2px 5px;
 }
