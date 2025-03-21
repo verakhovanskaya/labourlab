@@ -20,7 +20,7 @@ body {
 
 @font-face {
     font-family: 'Capitaine';
-    src: url('fonts/CapitaineTRIAL-Regular.otf') format('opentype');
+    src: url('fonts/CapitaineTRIAL-Bold.otf') format('opentype');
     font-weight: normal;
     font-style: normal;
 }
