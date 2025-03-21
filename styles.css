@@ -19,8 +19,8 @@ body {
 }
 
 @font-face {
-    font-family: 'Tid';
-    src: url('TrimPosterTRIAL-Lanky.otf') format('opentype');
+    font-family: 'Eksell';
+    src: url('EksellDisplayTRIAL-Large.otf') format('opentype');
     font-weight: normal;
     font-style: normal;
 }
@@ -50,7 +50,7 @@ header, nav, main, footer {
         }
 
         header p {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Trim', sans-serif;
             text-transform: uppercase;
             letter-spacing: .04em;
             margin: 0;
@@ -62,7 +62,7 @@ header, nav, main, footer {
             /*font-family: 'Garamond', Times, serif;
             letter-spacing: -.04em;
             font-weight: lighter;*/
-            font-family: 'Tid', serif;
+            font-family: 'Eksell', serif;
             font-size: 4em;
             margin: 0;
         
