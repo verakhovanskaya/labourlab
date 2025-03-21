@@ -20,7 +20,7 @@ body {
 
 @font-face {
     font-family: 'Tid';
-    src: url('TidTRIAL-BoldDisplay.otf') format('opentype');
+    src: url('TidTRIAL-RegularDisplay.otf') format('opentype');
     font-weight: normal;
     font-style: normal;
 }
