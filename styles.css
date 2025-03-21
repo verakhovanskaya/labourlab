@@ -19,8 +19,8 @@ body {
 }
 
 @font-face {
-    font-family: 'Capitaine';
-    src: url('fonts/CapitaineTRIAL-Bold.otf') format('opentype');
+    font-family: 'Tid';
+    src: url('TidTRIAL-BoldDisplay.otf') format('opentype');
     font-weight: normal;
     font-style: normal;
 }
@@ -55,7 +55,7 @@ header, nav, main, footer {
             /*font-family: 'Garamond', Times, serif;
             letter-spacing: -.04em;
             font-weight: lighter;*/
-            font-family: 'Capitaine', serif;
+            font-family: 'Tid', serif;
             font-size: 5em;
             margin: 0;
         
