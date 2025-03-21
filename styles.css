@@ -25,6 +25,13 @@ body {
     font-style: normal;
 }
 
+@font-face {
+    font-family: 'Trim';
+    src: url('TrimPosterTRIAL-Lanky.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
 header, nav, main, footer {
     position: relative;
     z-index: 1; /* Ensures content stays above the canvas */
@@ -62,6 +69,7 @@ header, nav, main, footer {
         }
 
         header p {
+            font-family: 'Trim', sans-serif;
             font-style: italic;
             margin: 0;
             font-size: 1.2em;
