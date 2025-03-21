@@ -37,7 +37,7 @@ body {
 
 /* Content Sections */
 header {
-    background: rgba(0, 0, 204, 0.9);
+    background: rgba(0, 0, 204, 0.8);
     color: white;
     text-align: center;
     padding: 3rem 0;
@@ -62,28 +62,15 @@ nav {
     margin: 20px 0;
 }
 
-nav a {
-    color: var(--primary-color);
-    text-decoration: none;
-    font-weight: bold;
-    padding: 5px 10px;
-    position: relative;
+a{
+    color: var(--secondary-color);
+
 }
 
-nav a::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: -3px;
-    width: 100%;
-    height: 2px;
-    background: var(--primary-color);
-    transform: scaleX(0);
-    transition: transform 0.2s ease-in-out;
-}
-
-nav a:hover::after {
-    transform: scaleX(1);
+a:hover {
+    background-color: var(--highlight-color);
+    color: black;
+    text-decoration: wavy underline var(--highlight-color);
 }
 
 /* Main Content */
@@ -102,8 +89,10 @@ main h2 {
 
 main h3 {
     font-family: 'T2', sans-serif;
-    font-size: 1.1em;
+    font-size: 1.2em;
+    font-weight: bolder;
     font-style: italic;
+    text-transform: uppercase;
 }
 
 .highlight {
