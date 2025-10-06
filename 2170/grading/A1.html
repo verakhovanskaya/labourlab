@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>INF2170 – Content Audit Rubric Helper (Static, Anchors: A / A-/B+ / B/B- / FZ)</title>
+  <title>INF2170 – Content Audit Grading Guide</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     :root { --bg:#0b0c10; --card:#15171c; --ink:#eaeaea; --muted:#b7bcc6; --accent:#78d0b6; --warn:#f5a97f; --bad:#f38ba8; }
@@ -29,7 +29,7 @@
     .badge-mid { background:#2a2d39; color:#dee1e8; }
     .badge-low { background:#332a14; color:#f1d7a2; }
     .badge-f { background:#3b1f24; color:#ffb4c0; }
-    .pill { padding:8px 12px; border-radius: 999px; background:#0f1116; border:1px solid #2a2f3a; cursor:pointer; }
+    .pill { padding:8px 12px; border-radius: 999px; background:#0f1116; border:1px solid #2a2f3a; cursor:pointer; color:#ff66cc; }
     .btn { appearance:none; border:none; border-radius:12px; padding:12px 16px; cursor:pointer; font-weight:700; }
     .btn-primary { background: var(--accent); color:#0b0c10; }
     .btn-ghost { background: transparent; color: var(--ink); border:1px solid #2a2f3a; }
@@ -38,8 +38,11 @@
 <body>
 <div class="wrap">
   <div class="card">
-    <h1>INF2170 – Assignment 1 grading rubric</h1>
-    <p class="muted">Levels: <strong>A</strong> / <strong>A-/B+</strong> / <strong>B/B-</strong> / <strong>FZ</strong>. Part 1 is A-or-F only. Grade bands use floor: A+ 90–100, A 85–89, A– 80–84, B+ 77–79, B 73–76, B– 70–72, FZ 0–69.</p>
+    <h1>INF2170 – Content Audit Grading Guide</h1>
+    <p class="muted">
+      Marking logic: <strong>A</strong> / <strong>A-/B+</strong> / <strong>B/B-</strong> / <strong>FZ</strong>. Part 1 is A-or-FZ only.
+      Grade bands use <strong>floor</strong>: A+ 90–100, A 85–89, A– 80–84, B+ 77–79, B 73–76, B– 70–72, FZ 0–69.
+    </p>
   </div>
 
   <div class="card">
@@ -47,11 +50,16 @@
     <div class="row">
       <div>
         <label>Student</label>
-        <input type="text" id="student" placeholder="Name or ID">
+        <input type="text" id="student" placeholder="Name">
       </div>
       <div>
         <label>Section</label>
-        <input type="text" id="section" placeholder="e.g., Friday 9am">
+         <select id="section">
+    <option value="">Select section</option>
+    <option value="5101">5101</option>
+    <option value="101">101</option>
+    <option value="102">102</option>
+  </select>
       </div>
       <div>
         <label>TA Name</label>
@@ -70,22 +78,19 @@
       <h3>1) Raw Crawl Data <span class="muted">(max 10 pts; A or FZ only)</span></h3>
       <div class="row">
         <div>
-          <label>Marking Levels</label>
+          <label>Marking Level</label>
           <select id="lvl_raw" onchange="syncPreset('raw', 10, this.value)">
             <option value="A">A (Excellent)</option>
             <option value="FZ">FZ (Fail)</option>
           </select>
-          <div class="muted" style="margin-top:8px;">
-            <div><span class="badge badge-a">A</span> Crawl export is complete, functional, and usable as a baseline. (9–10 pts)</div>
-            <div><span class="badge badge-f">FZ</span> Missing, unreadable, or not produced by Screaming Frog/equivalent. (0–4 pts)</div>
-          </div>
+          <div class="muted" style="margin-top:8px;" id="anchors_raw"></div>
         </div>
         <div>
           <label>Points Awarded (0–10)</label>
           <input type="number" id="pts_raw" min="0" max="10" step="0.5" value="10" oninput="recalc()">
           <div class="flex" style="margin-top:8px;">
-            <button class="pill" type="button" onclick="preset('raw',10,'A')">Fill A‑range</button>
-            <button class="pill" type="button" onclick="preset('raw',10,'FZ')">Fill FZ‑range</button>
+            <button class="pill" type="button" onclick="preset('raw',10,'A')">Fill A-range</button>
+            <button class="pill" type="button" onclick="preset('raw',10,'FZ')">Fill FZ-range</button>
           </div>
         </div>
       </div>
@@ -107,33 +112,28 @@
             <option value="B/B-">B/B-</option>
             <option value="FZ">FZ</option>
           </select>
-          <div class="muted" style="margin-top:8px;">
-            <div><span class="badge badge-a">A</span> Excellently legible hierarchy & grouping; consistent enumeration; concise labels; redundancies handled; structure 'thumbnail' evident at a glance. (27–30 pts)</div>
-            <div><span class="badge badge-mid">A-/B+</span> Generally clear; some vague IDs/groups; readable overall. (23–26 pts)</div>
-            <div><span class="badge badge-low">B/B-</span> Partially cleaned but confusing/uneven; enumeration/grouping incomplete. (18–22 pts)</div>
-            <div><span class="badge badge-f">FZ</span> Mostly unedited crawl or no discernible structure. (0–17 pts)</div>
-          </div>
+          <div class="muted" style="margin-top:8px;" id="anchors_clean"></div>
         </div>
         <div>
           <label>Points Awarded (0–30)</label>
           <input type="number" id="pts_clean" min="0" max="30" step="0.5" value="30" oninput="recalc()">
           <div class="flex" style="margin-top:8px;">
-            <button class="pill" type="button" onclick="preset('clean',30,'A')">Fill A‑range</button>
-            <button class="pill" type="button" onclick="preset('clean',30,'A-/B+')">Fill A-/B+‑range</button>
-            <button class="pill" type="button" onclick="preset('clean',30,'B/B-')">Fill B/B-‑range</button>
-            <button class="pill" type="button" onclick="preset('clean',30,'FZ')">Fill FZ‑range</button>
+            <button class="pill" type="button" onclick="preset('clean',30,'A')">Fill A-range</button>
+            <button class="pill" type="button" onclick="preset('clean',30,'A-/B+')">Fill A-/B+-range</button>
+            <button class="pill" type="button" onclick="preset('clean',30,'B/B-')">Fill B/B--range</button>
+            <button class="pill" type="button" onclick="preset('clean',30,'FZ')">Fill FZ-range</button>
           </div>
         </div>
       </div>
       <div style="margin-top:8px;">
-        <label>Marking Comment (optional)</label>
+        <label>Marking Comments</label>
         <textarea id="com_clean" placeholder="Explain briefly what is unclear in the grouping/structure, missed opportunities to use color/visual treatment etc."></textarea>
       </div>
     </div>
 
     <!-- Part 3 -->
     <div class="crit" id="crit-audit">
-      <h3>3) Audit (Ratings & Findings) <span class="muted">(max 20 pts)</span></h3>
+      <h3>3) Audit (Ratings) <span class="muted">(max 20 pts)</span></h3>
       <div class="row">
         <div>
           <label>Marking Level</label>
@@ -143,27 +143,22 @@
             <option value="B/B-">B/B-</option>
             <option value="FZ">FZ</option>
           </select>
-          <div class="muted" style="margin-top:8px;">
-            <div><span class="badge badge-a">A</span> Criteria explicit; evaluations consistent; distinguishes crawler vs content issues; balanced, evidence‑based. (18–20 pts)</div>
-            <div><span class="badge badge-mid">A-/B+</span> Criteria implied; mostly consistent; reasoning adequate though uneven. Work in this category may misdiagnose crawl errors/limitations as content issues (15–17 pts)</div>
-            <div><span class="badge badge-low">B/B-</span> Limited or repetitive; ratings inconsistent, grossly mischaracterized, comments borderline unprofessional. (12–14 pts)</div>
-            <div><span class="badge badge-f">FZ</span> No criteria/interpretation; incoherent/absent evaluation, innappropriate/missing work. (0–11 pts)</div>
-          </div>
+          <div class="muted" style="margin-top:8px;" id="anchors_audit"></div>
         </div>
         <div>
           <label>Points Awarded (0–20)</label>
           <input type="number" id="pts_audit" min="0" max="20" step="0.5" value="20" oninput="recalc()">
           <div class="flex" style="margin-top:8px;">
-            <button class="pill" type="button" onclick="preset('audit',20,'A')">Fill A‑range</button>
-            <button class="pill" type="button" onclick="preset('audit',20,'A-/B+')">Fill A-/B+‑range</button>
-            <button class="pill" type="button" onclick="preset('audit',20,'B/B-')">Fill B/B-‑range</button>
-            <button class="pill" type="button" onclick="preset('audit',20,'FZ')">Fill FZ‑range</button>
+            <button class="pill" type="button" onclick="preset('audit',20,'A')">Fill A-range</button>
+            <button class="pill" type="button" onclick="preset('audit',20,'A-/B+')">Fill A-/B+-range</button>
+            <button class="pill" type="button" onclick="preset('audit',20,'B/B-')">Fill B/B--range</button>
+            <button class="pill" type="button" onclick="preset('audit',20,'FZ')">Fill FZ-range</button>
           </div>
         </div>
       </div>
       <div style="margin-top:8px;">
-        <label>Marking Comment</label>
-        <textarea id="com_audit" placeholder="(note: you'll have to find the criteria in their report, do not ding them on rating the same things the same way if they explain in report.)"></textarea>
+        <label>Marking Comments</label>
+        <textarea id="com_audit" placeholder="(Note: you'll have to find the audit criteria in their recommendations report, do not deduct points on uniform ratings for set of content they justify doing so in report.)"></textarea>
       </div>
     </div>
 
@@ -179,27 +174,22 @@
             <option value="B/B-">B/B-</option>
             <option value="FZ">FZ</option>
           </select>
-          <div class="muted" style="margin-top:8px;">
-            <div><span class="badge badge-a">A</span> Clear, prioritized, evidence‑based recommendations (clearly tied to results from the audit); concise; abstract delivers 'thumbnail' overview; professional synthesis; strong design judgment. (36–40 pts)</div>
-            <div><span class="badge badge-mid">A-/B+</span> Logical and relevant; linkage to audit-based evidence somewhat uneven; abstract mostly clear. Assignments with too much space given to usability/navigation issues may be marked in this category, as are assingments with issues in writing style, tone, or clarity (31–35 pts)</div>
-            <div><span class="badge badge-low">B/B-</span> Generic or weakly to content linked; minimal synthesis. More egregious cases of mismatched tone and/or misunderstanding what is relevant guidance for a client may be marked in this category (27–30 pts)</div>
-            <div><span class="badge badge-f">FZ</span> Off‑topic, fragmented, or missing substantive recommendations. (0–26 pts)</div>
-          </div>
+          <div class="muted" style="margin-top:8px;" id="anchors_recs"></div>
         </div>
         <div>
           <label>Points Awarded (0–40)</label>
           <input type="number" id="pts_recs" min="0" max="40" step="0.5" value="40" oninput="recalc()">
           <div class="flex" style="margin-top:8px;">
-            <button class="pill" type="button" onclick="preset('recs',40,'A')">Fill A‑range</button>
-            <button class="pill" type="button" onclick="preset('recs',40,'A-/B+')">Fill A-/B+‑range</button>
-            <button class="pill" type="button" onclick="preset('recs',40,'B/B-')">Fill B/B-‑range</button>
-            <button class="pill" type="button" onclick="preset('recs',40,'FZ')">Fill FZ‑range</button>
+            <button class="pill" type="button" onclick="preset('recs',40,'A')">Fill A-range</button>
+            <button class="pill" type="button" onclick="preset('recs',40,'A-/B+')">Fill A-/B+-range</button>
+            <button class="pill" type="button" onclick="preset('recs',40,'B/B-')">Fill B/B--range</button>
+            <button class="pill" type="button" onclick="preset('recs',40,'FZ')">Fill FZ-range</button>
           </div>
         </div>
       </div>
       <div style="margin-top:8px;">
-        <label>Marking Comment</label>
-        <textarea id="com_recs" placeholder="Flag patterns and intent in comment here"></textarea>
+        <label>Marking Comments</label>
+        <textarea id="com_recs" placeholder="Most substantive feedback in this box; flag patterns and intent in comments here"></textarea>
       </div>
     </div>
 
@@ -208,18 +198,17 @@
         <label><input type="checkbox" id="consider_a_plus"> Consider for A+ (all categories must be A)</label>
       </div>
       <label>Overall Comment (optional)</label>
-      <textarea id="overall_comment" placeholder="Synthesis and next steps..."></textarea>
+      <textarea id="overall_comment" placeholder="Justification"></textarea>
     </div>
 
     <div class="flex right">
-      <button class="btn btn-primary" onclick="generate();return false;">Generate Feedback</button>
+      <button class="btn btn-primary" onclick="generate();return false;">Print Feedback Summary</button>
     </div>
   </div>
 
   <div class="card">
     <h2>Result</h2>
     <p class="scoreline">Total: <span id="total">100</span>/100 &nbsp; | &nbsp; Percent: <span id="pct">100</span>% &nbsp; | &nbsp; Grade: <span class="kbd" id="grade">A+</span></p>
-    <h3>Paste‑Ready Feedback</h3>
     <div class="out" id="out"></div>
     <div class="flex" style="margin-top:10px;">
       <button class="btn btn-ghost" onclick="copyOut()">Copy to Clipboard</button>
@@ -227,25 +216,50 @@
   </div>
 
   <div class="card">
-    <h2>How it works</h2>
+    <h2>Marking Notes</h2>
     <ul>
-      <li>Part 1 is A-or-F only, per policy.</li>
-      <li>Numeric grade bands are enforced with <strong>floor</strong>:
-        A+ 90–100, A 85–89, A– 80–84, B+ 77–79, B 73–76, B– 70–72, FZ 0–69.</li>
-      <li>A+ only if all categories are A and the checkbox is ticked.</li>
-      <li>Runs offline; host on any static site or open locally.</li>
+      <li>Part 1 is A-or-F only.</li>
+      <li>A+ consideration only if all categories are A and the checkbox is ticked.</li>
+      <li>Note: student and TA privacy is maintained as none of the data is saved, but that also means everything is easily lost/overwritten.</li>
     </ul>
   </div>
 </div>
 
 <script>
-const ranges = {
-  "raw":   { "A":[9,10], "FZ":[0,4] },
-  "clean": { "A":[27,30], "A-/B+":[23,26], "B/B-":[18,22], "FZ":[0,17] },
-  "audit": { "A":[18,20], "A-/B+":[15,17], "B/B-":[12,14], "FZ":[0,11] },
-  "recs":  { "A":[36,40], "A-/B+":[31,35], "B/B-":[27,30], "FZ":[0,26] }
+/* ---------- Single source of truth ---------- */
+const anchors = {
+  raw: {
+    A:  "Crawl export is complete and usable as a baseline. (9–10 pts)",
+    FZ: "Missing, unreadable, or not produced by Screaming Frog. (0–4 pts)"
+  },
+  clean: {
+    A:       "Highly legible hierarchy and grouping; enumeration is consistent; labels are concise and meaningful; redundancies and extra crawl data issues resolved; overall content structure clearly readable at a glance. (27–30 pts)",
+    "A-/B+": "Generally clear hierarchy and grouping; enumeration mostly consistent; labels usually concise; minor redundancies or uneven grouping present; overall structure readable with small effort. (23–26 pts)",
+    "B/B-":  "Partially cleaned inventory; grouping and enumeration attempted but confusing/uneven; duplicates and/or unauditable content still present. (18–22 pts)",
+    FZ:      "Mostly unedited crawl or no discernible structure. (0–17 pts)"
+  },
+  audit: {
+    A:       "Criteria explicit; evaluations consistent; audit results clearly distinguish crawler vs content issues; ratings are balanced and appear to be reasonable. (18–20 pts)",
+    "A-/B+": "Criteria clear or strongly implied; mostly consistent; reasoning adequate though uneven. Work in this category may misdiagnose crawl errors or limitations as content issues (15–17 pts)",
+    "B/B-":  "Limited or repetitive auditing; ratings inconsistent; grossly mischaracterized content vs. crawl issues. (12–14 pts)",
+    FZ:      "No discernable criteria/interpretation; incoherent/absent evaluation, inappropriate/missing work. (0–11 pts)"
+  },
+  recs: {
+    A:       "Clear, prioritized, evidence‑based recommendations which are directly tied to results from the audit; concise; abstract delivers 'thumbnail' overview; professional synthesis; strong design judgment. Scores on the higher range demonstrate awareness of client goals, theorize intervention impacts, and identify issue patterns. (36–40 pts)",
+    "A-/B+": "Logical and relevant; linkage to audit-based evidence somewhat uneven; abstract mostly clear. Assignments with too much space given to intuition about usability/navigation issues may be marked in this category, as are assingments with issues in writing style, tone, or clarity (31–35 pts)",
+    "B/B-":  "Generic recommendations and/or recommendations weakly to content linked; minimal synthesis. More egregious cases of mismatched tone and/or misunderstanding what is relevant guidance for a client may be marked in this category (27–30 pts)",
+    FZ:      "Off‑topic, fragmented, or missing substantive recommendations. (0–26 pts)"
+  }
 };
 
+const ranges = {
+  raw:   { "A":[9,10], "FZ":[0,4] },
+  clean: { "A":[27,30], "A-/B+":[23,26], "B/B-":[18,22], "FZ":[0,17] },
+  audit: { "A":[18,20], "A-/B+":[15,17], "B/B-":[12,14], "FZ":[0,11] },
+  recs:  { "A":[36,40], "A-/B+":[31,35], "B/B-":[27,30], "FZ":[0,26] }
+};
+
+/* ---------- Helpers ---------- */
 function todayISO(){
   const d = new Date();
   const m = String(d.getMonth()+1).padStart(2,"0");
@@ -254,11 +268,12 @@ function todayISO(){
 }
 
 function randMid(min, max, id, level) {
-  // Special case: Raw Crawl at A level should snap to the maximum (10)
+  // Snap Raw=A to the top of band (10)
   if (id === "raw" && level === "A") return max;
   return (min + max) / 2;
 }
 
+/* ---------- UI Actions ---------- */
 function preset(id, max, level) {
   const r = ranges[id][level];
   const val = Math.min(max, Math.max(0, randMid(r[0], r[1], id, level)));
@@ -274,16 +289,15 @@ function syncPreset(id, max, level) {
   const cur = parseFloat(input.value || "0");
 
   if (cur < r[0] || cur > r[1]) {
-    // Snap to max for Raw=A; otherwise use midpoint
+    // Snap to max for Raw=A; otherwise midpoint
     input.value = (id === "raw" && level === "A") ? r[1] : (r[0] + r[1]) / 2;
   } else if (id === "raw" && level === "A") {
-    // Even if within A band, force exact 10 for Raw=A
+    // Even if within band, force exactly 10
     input.value = r[1];
   }
 
   recalc();
 }
-
 
 function computeGrade(pct){
   if (pct >= 90) return "A+";
@@ -296,20 +310,51 @@ function computeGrade(pct){
 }
 
 function recalc(){
-  const total = ["raw","clean","audit","recs"].map(id => parseFloat(document.getElementById("pts_"+id).value || "0")).reduce((a,b)=>a+b,0);
-  const pct = Math.floor(total); // since total max is 100
+  const total = ["raw","clean","audit","recs"]
+    .map(id => parseFloat(document.getElementById("pts_"+id).value || "0"))
+    .reduce((a,b)=>a+b,0);
+  const pct = Math.floor(total); // floor to enforce bands exactly
   const grade = computeGrade(pct);
   document.getElementById("total").innerText = total.toFixed(1).replace(/\.0$/,"");
   document.getElementById("pct").innerText = pct;
   document.getElementById("grade").innerText = grade;
 }
 
+/* ---------- Render anchor blurbs from constant ---------- */
+function renderAnchors() {
+  const order = {
+    raw: ["A","FZ"],
+    clean: ["A","A-/B+","B/B-","FZ"],
+    audit: ["A","A-/B+","B/B-","FZ"],
+    recs: ["A","A-/B+","B/B-","FZ"]
+  };
+  const badgeClass = (k) => {
+    if (k === "A") return "badge badge-a";
+    if (k === "A-/B+") return "badge badge-mid";
+    if (k === "B/B-") return "badge badge-low";
+    return "badge badge-f";
+  };
+  ["raw","clean","audit","recs"].forEach(id => {
+    const el = document.getElementById("anchors_" + id);
+    if (!el) return;
+    const lines = order[id].map(k => {
+      const txt = anchors[id][k];
+      if (!txt) return "";
+      return `<div><span class="${badgeClass(k)}">${k}</span> ${txt}</div>`;
+    }).filter(Boolean);
+    el.innerHTML = lines.join("\n");
+  });
+}
+
+/* ---------- Generate feedback ---------- */
 function generate(){
   recalc();
+
   const student = document.getElementById("student").value.trim();
   const section = document.getElementById("section").value.trim();
   const ta = document.getElementById("ta_name").value.trim();
-  const date = document.getElementById("date_str").value.trim() || todayISO();
+  const date = (document.getElementById("date_str").value.trim() || todayISO());
+
   const levels = {
     raw: document.getElementById("lvl_raw").value,
     clean: document.getElementById("lvl_clean").value,
@@ -328,38 +373,16 @@ function generate(){
     audit: document.getElementById("com_audit").value.trim(),
     recs: document.getElementById("com_recs").value.trim()
   };
+
   const considerAplus = document.getElementById("consider_a_plus").checked;
+
   let total = ["raw","clean","audit","recs"].map(k => parseFloat(points[k]||"0")).reduce((a,b)=>a+b,0);
   let pct = Math.floor(total);
   let grade = computeGrade(pct);
+
   const allA = ["raw","clean","audit","recs"].every(k => levels[k] === "A");
   if ((grade === "A" || grade === "A+") && allA && considerAplus) grade = "A+";
   else if (grade === "A+" && !allA) grade = "A"; // safety
-
-  const anchors = {
-    raw: {
-      A:  "Crawl export is complete, functional, and human‑readable; URLs and metadata intact; opens cleanly. (9–10 pts)",
-      FZ: "Missing, unreadable, or not produced by Screaming Frog/equivalent. (0–4 pts)"
-    },
-    clean: {
-      A:      "Clear hierarchy & grouping; consistent enumeration; concise labels; redundancies handled; structure evident at a glance. (27–30 pts)",
-      "A-/B+":"Generally clear; some inconsistent IDs/groups; readable overall. (23–26 pts)",
-      "B/B-": "Partially cleaned but confusing/uneven; enumeration/grouping incomplete. (18–22 pts)",
-      FZ:     "Mostly unedited crawl or no discernible structure. (0–17 pts)"
-    },
-    audit: {
-      A:      "Criteria explicit; evaluations consistent; distinguishes crawler vs content issues; balanced, evidence‑based. (18–20 pts)",
-      "A-/B+":"Criteria implied; mostly consistent; reasoning adequate though uneven. (15–17 pts)",
-      "B/B-": "Limited or repetitive; ratings inconsistent or mostly descriptive. (12–14 pts)",
-      FZ:     "No criteria/interpretation; incoherent/absent evaluation. (0–11 pts)"
-    },
-    recs: {
-      A:      "Clear, prioritized, evidence‑based recommendations; concise, professional synthesis; strong design judgment. (36–40 pts)",
-      "A-/B+":"Logical and relevant; linkage to evidence somewhat uneven. (31–35 pts)",
-      "B/B-": "Generic or weakly linked; minimal synthesis. (27–30 pts)",
-      FZ:     "Off‑topic, fragmented, or missing substantive recommendations. (0–26 pts)"
-    }
-  };
 
   const lines = [];
   lines.push("INF2170 – Content Audit Feedback");
@@ -369,18 +392,22 @@ function generate(){
   lines.push("Date: " + date);
   lines.push("");
   lines.push("Scores");
-  [["raw","1) Raw Crawl Data",10],["clean","2) Cleaned & Grouped Spreadsheet",30],["audit","3) Audit (Ratings & Findings)",20],["recs","4) Recommendations Report",40]].forEach(([k,title,max])=>{
-    const lvl = levels[k];
-    const pts = points[k];
-    const anchor = anchors[k][lvl] || "";
-    lines.push(`- ${title}: ${pts}/${max} (Level: ${lvl})`);
-    if (anchor) lines.push("  · Anchor: " + anchor);
-    const com = comments[k];
-    if (com) lines.push("  · Comment: " + com);
-  });
+
+  [["raw","1) Raw Crawl Data",10],["clean","2) Cleaned & Grouped Spreadsheet",30],["audit","3) Audit (Ratings & Findings)",20],["recs","4) Recommendations Report",40]]
+    .forEach(([k,title,max])=>{
+      const lvl = levels[k];
+      const pts = points[k];
+      const anchor = anchors[k][lvl] || "";
+      lines.push(`- ${title}: ${pts}/${max} (Level: ${lvl})`);
+      if (anchor) lines.push("  · Anchor: " + anchor);
+      const com = comments[k];
+      if (com) lines.push("  · Comment: " + com);
+    });
+
   lines.push("");
   lines.push(`Total: ${total}/${100} (${pct}%)`);
   lines.push(`Grade: ${grade}`);
+
   const overall = document.getElementById("overall_comment").value.trim();
   if (overall){
     lines.push("");
@@ -392,20 +419,24 @@ function generate(){
     lines.push("Note: Eligible for A+ consideration (all categories scored at A).");
   }
 
-  document.getElementById("out").innerText = lines.join("\n");
+  const outEl = document.getElementById("out");
+  if (outEl) outEl.innerText = lines.join("\n");
 }
 
+/* ---------- Clipboard ---------- */
 function copyOut(){
   const txt = document.getElementById("out").innerText;
-  navigator.clipboard.writeText(txt).then(()=>{
-    alert("Feedback copied!");
-  });
+  navigator.clipboard.writeText(txt).then(()=> alert("Feedback copied!"));
 }
 
-// init
-document.getElementById("date_str").value = todayISO();
-recalc();
-generate();
+/* ---------- Init ---------- */
+window.addEventListener("DOMContentLoaded", () => {
+  const dateInput = document.getElementById("date_str");
+  if (dateInput) dateInput.value = todayISO();
+  renderAnchors();
+  recalc();
+  generate();
+});
 </script>
 </body>
 </html>
