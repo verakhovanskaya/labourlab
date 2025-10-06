@@ -518,7 +518,7 @@ function generate(){
   }
 
   const lines = [];
-  lines.push("INF2170 – Content Audit Feedback");
+  lines.push("INF2170 Assignment A1 Feedback");
   if (student) lines.push("Student: " + student);
   if (section) lines.push("Section: " + section);
   if (ta) lines.push("TA: " + ta);
@@ -538,25 +538,26 @@ function generate(){
       if (com) lines.push("  · Comment: " + com);
     });
 
-  lines.push("");
-  lines.push(`Total: ${Math.round(total)}/100 (${pctDisplay}%)`);
-  lines.push(`Grade: ${grade}`);
+    lines.push("");
+    lines.push(`Total: ${Math.round(total)}/100 (${pctDisplay}%)`);
+    lines.push(`Grade: ${grade}`);
 
-  const overall = document.getElementById("overall_comment").value.trim();
+    const overall = document.getElementById("overall_comment").value.trim();
+    
   if (overall){
     lines.push("");
     lines.push("Overall Feedback");
     lines.push(overall);
+  }
 
   if (grade === "A+") {
     lines.push("");
     lines.push("Instructor Note");
-    lines.push("Exceptional work, among the top 5–10% of submissions. Shows strong independence, depth, and originality beyond what was covered in class.");
+    lines.push("Exceptional work among the top 5–10% of submissions. Shows strong independence, depth, and originality beyond what was covered in class.");
   }
-  }
+  
 
-  // IMPORTANT: per your spec, don't mention A+ unless actually selected
-  // (so remove the old "eligible for A+" note entirely)
+  // don't mention A+ unless actually selected
 
   const outEl = document.getElementById("out");
   if (outEl) outEl.innerText = lines.join("\n");
