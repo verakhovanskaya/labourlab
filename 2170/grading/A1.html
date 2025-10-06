@@ -193,12 +193,20 @@
       </div>
     </div>
 
+    <div class="card">
+      <h2>A+ (Top 5%)</h2>
+      <p class="muted">
+      A+ may be awarded only if <strong>all four criteria are at A</strong> and you explicitly approve it.
+      </p>
+      <label class="flex">
+      <input type="checkbox" id="consider_a_plus" disabled>
+      Approve A+ (all categories must be A)
+      </label>
+    </div>
+
     <div class="crit">
-      <div class="flex">
-        <label><input type="checkbox" id="consider_a_plus"> Consider for A+ (all categories must be A)</label>
-      </div>
       <label>Overall Comment (optional)</label>
-      <textarea id="overall_comment" placeholder="Justification"></textarea>
+      <textarea id="overall_comment" placeholder="Other comments here"></textarea>
     </div>
 
     <div class="flex right">
@@ -209,6 +217,9 @@
   <div class="card">
     <h2>Result</h2>
     <p class="scoreline">Total: <span id="total">100</span>/100 &nbsp; | &nbsp; Percent: <span id="pct">100</span>% &nbsp; | &nbsp; Grade: <span class="kbd" id="grade">A+</span></p>
+    <p id="a_plus_hint" style="color:#ff66cc; font-weight:600; display:none;">
+  note: your grade total creates minor A+
+    </p>
     <div class="out" id="out"></div>
     <div class="flex" style="margin-top:10px;">
       <button class="btn btn-ghost" onclick="copyOut()">Copy to Clipboard</button>
@@ -274,7 +285,29 @@ function buildRanges() {
 
 let ranges = buildRanges();
 
-/* ---------- Helpers ---------- */
+/* ---------- Misc Helpers ---------- */
+
+/* ----------A+ gating ---------- */
+function allLevelsAreA(){
+  return ["raw","clean","audit","recs"].every(k =>
+    document.getElementById("lvl_" + k).value === "A"
+  );
+}
+
+function updateAPlusEligibility(){
+  const cb = document.getElementById("consider_a_plus");
+  if (!cb) return;
+  const eligible = allLevelsAreA();
+  cb.disabled = !eligible;
+  if (!eligible) cb.checked = false; // cannot be on unless eligible
+}
+
+function showAPlusHint(show){
+  const el = document.getElementById("a_plus_hint");
+  if (!el) return;
+  el.style.display = show ? "block" : "none";
+}
+
 function setDefaultsFromCurrentLevels() {
   ["raw","clean","audit","recs"].forEach(id => {
     const sel = document.getElementById("lvl_" + id);
@@ -305,9 +338,10 @@ function preset(id, max, level) {
   const band = ranges[id][level];
   let val = randMid(band[0], band[1], id, level);
   val = Math.min(max, Math.max(0, val));
-  document.getElementById("pts_" + id).value = Math.round(val);   // ← round here
+  document.getElementById("pts_" + id).value = Math.round(val);   // rounding test here
   const sel = document.getElementById("lvl_" + id);
   if (sel) sel.value = level;
+  updateAPlusEligibility();   
   recalc();
 }
 
@@ -325,7 +359,8 @@ function syncPreset(id, max, level) {
   } else {
     val = cur;
   }
-  input.value = Math.round(val);                                    // ← round here
+  input.value = Math.round(val);
+  updateAPlusEligibility();
   recalc();
 }
 
@@ -341,9 +376,8 @@ function computeGrade(pct){
 }
 
 function applyAPlusPolicy(pct, baseGrade, allA, considerAplus){
-  // A+ only if >=90% AND all four levels are A AND the checkbox is ticked
-  if (pct >= 90) {
-    return (allA && considerAplus) ? "A+" : "A";
+  if (pct >= 90 && allA && considerAplus) {
+    return "A+";
   }
   return baseGrade;
 }
@@ -352,23 +386,27 @@ function recalc(){
   const total = ["raw","clean","audit","recs"]
     .map(id => parseFloat(document.getElementById("pts_"+id).value || "0"))
     .reduce((a,b)=>a+b,0);
-  const pct = Math.floor(total); // keep floor for band mapping
-  const baseGrade = computeGrade(pct);
+  let pct = Math.floor(total);
+  let grade = computeGrade(pct);
 
-  const levels = {
-    raw: document.getElementById("lvl_raw").value,
-    clean: document.getElementById("lvl_clean").value,
-    audit: document.getElementById("lvl_audit").value,
-    recs: document.getElementById("lvl_recs").value
-  };
-  const allA = ["raw","clean","audit","recs"].every(k => levels[k] === "A");
+  const allA = ["raw","clean","audit","recs"].every(k => document.getElementById("lvl_"+k).value === "A");
   const considerAplus = document.getElementById("consider_a_plus").checked;
-  const displayGrade = applyAPlusPolicy(pct, baseGrade, allA, considerAplus);
 
-  document.getElementById("total").innerText = total;               // now integer
+  grade = applyAPlusPolicy(pct, grade, allA, considerAplus);
+  if (grade === "A+") pct = 95;  // <—— show 95% for A+
+
+    // ---- minor A+ hint ----
+  if (pct >= 90 && allA && !considerAplus) {
+    showAPlusHint(true);   // show magenta warning
+  } else {
+    showAPlusHint(false);  // hide it otherwise
+  }
+
+  document.getElementById("total").innerText = total;
   document.getElementById("pct").innerText = pct;
-  document.getElementById("grade").innerText = displayGrade;
+  document.getElementById("grade").innerText = grade;
 }
+
 
 /* ---------- Render anchor blurbs from rubric constant section ---------- */
 function bandPointsText(id, level) {
@@ -494,6 +532,11 @@ function copyOut(){
 window.addEventListener("DOMContentLoaded", () => {
   const dateInput = document.getElementById("date_str");
   if (dateInput) dateInput.value = todayISO();
+
+    // ensure A+ checkbox is off on first load
+  const cb = document.getElementById("consider_a_plus");
+  if (cb) cb.checked = false;
+
   renderAnchors();
   setDefaultsFromCurrentLevels();
   recalc();
