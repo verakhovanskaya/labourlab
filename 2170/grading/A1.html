@@ -292,16 +292,21 @@ let ranges = buildRanges();
 /* ---------- Misc Helpers ---------- */
 
 /* ----------A+ gating ---------- */
-function allLevelsAreA(){
-  return ["raw","clean","audit","recs"].every(k =>
-    document.getElementById("lvl_" + k).value === "A"
-  );
+function atLeastA(id){
+  const pts = parseFloat(document.getElementById("pts_" + id).value || "0");
+  const aBand = ranges[id]["A"];            // [lo, hi]
+  const loInt = Math.ceil(aBand[0]);        // integerized lower bound
+  return pts >= loInt;                      // "at least A"
+}
+
+function allAtLeastA(){
+  return ["raw","clean","audit","recs"].every(atLeastA);
 }
 
 function updateAPlusEligibility(){
   const cb = document.getElementById("consider_a_plus");
   if (!cb) return;
-  const eligible = allLevelsAreA();
+  const eligible = allAtLeastA();
   cb.disabled = !eligible;
   if (!eligible) cb.checked = false; // cannot be on unless eligible
 }
@@ -392,39 +397,39 @@ function recalc(){
     const v = parseFloat(document.getElementById("pts_"+id).value || "0");
     return Number.isFinite(v) ? v : 0;
   };
-  const pts = ["raw","clean","audit","recs"].map(read);
-  const total = pts.reduce((a,b)=>a+b,0);
+  const total = ["raw","clean","audit","recs"].map(read).reduce((a,b)=>a+b,0);
+  const pctRaw = Math.floor(total);          // true math before any snap
 
-  const pctRaw = Math.floor(total);
+  updateAPlusEligibility();                   // keep checkbox state synced
 
-  // Keep A+ checkbox eligibility synced
-  updateAPlusEligibility();
-
-  const allA = ["raw","clean","audit","recs"]
-    .every(k => document.getElementById("lvl_"+k).value === "A");
+  const eligibleAplus = allAtLeastA();       // NEW: points-based eligibility
   const considerAplus = document.getElementById("consider_a_plus").checked;
 
-  // UI-only hint (not in printout)
-  showAPlusHint(pctRaw >= 90 && allA && !considerAplus);
+  // UI-only magenta hint (minor A+) — show only when math ≥90, eligible, but not approved
+  showAPlusHint(pctRaw >= 90 && eligibleAplus && !considerAplus);
 
-  // Grade + display percent
+  // Grade + display percent:
+  // - If A+ approved and eligible -> A+ and snap to 95 (even if raw is 88)
+  // - Else if raw ≥90 -> show A (minor A+)
+  // - Else use normal bands
   let grade, pctDisplay;
-  if (pctRaw >= 90 && allA && considerAplus) {
+  if (considerAplus && eligibleAplus) {
     grade = "A+";
-    pctDisplay = 95;        // snap to 95 when approved
+    pctDisplay = 95;                          // snap to 95 on approval
   } else if (pctRaw >= 90) {
-    grade = "A";            // ≥90 but not approved stays A
-    pctDisplay = pctRaw;    // show the actual 90/91/etc.
+    grade = "A";                              // ≥90 but not approved
+    pctDisplay = pctRaw;
   } else {
     grade = computeGrade(pctRaw);
     pctDisplay = pctRaw;
   }
 
-  // Update header
+  // Header
   document.getElementById("total").innerText = Math.round(total);
-  document.getElementById("pct").innerText = pctDisplay;
+  document.getElementById("pct").innerText   = pctDisplay;
   document.getElementById("grade").innerText = grade;
 }
+
 
 
 
@@ -466,42 +471,53 @@ function renderAnchors() {
 
 /* ---------- About the printout feedback ---------- */
 function generate(){
-  recalc();
+  recalc(); // keep header in sync first
 
   const student = document.getElementById("student").value.trim();
   const section = document.getElementById("section").value.trim();
-  const ta = document.getElementById("ta_name").value.trim();
-  const date = (document.getElementById("date_str").value.trim() || todayISO());
+  const ta      = document.getElementById("ta_name").value.trim();
+  const date    = (document.getElementById("date_str").value.trim() || todayISO());
 
   const levels = {
-    raw: document.getElementById("lvl_raw").value,
+    raw:   document.getElementById("lvl_raw").value,
     clean: document.getElementById("lvl_clean").value,
     audit: document.getElementById("lvl_audit").value,
-    recs: document.getElementById("lvl_recs").value
+    recs:  document.getElementById("lvl_recs").value
   };
   const points = {
-    raw: document.getElementById("pts_raw").value,
-    clean: document.getElementById("pts_clean").value,
-    audit: document.getElementById("pts_audit").value,
-    recs: document.getElementById("pts_recs").value
+    raw:   parseFloat(document.getElementById("pts_raw").value || "0"),
+    clean: parseFloat(document.getElementById("pts_clean").value || "0"),
+    audit: parseFloat(document.getElementById("pts_audit").value || "0"),
+    recs:  parseFloat(document.getElementById("pts_recs").value || "0"),
   };
   const comments = {
-    raw: document.getElementById("com_raw").value.trim(),
+    raw:   document.getElementById("com_raw").value.trim(),
     clean: document.getElementById("com_clean").value.trim(),
     audit: document.getElementById("com_audit").value.trim(),
-    recs: document.getElementById("com_recs").value.trim()
+    recs:  document.getElementById("com_recs").value.trim()
   };
 
   const considerAplus = document.getElementById("consider_a_plus").checked;
 
-  let total = ["raw","clean","audit","recs"]
-    .map(k => parseFloat(points[k] || "0"))
-    .reduce((a,b) => a + b, 0);
-  let pct = Math.floor(total);
-  let grade = computeGrade(pct);
+  // math total before any snap
+  const total  = ["raw","clean","audit","recs"].map(k => points[k]).reduce((a,b)=>a+b,0);
+  const pctRaw = Math.floor(total);
 
-  const allA = ["raw","clean","audit","recs"].every(k => levels[k] === "A");
-  grade = applyAPlusPolicy(pct, grade, allA, considerAplus);
+  // NEW: eligibility = at least A in all four (points-based)
+  const eligibleAplus = allAtLeastA();
+
+  // Grade + display percent for the printout — mirror recalc()
+  let grade, pctDisplay;
+  if (considerAplus && eligibleAplus) {
+    grade = "A+";
+    pctDisplay = 95;    // snap printout to 95 when A+ approved
+  } else if (pctRaw >= 90) {
+    grade = "A";        // minor A+ shown as A unless approved
+    pctDisplay = pctRaw;
+  } else {
+    grade = computeGrade(pctRaw);
+    pctDisplay = pctRaw;
+  }
 
   const lines = [];
   lines.push("INF2170 – Content Audit Feedback");
@@ -515,7 +531,7 @@ function generate(){
   [["raw","1) Raw Crawl Data",10],["clean","2) Cleaned & Grouped Spreadsheet",30],["audit","3) Audit (Ratings & Findings)",20],["recs","4) Recommendations Report",40]]
     .forEach(([k,title,max])=>{
       const lvl = levels[k];
-      const ptsInt = Math.round(parseFloat(points[k] || "0"));
+      const ptsInt = Math.round(points[k] || 0);
       const anchorTxt = anchors[k][lvl] || "";
       const anchor = anchorTxt + bandPointsText(k, lvl);
       lines.push(`- ${title}: ${ptsInt}/${max} (Level: ${lvl})`);
@@ -525,7 +541,7 @@ function generate(){
     });
 
   lines.push("");
-  lines.push(`Total: ${Math.round(total)}/${100} (${pct}%)`);
+  lines.push(`Total: ${Math.round(total)}/100 (${pctDisplay}%)`);
   lines.push(`Grade: ${grade}`);
 
   const overall = document.getElementById("overall_comment").value.trim();
@@ -534,14 +550,14 @@ function generate(){
     lines.push("Overall Feedback");
     lines.push(overall);
   }
-  if (grade === "A" && allA && !considerAplus) {
-    lines.push("");
-    lines.push("Note: Eligible for A+ consideration (all categories scored at A).");
-  }
+
+  // IMPORTANT: per your spec, don't mention A+ unless actually selected
+  // (so remove the old "eligible for A+" note entirely)
 
   const outEl = document.getElementById("out");
   if (outEl) outEl.innerText = lines.join("\n");
 }
+
 
 /* ---------- Clipboard ---------- */
 function copyOut(){
@@ -565,8 +581,9 @@ window.addEventListener("DOMContentLoaded", () => {
   const cb = document.getElementById("consider_a_plus");
   if (cb) {
     cb.checked = false;
-    cb.addEventListener("change", recalc);   // snap to 95 when approved
+    cb.addEventListener("change", recalc);  // snap live when toggled
   }
+
   updateAPlusEligibility();                  // enable only if all A
 
   // 5) Now compute header and build the printout block
