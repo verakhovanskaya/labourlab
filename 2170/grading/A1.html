@@ -547,6 +547,12 @@ function generate(){
     lines.push("");
     lines.push("Overall Feedback");
     lines.push(overall);
+
+  if (grade === "A+") {
+    lines.push("");
+    lines.push("Instructor Note");
+    lines.push("Exceptional work, among the top 5–10% of submissions. Shows strong independence, depth, and originality beyond what was covered in class.");
+  }
   }
 
   // IMPORTANT: per your spec, don't mention A+ unless actually selected
