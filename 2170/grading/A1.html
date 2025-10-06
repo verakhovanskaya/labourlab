@@ -229,26 +229,26 @@
 /* ---------- Single source of truth ---------- */
 const anchors = {
   raw: {
-    A:  "Crawl export is complete and usable as a baseline. (10 pts)",
-    FZ: "Missing, unreadable, or not produced by Screaming Frog. (0–4 pts)"
+    A:  "Crawl export is complete and usable as a baseline.",
+    FZ: "Missing, unreadable, or not produced by Screaming Frog."
   },
   clean: {
-    A:       "Highly legible hierarchy and grouping; enumeration is consistent; labels are concise and meaningful; redundancies and extra crawl data issues resolved; overall content structure clearly readable at a glance. (27–30 pts)",
-    "A-/B+": "Generally clear hierarchy and grouping; enumeration mostly consistent; labels usually concise; minor redundancies or uneven grouping present; overall structure readable with small effort. (23–26 pts)",
-    "B/B-":  "Partially cleaned inventory; grouping and enumeration attempted but confusing/uneven; duplicates and/or unauditable content still present. (18–22 pts)",
-    FZ:      "Mostly unedited crawl or no discernible structure. (0–17 pts)"
+    A:       "Highly legible hierarchy and grouping; enumeration is consistent; labels are concise and meaningful; redundancies and extra crawl data issues resolved; overall content structure clearly readable at a glance.",
+    "A-/B+": "Generally clear hierarchy and grouping; enumeration mostly consistent; labels usually concise; minor redundancies or uneven grouping present; overall structure readable with small effort.",
+    "B/B-":  "Partially cleaned inventory; grouping and enumeration attempted but confusing/uneven; duplicates and/or unauditable content still present.",
+    FZ:      "Mostly unedited crawl or no discernible structure."
   },
   audit: {
-    A:       "Criteria explicit; evaluations consistent; audit results clearly distinguish crawler vs content issues; ratings are balanced and appear to be reasonable. (18–20 pts)",
-    "A-/B+": "Criteria clear or strongly implied; mostly consistent; reasoning adequate though uneven. Work in this category may misdiagnose crawl errors or limitations as content issues. (15–17 pts)",
-    "B/B-":  "Limited or repetitive auditing; ratings inconsistent; grossly mischaracterized content vs. crawl issues. (12–14 pts)",
-    FZ:      "No discernable criteria/interpretation; incoherent/absent evaluation, inappropriate/missing work. (0–11 pts)"
+    A:       "Criteria explicit; evaluations consistent; audit results clearly distinguish crawler vs content issues; ratings are balanced and appear to be reasonable.",
+    "A-/B+": "Criteria clear or strongly implied; mostly consistent; reasoning adequate though uneven. Work in this category may misdiagnose crawl errors or limitations as content issues.",
+    "B/B-":  "Limited or repetitive auditing; ratings inconsistent; grossly mischaracterized content vs. crawl issues.",
+    FZ:      "No discernable criteria/interpretation; incoherent/absent evaluation, inappropriate/missing work."
   },
   recs: {
-    A:       "Clear, prioritized, evidence‑based recommendations which are directly tied to results from the audit; concise; abstract delivers 'thumbnail' overview; professional synthesis; strong design judgment. Scores on the higher range demonstrate awareness of client goals, theorize intervention impacts, and identify issue patterns. (36–40 pts)",
-    "A-/B+": "Logical and relevant, but linkage to audit-based evidence is uneven; abstract is mostly clear. Work that leans too heavily on intuition about usability/navigation, or shows issues in writing style, tone, or clarity, will fall into this category. (31–35 pts)",
-    "B/B-":  "Generic recommendations and/or recommendations only very tenuously tied to content audit results. More egregious cases of mismatched tone and/or severe misunderstanding of appropriate content interventions may be marked in this range. (27–30 pts)",
-    FZ:      "Off‑topic, fragmented, or missing substantive recommendations. (0–26 pts)"
+    A:       "Clear, prioritized, evidence‑based recommendations which are directly tied to results from the audit; concise; abstract delivers 'thumbnail' overview; professional synthesis; strong design judgment. Scores on the higher range demonstrate awareness of client goals, theorize intervention impacts, and identify issue patterns.",
+    "A-/B+": "Logical and relevant, but linkage to audit-based evidence is uneven; abstract is mostly clear. Work that leans too heavily on intuition about usability/navigation, or shows issues in writing style, tone, or clarity, will fall into this category.",
+    "B/B-":  "Generic recommendations and/or recommendations only very tenuously tied to content audit results. More egregious cases of mismatched tone and/or severe misunderstanding of appropriate content interventions may be marked in this range.",
+    FZ:      "Off‑topic, fragmented, or missing substantive recommendations."
   }
 };
 
@@ -483,7 +483,6 @@ function generate(){
   const outEl = document.getElementById("out");
   if (outEl) outEl.innerText = lines.join("\n");
 }
-
 
 /* ---------- Clipboard ---------- */
 function copyOut(){
