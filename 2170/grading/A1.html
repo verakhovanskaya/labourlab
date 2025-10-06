@@ -275,6 +275,18 @@ function buildRanges() {
 let ranges = buildRanges();
 
 /* ---------- Helpers ---------- */
+function setDefaultsFromCurrentLevels() {
+  ["raw","clean","audit","recs"].forEach(id => {
+    const sel = document.getElementById("lvl_" + id);
+    const level = sel ? sel.value : "A";
+    const max = MAXPTS[id];
+    const band = ranges[id][level];
+    let val = randMid(band[0], band[1], id, level);
+    val = Math.min(max, Math.max(0, val));
+    document.getElementById("pts_" + id).value = Math.round(val);  // ← mid-band integer
+  });
+}
+
 function todayISO(){
   const d = new Date();
   const m = String(d.getMonth()+1).padStart(2,"0");
@@ -290,9 +302,10 @@ function randMid(min, max, id, level) {
 
 /* ---------- UI Actions ---------- */
 function preset(id, max, level) {
-  const r = ranges[id][level];
-  const val = Math.min(max, Math.max(0, randMid(r[0], r[1], id, level)));
-  document.getElementById("pts_" + id).value = val;
+  const band = ranges[id][level];
+  let val = randMid(band[0], band[1], id, level);
+  val = Math.min(max, Math.max(0, val));
+  document.getElementById("pts_" + id).value = Math.round(val);   // ← round here
   const sel = document.getElementById("lvl_" + id);
   if (sel) sel.value = level;
   recalc();
@@ -300,19 +313,22 @@ function preset(id, max, level) {
 
 function syncPreset(id, max, level) {
   const input = document.getElementById("pts_" + id);
-  const r = ranges[id][level];
+  const band = ranges[id][level];
   const cur = parseFloat(input.value || "0");
+  const inBand = cur >= band[0] && cur <= band[1];
 
-  if (cur < r[0] || cur > r[1]) {
-    // Snap to max for Raw=A; otherwise midpoint
-    input.value = (id === "raw" && level === "A") ? r[1] : (r[0] + r[1]) / 2;
+  let val;
+  if (!inBand) {
+    val = (id === "raw" && level === "A") ? MAXPTS.raw : (band[0] + band[1]) / 2;
   } else if (id === "raw" && level === "A") {
-    // Even if within band, force exactly 10
-    input.value = r[1];
+    val = MAXPTS.raw;
+  } else {
+    val = cur;
   }
-
+  input.value = Math.round(val);                                    // ← round here
   recalc();
 }
+
 
 function computeGrade(pct){
   if (pct >= 90) return "A+";
@@ -328,14 +344,25 @@ function recalc(){
   const total = ["raw","clean","audit","recs"]
     .map(id => parseFloat(document.getElementById("pts_"+id).value || "0"))
     .reduce((a,b)=>a+b,0);
-  const pct = Math.floor(total); // floor to enforce bands exactly
-  const grade = computeGrade(pct);
-  document.getElementById("total").innerText = total.toFixed(1).replace(/\.0$/,"");
+  const pct = Math.floor(total); // keep floor for band mapping
+  const baseGrade = computeGrade(pct);
+
+  const levels = {
+    raw: document.getElementById("lvl_raw").value,
+    clean: document.getElementById("lvl_clean").value,
+    audit: document.getElementById("lvl_audit").value,
+    recs: document.getElementById("lvl_recs").value
+  };
+  const allA = ["raw","clean","audit","recs"].every(k => levels[k] === "A");
+  const considerAplus = document.getElementById("consider_a_plus").checked;
+  const displayGrade = applyAPlusPolicy(pct, baseGrade, allA, considerAplus);
+
+  document.getElementById("total").innerText = total;               // now integer
   document.getElementById("pct").innerText = pct;
-  document.getElementById("grade").innerText = grade;
+  document.getElementById("grade").innerText = displayGrade;
 }
 
-/* ---------- Render anchor blurbs from constant ---------- */
+/* ---------- Render anchor blurbs from rubric constant section ---------- */
 function renderAnchors() {
   const order = {
     raw: ["A","FZ"],
@@ -449,6 +476,7 @@ window.addEventListener("DOMContentLoaded", () => {
   const dateInput = document.getElementById("date_str");
   if (dateInput) dateInput.value = todayISO();
   renderAnchors();
+  setDefaultsFromCurrentLevels();
   recalc();
   generate();
 });
