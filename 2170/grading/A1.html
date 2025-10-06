@@ -386,26 +386,38 @@ function recalc(){
   const total = ["raw","clean","audit","recs"]
     .map(id => parseFloat(document.getElementById("pts_"+id).value || "0"))
     .reduce((a,b)=>a+b,0);
-  let pct = Math.floor(total);
-  let grade = computeGrade(pct);
 
-  const allA = ["raw","clean","audit","recs"].every(k => document.getElementById("lvl_"+k).value === "A");
+  const pctRaw = Math.floor(total); // true mathematical percent (pre-snap)
+
+  const allA = ["raw","clean","audit","recs"]
+    .every(k => document.getElementById("lvl_"+k).value === "A");
   const considerAplus = document.getElementById("consider_a_plus").checked;
 
-  grade = applyAPlusPolicy(pct, grade, allA, considerAplus);
-  if (grade === "A+") pct = 95;  // <—— show 95% for A+
+  // Show/hide the magenta hint (UI only, not in printout)
+  showAPlusHint(pctRaw >= 90 && allA && !considerAplus);
 
-    // ---- minor A+ hint ----
-  if (pct >= 90 && allA && !considerAplus) {
-    showAPlusHint(true);   // show magenta warning
+  // Grade logic:
+  // - If >=90 and A+ approved (and all A) -> A+ and snap display to 95
+  // - If >=90 but NOT approved -> force to A (no snap)
+  // - Else use normal bands
+  let grade, pctDisplay;
+  if (pctRaw >= 90 && allA && considerAplus) {
+    grade = "A+";
+    pctDisplay = 95;           // snap display percent
+  } else if (pctRaw >= 90) {
+    grade = "A";               // keep as A unless approved
+    pctDisplay = pctRaw;
   } else {
-    showAPlusHint(false);  // hide it otherwise
+    grade = computeGrade(pctRaw);
+    pctDisplay = pctRaw;
   }
 
-  document.getElementById("total").innerText = total;
-  document.getElementById("pct").innerText = pct;
+  // Update UI
+  document.getElementById("total").innerText = Math.round(total);
+  document.getElementById("pct").innerText = pctDisplay;
   document.getElementById("grade").innerText = grade;
 }
+
 
 
 /* ---------- Render anchor blurbs from rubric constant section ---------- */
@@ -536,6 +548,7 @@ window.addEventListener("DOMContentLoaded", () => {
     // ensure A+ checkbox is off on first load
   const cb = document.getElementById("consider_a_plus");
   if (cb) cb.checked = false;
+  if (cb) cb.addEventListener("change", recalc);  // ← make A+ snap live
 
   renderAnchors();
   setDefaultsFromCurrentLevels();
