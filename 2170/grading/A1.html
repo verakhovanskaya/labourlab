@@ -435,11 +435,38 @@ function generate(){
 
   const considerAplus = document.getElementById("consider_a_plus").checked;
 
-  let total = ["raw","clean","audit","recs"].map(k => parseFloat(points[k]||"0")).reduce((a,b)
+  let total = ["raw","clean","audit","recs"]
+    .map(k => parseFloat(points[k] || "0"))
+    .reduce((a,b) => a + b, 0);
+  let pct = Math.floor(total);
+  let grade = computeGrade(pct);
 
+  const allA = ["raw","clean","audit","recs"].every(k => levels[k] === "A");
+  grade = applyAPlusPolicy(pct, grade, allA, considerAplus);
+
+  const lines = [];
+  lines.push("INF2170 – Content Audit Feedback");
+  if (student) lines.push("Student: " + student);
+  if (section) lines.push("Section: " + section);
+  if (ta) lines.push("TA: " + ta);
+  lines.push("Date: " + date);
+  lines.push("");
+  lines.push("Scores");
+
+  [["raw","1) Raw Crawl Data",10],["clean","2) Cleaned & Grouped Spreadsheet",30],["audit","3) Audit (Ratings & Findings)",20],["recs","4) Recommendations Report",40]]
+    .forEach(([k,title,max])=>{
+      const lvl = levels[k];
+      const ptsInt = Math.round(parseFloat(points[k] || "0"));
+      const anchorTxt = anchors[k][lvl] || "";
+      const anchor = anchorTxt + bandPointsText(k, lvl);
+      lines.push(`- ${title}: ${ptsInt}/${max} (Level: ${lvl})`);
+      if (anchorTxt) lines.push("  · Feedback reference: " + anchor);
+      const com = comments[k];
+      if (com) lines.push("  · Comment: " + com);
+    });
 
   lines.push("");
-  lines.push(`Total: ${total}/${100} (${pct}%)`);
+  lines.push(`Total: ${Math.round(total)}/${100} (${pct}%)`);
   lines.push(`Grade: ${grade}`);
 
   const overall = document.getElementById("overall_comment").value.trim();
@@ -456,6 +483,7 @@ function generate(){
   const outEl = document.getElementById("out");
   if (outEl) outEl.innerText = lines.join("\n");
 }
+
 
 /* ---------- Clipboard ---------- */
 function copyOut(){
