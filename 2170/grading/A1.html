@@ -67,7 +67,7 @@
       </div>
     </div>
 
-    <h2 style="margin-top:16px;">Detailed Grading</h2>
+    <h2 style="margin-top:16px;">Subcomponent Scores</h2>
 
     <!-- Part 1: A-or-F only -->
     <div class="crit" id="crit-raw">
@@ -527,7 +527,7 @@ function generate(){
   if (ta) lines.push("TA: " + ta);
   lines.push("Date: " + date);
   lines.push("");
-  lines.push("Scores");
+  lines.push("Subcomponent Scores");
 
   [["raw","1) Raw Crawl Data",10],["clean","2) Cleaned & Grouped Spreadsheet",30],["audit","3) Audit (Ratings & Findings)",20],["recs","4) Recommendations Report",40]]
     .forEach(([k,title,max])=>{
@@ -555,8 +555,7 @@ function generate(){
 
   if (grade === "A+") {
     lines.push("");
-    lines.push("Instructor Note");
-    lines.push("Exceptional work among the top 5–10% of submissions. Shows strong independence, depth, and originality beyond what was covered in class.");
+    lines.push("Instructor Note: A+ awarded for exceptional work among the top 5–10% of submissions. Shows strong independence, depth, and originality beyond what was covered in class.");
   }
   
 
