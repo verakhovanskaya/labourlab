@@ -246,7 +246,7 @@ const anchors = {
   },
   recs: {
     A:       "Clear, prioritized, evidence‑based recommendations which are directly tied to results from the audit; concise; abstract delivers 'thumbnail' overview; professional synthesis; strong design judgment. Scores on the higher range demonstrate awareness of client goals, theorize intervention impacts, and identify issue patterns. (36–40 pts)",
-    "A-/B+": "ogical and relevant, but linkage to audit-based evidence is uneven; abstract is mostly clear. Work that leans too heavily on intuition about usability/navigation, or shows issues in writing style, tone, or clarity, will fall into this category. (31–35 pts)",
+    "A-/B+": "Logical and relevant, but linkage to audit-based evidence is uneven; abstract is mostly clear. Work that leans too heavily on intuition about usability/navigation, or shows issues in writing style, tone, or clarity, will fall into this category. (31–35 pts)",
     "B/B-":  "Generic recommendations and/or recommendations only very tenuously tied to content audit results. More egregious cases of mismatched tone and/or severe misunderstanding of appropriate content interventions may be marked in this range. (27–30 pts)",
     FZ:      "Off‑topic, fragmented, or missing substantive recommendations. (0–26 pts)"
   }
@@ -399,7 +399,7 @@ function generate(){
       const pts = points[k];
       const anchor = anchors[k][lvl] || "";
       lines.push(`- ${title}: ${pts}/${max} (Level: ${lvl})`);
-      if (anchor) lines.push("  · Anchor: " + anchor);
+      if (anchor) lines.push("  · Feedback reference: " + anchor);
       const com = comments[k];
       if (com) lines.push("  · Comment: " + com);
     });
