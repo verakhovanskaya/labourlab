@@ -340,6 +340,14 @@ function computeGrade(pct){
   return "FZ";
 }
 
+function applyAPlusPolicy(pct, baseGrade, allA, considerAplus){
+  // A+ only if >=90% AND all four levels are A AND the checkbox is ticked
+  if (pct >= 90) {
+    return (allA && considerAplus) ? "A+" : "A";
+  }
+  return baseGrade;
+}
+
 function recalc(){
   const total = ["raw","clean","audit","recs"]
     .map(id => parseFloat(document.getElementById("pts_"+id).value || "0"))
@@ -423,8 +431,7 @@ function generate(){
   let grade = computeGrade(pct);
 
   const allA = ["raw","clean","audit","recs"].every(k => levels[k] === "A");
-  if ((grade === "A" || grade === "A+") && allA && considerAplus) grade = "A+";
-  else if (grade === "A+" && !allA) grade = "A"; // safety
+  grade = applyAPlusPolicy(pct, grade, allA, considerAplus);
 
   const lines = [];
   lines.push("INF2170 – Content Audit Feedback");
