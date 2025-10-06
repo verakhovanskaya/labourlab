@@ -87,7 +87,7 @@
         </div>
         <div>
           <label>Points Awarded (0–10)</label>
-          <input type="number" id="pts_raw" min="0" max="10" step="0.5" value="10" oninput="recalc()">
+          <input type="number" id="pts_raw"   min="0" max="10" step="0.5" oninput="recalc()">
           <div class="flex" style="margin-top:8px;">
             <button class="pill" type="button" onclick="preset('raw',10,'A')">Fill A-range</button>
             <button class="pill" type="button" onclick="preset('raw',10,'FZ')">Fill FZ-range</button>
@@ -116,7 +116,7 @@
         </div>
         <div>
           <label>Points Awarded (0–30)</label>
-          <input type="number" id="pts_clean" min="0" max="30" step="0.5" value="30" oninput="recalc()">
+          <input type="number" id="pts_clean" min="0" max="30" step="0.5" oninput="recalc()">
           <div class="flex" style="margin-top:8px;">
             <button class="pill" type="button" onclick="preset('clean',30,'A')">Fill A-range</button>
             <button class="pill" type="button" onclick="preset('clean',30,'A-/B+')">Fill A-/B+-range</button>
@@ -147,7 +147,7 @@
         </div>
         <div>
           <label>Points Awarded (0–20)</label>
-          <input type="number" id="pts_audit" min="0" max="20" step="0.5" value="20" oninput="recalc()">
+          <input type="number" id="pts_audit" min="0" max="20" step="0.5" oninput="recalc()">
           <div class="flex" style="margin-top:8px;">
             <button class="pill" type="button" onclick="preset('audit',20,'A')">Fill A-range</button>
             <button class="pill" type="button" onclick="preset('audit',20,'A-/B+')">Fill A-/B+-range</button>
@@ -178,7 +178,7 @@
         </div>
         <div>
           <label>Points Awarded (0–40)</label>
-          <input type="number" id="pts_recs" min="0" max="40" step="0.5" value="40" oninput="recalc()">
+          <input type="number" id="pts_recs"  min="0" max="40" step="0.5" oninput="recalc()">
           <div class="flex" style="margin-top:8px;">
             <button class="pill" type="button" onclick="preset('recs',40,'A')">Fill A-range</button>
             <button class="pill" type="button" onclick="preset('recs',40,'A-/B+')">Fill A-/B+-range</button>
@@ -383,39 +383,40 @@ function applyAPlusPolicy(pct, baseGrade, allA, considerAplus){
 }
 
 function recalc(){
+  function recalc(){
   const total = ["raw","clean","audit","recs"]
     .map(id => parseFloat(document.getElementById("pts_"+id).value || "0"))
     .reduce((a,b)=>a+b,0);
 
-  const pctRaw = Math.floor(total); // true mathematical percent (pre-snap)
+  const pctRaw = Math.floor(total);
+
+  // keep checkbox state synced as levels/points evolve
+  updateAPlusEligibility();
 
   const allA = ["raw","clean","audit","recs"]
     .every(k => document.getElementById("lvl_"+k).value === "A");
   const considerAplus = document.getElementById("consider_a_plus").checked;
 
-  // Show/hide the magenta hint (UI only, not in printout)
+  // UI-only hint
   showAPlusHint(pctRaw >= 90 && allA && !considerAplus);
 
-  // Grade logic:
-  // - If >=90 and A+ approved (and all A) -> A+ and snap display to 95
-  // - If >=90 but NOT approved -> force to A (no snap)
-  // - Else use normal bands
+  // Snap/display logic
   let grade, pctDisplay;
   if (pctRaw >= 90 && allA && considerAplus) {
     grade = "A+";
-    pctDisplay = 95;           // snap display percent
+    pctDisplay = 95;      // snap display to 95 when approved
   } else if (pctRaw >= 90) {
-    grade = "A";               // keep as A unless approved
+    grade = "A";          // ≥90 but not approved stays A (minor A+)
     pctDisplay = pctRaw;
   } else {
     grade = computeGrade(pctRaw);
     pctDisplay = pctRaw;
   }
 
-  // Update UI
   document.getElementById("total").innerText = Math.round(total);
   document.getElementById("pct").innerText = pctDisplay;
   document.getElementById("grade").innerText = grade;
+}
 }
 
 
@@ -545,15 +546,19 @@ window.addEventListener("DOMContentLoaded", () => {
   const dateInput = document.getElementById("date_str");
   if (dateInput) dateInput.value = todayISO();
 
-    // ensure A+ checkbox is off on first load
+   // A+ checkbox: start OFF and wire change handler
   const cb = document.getElementById("consider_a_plus");
-  if (cb) cb.checked = false;
-  if (cb) cb.addEventListener("change", recalc);  // ← make A+ snap live
+  if (cb) {
+    cb.checked = false;
+    cb.addEventListener("change", recalc);   // snap grade/percent when toggled
+  }
 
   renderAnchors();
-  setDefaultsFromCurrentLevels();
+  setDefaultsFromCurrentLevels();            // sets ~88 total
+  updateAPlusEligibility();                  // <-- enable checkbox if all A
   recalc();
   generate();
+
 });
 </script>
 </body>
