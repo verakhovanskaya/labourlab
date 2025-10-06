@@ -252,12 +252,27 @@ const anchors = {
   }
 };
 
-const ranges = {
-  raw:   { "A":[9,10], "FZ":[0,4] },
-  clean: { "A":[27,30], "A-/B+":[23,26], "B/B-":[18,22], "FZ":[0,17] },
-  audit: { "A":[18,20], "A-/B+":[15,17], "B/B-":[12,14], "FZ":[0,11] },
-  recs:  { "A":[36,40], "A-/B+":[31,35], "B/B-":[27,30], "FZ":[0,26] }
-};
+const MAXPTS = { raw:10, clean:30, audit:20, recs:40 };
+
+// FOI grading ranges from here https://ischool.utoronto.ca/graduate-students/academics/course-policies/
+function buildRanges() {
+  const r = {};
+  Object.entries(MAXPTS).forEach(([id, max]) => {
+    const pct = p => +(max * p).toFixed(2);
+    r[id] = {
+      "A":       [pct(0.85), pct(0.89)],
+      "A-/B+":   [pct(0.77), pct(0.84)],
+      "B/B-":    [pct(0.70), pct(0.76)],
+      "FZ":      [0, pct(0.69)]
+    };
+    if (id === "raw") { // A or FZ only
+      r[id] = { "A":[pct(0.85), pct(1.00)], "FZ":[0, pct(0.69)] };
+    }
+  });
+  return r;
+}
+
+let ranges = buildRanges();
 
 /* ---------- Helpers ---------- */
 function todayISO(){
