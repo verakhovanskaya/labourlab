@@ -383,41 +383,45 @@ function applyAPlusPolicy(pct, baseGrade, allA, considerAplus){
 }
 
 function recalc(){
-  function recalc(){
-  const total = ["raw","clean","audit","recs"]
-    .map(id => parseFloat(document.getElementById("pts_"+id).value || "0"))
-    .reduce((a,b)=>a+b,0);
+  // Read points safely
+  const read = id => {
+    const v = parseFloat(document.getElementById("pts_"+id).value || "0");
+    return Number.isFinite(v) ? v : 0;
+  };
+  const pts = ["raw","clean","audit","recs"].map(read);
+  const total = pts.reduce((a,b)=>a+b,0);
 
   const pctRaw = Math.floor(total);
 
-  // keep checkbox state synced as levels/points evolve
+  // Keep A+ checkbox eligibility synced
   updateAPlusEligibility();
 
   const allA = ["raw","clean","audit","recs"]
     .every(k => document.getElementById("lvl_"+k).value === "A");
   const considerAplus = document.getElementById("consider_a_plus").checked;
 
-  // UI-only hint
+  // UI-only hint (not in printout)
   showAPlusHint(pctRaw >= 90 && allA && !considerAplus);
 
-  // Snap/display logic
+  // Grade + display percent
   let grade, pctDisplay;
   if (pctRaw >= 90 && allA && considerAplus) {
     grade = "A+";
-    pctDisplay = 95;      // snap display to 95 when approved
+    pctDisplay = 95;        // snap to 95 when approved
   } else if (pctRaw >= 90) {
-    grade = "A";          // ≥90 but not approved stays A (minor A+)
-    pctDisplay = pctRaw;
+    grade = "A";            // ≥90 but not approved stays A
+    pctDisplay = pctRaw;    // show the actual 90/91/etc.
   } else {
     grade = computeGrade(pctRaw);
     pctDisplay = pctRaw;
   }
 
+  // Update header
   document.getElementById("total").innerText = Math.round(total);
   document.getElementById("pct").innerText = pctDisplay;
   document.getElementById("grade").innerText = grade;
 }
-}
+
 
 
 
@@ -543,23 +547,29 @@ function copyOut(){
 
 /* ---------- Init ---------- */
 window.addEventListener("DOMContentLoaded", () => {
+  // Date
   const dateInput = document.getElementById("date_str");
   if (dateInput) dateInput.value = todayISO();
 
-   // A+ checkbox: start OFF and wire change handler
+  // Build rubric blurbs
+  renderAnchors();
+
+  // Set mid-band integer defaults (Raw A -> 10; others ≈ mid A)
+  setDefaultsFromCurrentLevels();
+
+  // A+: start OFF, wire change handler, and gate eligibility
   const cb = document.getElementById("consider_a_plus");
   if (cb) {
     cb.checked = false;
-    cb.addEventListener("change", recalc);   // snap grade/percent when toggled
+    cb.addEventListener("change", recalc);  // make A+ snap live
   }
+  updateAPlusEligibility();  // enable only if all A
 
-  renderAnchors();
-  setDefaultsFromCurrentLevels();            // sets ~88 total
-  updateAPlusEligibility();                  // <-- enable checkbox if all A
+  // First compute + generate the text block
   recalc();
   generate();
-
 });
+
 </script>
 </body>
 </html>
