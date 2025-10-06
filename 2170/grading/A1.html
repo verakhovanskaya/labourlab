@@ -536,9 +536,9 @@ function generate(){
       const anchorTxt = anchors[k][lvl] || "";
       const anchor = anchorTxt + bandPointsText(k, lvl);
       lines.push(`${title}: ${ptsInt}/${max} (Level: ${lvl})`);
-      if (anchorTxt) lines.push("   Feedback reference: " + anchor);
+      if (anchorTxt) lines.push("Feedback reference: " + anchor);
       const com = comments[k];
-      if (com) lines.push("   Comment: " + com);
+      if (com) lines.push("Comment: " + com);
     });
 
     lines.push("");
