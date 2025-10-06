@@ -229,7 +229,7 @@
 /* ---------- Single source of truth ---------- */
 const anchors = {
   raw: {
-    A:  "Crawl export is complete and usable as a baseline. (9–10 pts)",
+    A:  "Crawl export is complete and usable as a baseline. (10 pts)",
     FZ: "Missing, unreadable, or not produced by Screaming Frog. (0–4 pts)"
   },
   clean: {
@@ -371,6 +371,15 @@ function recalc(){
 }
 
 /* ---------- Render anchor blurbs from rubric constant section ---------- */
+function bandPointsText(id, level) {
+  const band = ranges[id]?.[level];
+  if (!band) return "";
+  const lo = Math.round(band[0]);
+  const hi = Math.round(band[1]);
+  const max = MAXPTS[id];
+  return ` (${lo}–${hi} / ${max})`;
+}
+
 function renderAnchors() {
   const order = {
     raw: ["A","FZ"],
@@ -390,13 +399,13 @@ function renderAnchors() {
     const lines = order[id].map(k => {
       const txt = anchors[id][k];
       if (!txt) return "";
-      return `<div><span class="${badgeClass(k)}">${k}</span> ${txt}</div>`;
+      return `<div><span class="${badgeClass(k)}">${k}</span> ${txt}${bandPointsText(id, k)}</div>`;
     }).filter(Boolean);
     el.innerHTML = lines.join("\n");
   });
 }
 
-/* ---------- Generate feedback ---------- */
+/* ---------- About the printout feedback ---------- */
 function generate(){
   recalc();
 
@@ -426,32 +435,8 @@ function generate(){
 
   const considerAplus = document.getElementById("consider_a_plus").checked;
 
-  let total = ["raw","clean","audit","recs"].map(k => parseFloat(points[k]||"0")).reduce((a,b)=>a+b,0);
-  let pct = Math.floor(total);
-  let grade = computeGrade(pct);
+  let total = ["raw","clean","audit","recs"].map(k => parseFloat(points[k]||"0")).reduce((a,b)
 
-  const allA = ["raw","clean","audit","recs"].every(k => levels[k] === "A");
-  grade = applyAPlusPolicy(pct, grade, allA, considerAplus);
-
-  const lines = [];
-  lines.push("INF2170 – Content Audit Feedback");
-  if (student) lines.push("Student: " + student);
-  if (section) lines.push("Section: " + section);
-  if (ta) lines.push("TA: " + ta);
-  lines.push("Date: " + date);
-  lines.push("");
-  lines.push("Scores");
-
-  [["raw","1) Raw Crawl Data",10],["clean","2) Cleaned & Grouped Spreadsheet",30],["audit","3) Audit (Ratings & Findings)",20],["recs","4) Recommendations Report",40]]
-    .forEach(([k,title,max])=>{
-      const lvl = levels[k];
-      const pts = points[k];
-      const anchor = anchors[k][lvl] || "";
-      lines.push(`- ${title}: ${pts}/${max} (Level: ${lvl})`);
-      if (anchor) lines.push("  · Feedback reference: " + anchor);
-      const com = comments[k];
-      if (com) lines.push("  · Comment: " + com);
-    });
 
   lines.push("");
   lines.push(`Total: ${total}/${100} (${pct}%)`);
@@ -460,7 +445,7 @@ function generate(){
   const overall = document.getElementById("overall_comment").value.trim();
   if (overall){
     lines.push("");
-    lines.push("Overall Comment");
+    lines.push("Overall Feedback");
     lines.push(overall);
   }
   if (grade === "A" && allA && !considerAplus) {
