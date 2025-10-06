@@ -374,10 +374,10 @@ function recalc(){
 function bandPointsText(id, level) {
   const band = ranges[id]?.[level];
   if (!band) return "";
-  const lo = Math.round(band[0]);
-  const hi = Math.round(band[1]);
   const max = MAXPTS[id];
-  return ` (${lo}–${hi} / ${max})`;
+  const lo = (Math.round(band[0]*10)/10).toFixed(1);
+  const hi = (Math.round(band[1]*10)/10).toFixed(1);
+  return ` (${lo}–${hi} out of ${max})`;
 }
 
 function renderAnchors() {
