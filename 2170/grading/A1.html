@@ -410,12 +410,13 @@ function recalc(){
   // - If A+ approved and eligible -> A+ and snap to 95 (even if raw is 88)
   // - Else if raw ≥90 -> show A (minor A+)
   // - Else use normal bands
-  let grade, pctDisplay;
+let grade, pctDisplay, displayTotal = Math.round(total);
   if (considerAplus && eligibleAplus) {
     grade = "A+";
-    pctDisplay = 95;                          // snap to 95 on approval
+    pctDisplay = 95;       // snap percent
+    displayTotal = 95;     // snap total shown next to /100
   } else if (pctRaw >= 90) {
-    grade = "A";                              // ≥90 but not approved
+    grade = "A";
     pctDisplay = pctRaw;
   } else {
     grade = computeGrade(pctRaw);
@@ -423,7 +424,7 @@ function recalc(){
   }
 
   // Header
-  document.getElementById("total").innerText = Math.round(total);
+  document.getElementById("total").innerText = displayTotal;
   document.getElementById("pct").innerText   = pctDisplay;
   document.getElementById("grade").innerText = grade;
 }
@@ -497,20 +498,22 @@ function generate(){
 
   const considerAplus = document.getElementById("consider_a_plus").checked;
 
-  // math total before any snap
-  const total  = ["raw","clean","audit","recs"].map(k => points[k]).reduce((a,b)=>a+b,0);
+// --- compute total and reapply A+ logic for printout ---
+  const total  = ["raw","clean","audit","recs"]
+    .map(k => points[k])
+    .reduce((a,b)=>a+b,0);
   const pctRaw = Math.floor(total);
 
-  // NEW: eligibility = at least A in all four (points-based)
   const eligibleAplus = allAtLeastA();
+  const approvedAplus = considerAplus && eligibleAplus;
 
-  // Grade + display percent for the printout — mirror recalc()
-  let grade, pctDisplay;
-  if (considerAplus && eligibleAplus) {
+  let grade, pctDisplay, displayTotal = Math.round(total);
+  if (approvedAplus) {
     grade = "A+";
-    pctDisplay = 95;    // snap printout to 95 when A+ approved
+    pctDisplay = 95;       // snap percent
+    displayTotal = 95;     // snap total shown next to /100
   } else if (pctRaw >= 90) {
-    grade = "A";        // minor A+ shown as A unless approved
+    grade = "A";
     pctDisplay = pctRaw;
   } else {
     grade = computeGrade(pctRaw);
@@ -539,11 +542,11 @@ function generate(){
     });
 
     lines.push("");
-    lines.push(`Total: ${Math.round(total)}/100 (${pctDisplay}%)`);
+    lines.push(`Total: ${displayTotal}/100 (${pctDisplay}%)`);
     lines.push(`Grade: ${grade}`);
 
     const overall = document.getElementById("overall_comment").value.trim();
-    
+
   if (overall){
     lines.push("");
     lines.push("Overall Feedback");
