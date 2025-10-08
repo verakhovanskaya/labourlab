@@ -253,8 +253,8 @@ const anchors = {
   },
   audit: {
     A:       "Criteria explicit; evaluations consistent; audit results clearly distinguish crawler vs content issues; ratings are balanced and appear to be reasonable.",
-    "A-/B+": "Criteria clear or strongly implied; mostly consistent; reasoning adequate though uneven. Work in this category may misdiagnose crawl errors or limitations as content issues.",
-    "B/B-":  "Limited or repetitive auditing; ratings inconsistent; grossly mischaracterized content vs. crawl issues.",
+    "A-/B+": "Criteria clear or strongly implied; mostly consistent; reasoning adequate though uneven. Work in this category may misdiagnose crawl errors or limitations as content issues. (Work in this mark level may provide multiple ratings for each item without arriving at an overall value for each row.)",
+    "B/B-":  "Limited or repetitive auditing; ratings inconsistent; grossly mischaracterized content vs. crawl issues. (Work in this mark level may provide multiple ratings for each item without arriving at an overall value for each row.)",
     FZ:      "No discernable criteria/interpretation; incoherent/absent evaluation, inappropriate/missing work."
   },
   recs: {
@@ -279,7 +279,7 @@ function buildRanges() {
       "FZ":      [0, pct(0.69)]
     };
     if (id === "raw") { // A or FZ only
-      r[id] = { "A":[pct(0.85), pct(1.00)], "FZ":[0, pct(0.69)] };
+      r[id] = { "A":[pct(0.85), pct(1.00)], "FZ":[0, pct(0.79)] };
     }
   });
   return r;
