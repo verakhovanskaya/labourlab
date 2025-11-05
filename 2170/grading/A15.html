@@ -284,7 +284,7 @@ class and/or encountered in readings', it has to 'demonstrate tremendous initiat
 /* ---------- Config ---------- */
 const MAXPTS = { revise:35, enhance:30, changelog:15, peer:10, narr:10 };
 
-// Qualitative anchors (Vera’s “notes on goodness” reflected)
+// Qualitative anchors (notes on goodness reflected)
 const anchors = {
   revise: {
     "A":       "Substantial, correct, traceable revisions to A1 Part 3 and Part 4. Fixes grouping/legibility, duplicates, priorities re-ordered with lines back to audit evidence; crawler vs. content issues distinguished.",
@@ -311,10 +311,10 @@ const anchors = {
     "FZ":      "No evidence of peer review participation."
   },
   narr: {
-    "A":       "Clear narrative of motivation/learning goals; cohesive writing; professional formatting; explicit signposting for ‘critical research’/‘language rewrite’ when relevant; appropriate citations when relevant.",
+    "A":       "Clear narrative of motivation/learning goals across assignment; cohesive writing; professional formatting; explicit signposting for ‘critical research’/‘language rewrite’ when relevant; appropriate citations when relevant.",
     "A-/B+":   "Generally clear and professional; minor issues with structure, signposting, or mechanics.",
     "B/B-":    "Uneven structure/clarity; weak signposting; noticeable mechanical errors.",
-    "FZ":      "Disorganized, unclear, or unprofessional presentation."
+    "FZ":      "Disorganized, arbitrary, unclear, or unprofessional presentation."
   }
 };
 
@@ -543,8 +543,8 @@ function generate(){
   const rows = [
     ["revise","1) Revised A1 Parts 3 & 4 (Audit + Recommendations)",35],
     ["enhance","2) Enhancement (new content in chosen direction)",30],
-    ["changelog","3) Change-log & Response to Feedback",15],
-    ["peer","4) Peer Review Evidence & Integration",10],
+    ["changelog","3) Change-log (rationale and response to feedback)",15],
+    ["peer","4) Peer Review Evidence",10],
     ["narr","5) Narrative Coherence & Professionalism",10]
   ];
   rows.forEach(([k,title,max])=>{
@@ -552,9 +552,9 @@ function generate(){
     const pts = Math.round(points[k] || 0);
     const anchorTxt = anchors[k][lvl] || "";
     lines.push(`${title}: ${pts}/${max} (Band: ${lvl})`);
-    if (anchorTxt) lines.push("  · Anchor: " + anchorTxt + bandPointsText(k, lvl));
+    if (anchorTxt) lines.push("Feedback reference: " + anchorTxt + bandPointsText(k, lvl));
     const com = comments[k];
-    if (com) lines.push("  · Comment: " + com);
+    if (com) lines.push("Comment: " + com);
   });
 
   lines.push("");
