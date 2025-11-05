@@ -1,0 +1,588 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>INF2170 A1.5 Revised/Enhanced Content Audit Grading Rubric</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root { --bg:#0b0c10; --card:#15171c; --ink:#eaeaea; --muted:#b7bcc6; --accent:#78d0b6; --warn:#f5a97f; --bad:#f38ba8; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; background:var(--bg); color:var(--ink); }
+    .wrap { max-width: 980px; margin: 24px auto; padding: 0 16px; }
+    .card { background: var(--card); border-radius: 16px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.25); margin-bottom: 16px; }
+    h1, h2, h3 { margin: 0 0 10px; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    label { display:block; font-weight:600; margin-bottom:6px; color: var(--muted); }
+    input[type="text"], input[type="number"], textarea, select {
+      width:100%; padding:10px 12px; border-radius:10px; border:1px solid #2a2f3a; background:#0f1116; color:var(--ink);
+    }
+    textarea { min-height: 80px; }
+    .crit { border:1px solid #2a2f3a; border-radius: 14px; padding: 12px; margin-top: 10px; }
+    .flex { display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+    .right { text-align:right; }
+    .muted { color: var(--muted); }
+    .scoreline { font-weight:700; }
+    .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; background:#0f1116; border:1px solid #2a2f3a; padding:2px 6px; border-radius:6px; }
+    .out { white-space: pre-wrap; background:#0f1116; border:1px dashed #2a2f3a; border-radius: 12px; padding: 12px; }
+    .badge { padding:4px 8px; border-radius:8px; font-weight:700; }
+    .badge-a  { background:#10352c; color:#a0eacf; }
+    .badge-mid{ background:#2a2d39; color:#dee1e8; }
+    .badge-low{ background:#332a14; color:#f1d7a2; }
+    .badge-f  { background:#3b1f24; color:#ffb4c0; }
+    .pill { padding:8px 12px; border-radius: 999px; background:#0f1116; border:1px solid #2a2f3a; cursor:pointer; color:#ff66cc; }
+    .btn { appearance:none; border:none; border-radius:12px; padding:12px 16px; cursor:pointer; font-weight:700; }
+    .btn-primary { background: var(--accent); color:#0b0c10; }
+    .btn-ghost { background: transparent; color: var(--ink); border:1px solid #2a2f3a; }
+    ul { margin: 0 0 0 18px; }
+    li { margin: 6px 0; }
+    .bandnote { font-size: 12px; color: var(--muted); margin-top: 6px; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <h1>INF2170 A1.5 Enhanced Content Audit – Grading Rubric</h1>
+    <p class="muted">
+      Per-criterion bands: <strong>A</strong> 85–89%, <strong>A-/B+</strong> 77–84%, <strong>B/B-</strong> 70–76%, <strong>FZ</strong> 0–69%.<br>
+      Overall grade bands (FOI): <strong>A+</strong> 90–100, <strong>A</strong> 85–89, <strong>A-</strong> 80–84, <strong>B+</strong> 77–79, <strong>B</strong> 73–76, <strong>B-</strong> 70–72, <strong>FZ</strong> 0–69.
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>Student Info</h2>
+    <div class="row">
+      <div>
+        <label>Student</label>
+        <input type="text" id="student" placeholder="Name">
+      </div>
+      <div>
+        <label>Section</label>
+        <select id="section">
+          <option value="">Select section</option>
+          <option value="5101">5101</option>
+          <option value="101">101</option>
+          <option value="102">102</option>
+        </select>
+      </div>
+      <div>
+        <label>Instructor / TA Name</label>
+        <input type="text" id="ta_name" placeholder="Name of person grading">
+      </div>
+      <div>
+        <label>Date</label>
+        <input type="text" id="date_str" value="">
+      </div>
+    </div>
+
+    <h2 style="margin-top:16px;">Criteria</h2>
+
+    <!-- 1) Revised Parts 3 & 4 -->
+    <div class="crit" id="crit-revise">
+      <h3>1) Revised A1 Parts 3 & 4 (Audit + Recommendations) <span class="muted">(max 35 pts)</span></h3>
+      <div class="row">
+        <div>
+          <label>Band</label>
+          <select id="lvl_revise" onchange="syncPreset('revise', 35, this.value)">
+            <option value="A">A</option>
+            <option value="A-/B+">A-/B+</option>
+            <option value="B/B-">B/B-</option>
+            <option value="FZ">FZ</option>
+          </select>
+          <div class="muted" style="margin-top:8px;" id="anchors_revise"></div>
+        </div>
+        <div>
+          <label>Points Awarded (0–35)</label>
+          <input type="number" id="pts_revise" min="0" max="35" step="0.5" oninput="recalc()">
+          <div class="flex" style="margin-top:8px;">
+            <button class="pill" type="button" onclick="preset('revise',35,'A')">Fill A</button>
+            <button class="pill" type="button" onclick="preset('revise',35,'A-/B+')">Fill A-/B+</button>
+            <button class="pill" type="button" onclick="preset('revise',35,'B/B-')">Fill B/B-</button>
+            <button class="pill" type="button" onclick="preset('revise',35,'FZ')">Fill FZ</button>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:8px;">
+        <label>Comments</label>
+        <textarea id="com_revise" placeholder="Trace revisions to feedback; note fixes to ratings, duplicates, evidence linkage, etc."></textarea>
+      </div>
+    </div>
+
+    <!-- 2) Enhancement -->
+    <div class="crit" id="crit-enhance">
+      <h3>2) Enhancement (new content in chosen direction) <span class="muted">(max 30 pts)</span></h3>
+      <div class="row">
+        <div>
+          <label>Band</label>
+          <select id="lvl_enhance" onchange="syncPreset('enhance', 30, this.value)">
+            <option value="A">A</option>
+            <option value="A-/B+">A-/B+</option>
+            <option value="B/B-">B/B-</option>
+            <option value="FZ">FZ</option>
+          </select>
+          <div class="muted" style="margin-top:8px;" id="anchors_enhance"></div>
+        </div>
+        <div>
+          <label>Points Awarded (0–30)</label>
+          <input type="number" id="pts_enhance" min="0" max="30" step="0.5" oninput="recalc()">
+          <div class="flex" style="margin-top:8px;">
+            <button class="pill" type="button" onclick="preset('enhance',30,'A')">Fill A</button>
+            <button class="pill" type="button" onclick="preset('enhance',30,'A-/B+')">Fill A-/B+</button>
+            <button class="pill" type="button" onclick="preset('enhance',30,'B/B-')">Fill B/B-</button>
+            <button class="pill" type="button" onclick="preset('enhance',30,'FZ')">Fill FZ</button>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:8px;">
+        <label>Comments</label>
+        <textarea id="com_enhance" placeholder="What they did (method), limits, and how well it integrates into recommendations."></textarea>
+      </div>
+    </div>
+
+    <!-- 3) Change-log -->
+    <div class="crit" id="crit-changelog">
+      <h3>3) Change-log & Response to Feedback <span class="muted">(max 15 pts)</span></h3>
+      <div class="row">
+        <div>
+          <label>Band</label>
+          <select id="lvl_changelog" onchange="syncPreset('changelog', 15, this.value)">
+            <option value="A">A</option>
+            <option value="A-/B+">A-/B+</option>
+            <option value="B/B-">B/B-</option>
+            <option value="FZ">FZ</option>
+          </select>
+          <div class="muted" style="margin-top:8px;" id="anchors_changelog"></div>
+        </div>
+        <div>
+          <label>Points Awarded (0–15)</label>
+          <input type="number" id="pts_changelog" min="0" max="15" step="0.5" oninput="recalc()">
+          <div class="flex" style="margin-top:8px;">
+            <button class="pill" type="button" onclick="preset('changelog',15,'A')">Fill A</button>
+            <button class="pill" type="button" onclick="preset('changelog',15,'A-/B+')">Fill A-/B+</button>
+            <button class="pill" type="button" onclick="preset('changelog',15,'B/B-')">Fill B/B-</button>
+            <button class="pill" type="button" onclick="preset('changelog',15,'FZ')">Fill FZ</button>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:8px;">
+        <label>Comments</label>
+        <textarea id="com_changelog" placeholder="Map changes to specific peer/instructor feedback; justify intentional deviations; note section shortening."></textarea>
+      </div>
+    </div>
+
+    <!-- 4) Peer Review Evidence -->
+    <div class="crit" id="crit-peer">
+      <h3>4) Peer Review Evidence & Integration <span class="muted">(max 10 pts)</span></h3>
+      <div class="row">
+        <div>
+          <label>Band</label>
+          <select id="lvl_peer" onchange="syncPreset('peer', 10, this.value)">
+            <option value="A">A</option>
+            <option value="A-/B+">A-/B+</option>
+            <option value="B/B-">B/B-</option>
+            <option value="FZ">FZ</option>
+          </select>
+          <div class="muted" style="margin-top:8px;" id="anchors_peer"></div>
+        </div>
+        <div>
+          <label>Points Awarded (0–10)</label>
+          <input type="number" id="pts_peer" min="0" max="10" step="0.5" oninput="recalc()">
+          <div class="flex" style="margin-top:8px;">
+            <button class="pill" type="button" onclick="preset('peer',10,'A')">Fill A</button>
+            <button class="pill" type="button" onclick="preset('peer',10,'A-/B+')">Fill A-/B+</button>
+            <button class="pill" type="button" onclick="preset('peer',10,'B/B-')">Fill B/B-</button>
+            <button class="pill" type="button" onclick="preset('peer',10,'FZ')">Fill FZ</button>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:8px;">
+        <label>Comments</label>
+        <textarea id="com_peer" placeholder="Silent review evidence, email/export attached, changes traceably influenced by peer."></textarea>
+      </div>
+    </div>
+
+    <!-- 5) Narrative & Professionalism -->
+    <div class="crit" id="crit-narr">
+      <h3>5) Narrative Coherence & Professionalism <span class="muted">(max 10 pts)</span></h3>
+      <div class="row">
+        <div>
+          <label>Band</label>
+          <select id="lvl_narr" onchange="syncPreset('narr', 10, this.value)">
+            <option value="A">A</option>
+            <option value="A-/B+">A-/B+</option>
+            <option value="B/B-">B/B-</option>
+            <option value="FZ">FZ</option>
+          </select>
+          <div class="muted" style="margin-top:8px;" id="anchors_narr"></div>
+        </div>
+        <div>
+          <label>Points Awarded (0–10)</label>
+          <input type="number" id="pts_narr" min="0" max="10" step="0.5" oninput="recalc()">
+          <div class="flex" style="margin-top:8px;">
+            <button class="pill" type="button" onclick="preset('narr',10,'A')">Fill A</button>
+            <button class="pill" type="button" onclick="preset('narr',10,'A-/B+')">Fill A-/B+</button>
+            <button class="pill" type="button" onclick="preset('narr',10,'B/B-')">Fill B/B-</button>
+            <button class="pill" type="button" onclick="preset('narr',10,'FZ')">Fill FZ</button>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:8px;">
+        <label>Comments</label>
+        <textarea id="com_narr" placeholder="Motivation and learning goals; signposting; tone; citations; basic accessibility checks."></textarea>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>A+ Policy</h2>
+      <p class="muted">
+        A+ may be awarded only if <strong>all five categories are at A</strong> and you explicitly approve it.
+      </p>
+      <label class="flex">
+        <input type="checkbox" id="consider_a_plus" disabled>
+        Approve A+ (all categories must be A and work is top ~5–10%)
+      </label>
+    </div>
+
+    <div class="crit">
+      <label>Overall Comment (optional)</label>
+      <textarea id="overall_comment" placeholder="Synthesis and next steps."></textarea>
+    </div>
+
+    <div class="flex right">
+      <button class="btn btn-primary" onclick="generate();return false;">Print Feedback Summary</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Result</h2>
+    <p class="scoreline">
+      Total: <span id="total"></span>/100 &nbsp; | &nbsp;
+      Percent: <span id="pct"></span>% &nbsp; | &nbsp;
+      Grade: <span class="kbd" id="grade"></span>
+    </p>
+    <p id="a_plus_hint" style="color:#ff66cc; font-weight:600; display:none;">
+      Note: score is in the A+ band but A+ is not approved. If ≥92, double-check manual entries.
+    </p>
+    <div class="out" id="out"></div>
+    <div class="flex" style="margin-top:10px;">
+      <button class="btn btn-ghost" onclick="copyOut()">Copy to Clipboard</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Marking Notes</h2>
+    <ul>
+      <li>Per-criterion bands: <strong>A</strong> / <strong>A-/B+</strong> / <strong>B/B-</strong> / <strong>FZ</strong> computed from each criterion’s max.</li>
+      <li>Overall bands (FOI): <strong>A+</strong> 90–100, <strong>A</strong> 85–89, <strong>A-</strong> 80–84, <strong>B+</strong> 77–79, <strong>B</strong> 73–76, <strong>B-</strong> 70–72, <strong>FZ</strong> 0–69.</li>
+      <li>A+ requires all categories at A and checkbox approval.</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+/* ---------- Config ---------- */
+const MAXPTS = { revise:35, enhance:30, changelog:15, peer:10, narr:10 };
+
+// Qualitative anchors (Vera’s “notes on goodness” reflected)
+const anchors = {
+  revise: {
+    "A":       "Substantial, correct, traceable revisions to A1 Part 3 and Part 4. Fixes mis-ratings, duplicates, broken links; priorities re-ordered with lines back to evidence; crawler vs. content issues distinguished.",
+    "A-/B+":   "Meaningful revisions but some earlier issues persist or links to evidence/priorities are uneven.",
+    "B/B-":    "Light edits/cosmetic polish; major issues unresolved; weak traceability to evidence.",
+    "FZ":      "Minimal/no revision; does not address prior feedback/required components."
+  },
+  enhance: {
+    "A":       "Ambitious, well-executed enhancement (competitor scan, GA deep-dive, prototype/wireframes, accessibility audit, journey map, critical/literature-informed argument). Method described, limits noted, findings integrated into recommendations.",
+    "A-/B+":   "Clear enhancement with adequate method; some gaps in rigor or integration into recommendations.",
+    "B/B-":    "Narrow/under-developed; descriptive more than analytical; limited integration.",
+    "FZ":      "No meaningful enhancement or effort not demonstrated."
+  },
+  changelog: {
+    "A":       "Concise (≤1 page) map from feedback → change; rationales for major choices (including intentional deviations); notes any deliberate shortening to meet ~2,500 words while staying legible.",
+    "A-/B+":   "Present and mostly specific, with minor omissions or vague rationales.",
+    "B/B-":    "High-level summary with little specificity; missing rationales or feedback mapping.",
+    "FZ":      "Absent or perfunctory change-log."
+  },
+  peer: {
+    "A":       "Evidence of silent review and follow-up: email/export attached, check-in scheduled, concrete changes traceably influenced by peer (even if implemented differently).",
+    "A-/B+":   "Documentation included; some influence on changes is described but not strongly evidenced.",
+    "B/B-":    "Sparse documentation; influence of peer input unclear.",
+    "FZ":      "No evidence of peer review participation."
+  },
+  narr: {
+    "A":       "Clear narrative of motivation/learning goals; cohesive writing; professional formatting; explicit signposting for ‘critical research’/‘language rewrite’; appropriate citations; accessible tone and basic compliance checks (headings/alt text considered).",
+    "A-/B+":   "Generally clear and professional; minor issues with structure, signposting, or mechanics.",
+    "B/B-":    "Uneven structure/clarity; weak signposting; noticeable mechanical errors.",
+    "FZ":      "Disorganized, unclear, or unprofessional presentation."
+  }
+};
+
+// Build per-criterion numeric bands from FOI percentages
+// A = 85–89%, A-/B+ = 77–84%, B/B- = 70–76%, FZ = 0–69%
+function buildRanges() {
+  const r = {};
+  Object.entries(MAXPTS).forEach(([id, max]) => {
+    const pct = p => +(max * p).toFixed(2);
+    r[id] = {
+      "A":       [pct(0.85), pct(0.89)],
+      "A-/B+":   [pct(0.77), pct(0.84)],
+      "B/B-":    [pct(0.70), pct(0.76)],
+      "FZ":      [0,           pct(0.69)]
+    };
+  });
+  return r;
+}
+let ranges = buildRanges();
+
+/* ---------- Helpers ---------- */
+function todayISO(){
+  const d = new Date();
+  const m = String(d.getMonth()+1).padStart(2,"0");
+  const day = String(d.getDate()).padStart(2,"0");
+  return `${d.getFullYear()}-${m}-${day}`;
+}
+function mid(a,b){ return ( (parseFloat(a) + parseFloat(b)) / 2 ); }
+function bandPointsText(id, level) {
+  const [lo, hi] = ranges[id][level];
+  const max = MAXPTS[id];
+  const f = (x)=> (Math.round(x*10)/10).toFixed(1);
+  return ` (${f(lo)}–${f(hi)} out of ${max})`;
+}
+
+/* ---------- A+ gating ---------- */
+function atLeastA(id){
+  const pts = parseFloat(document.getElementById("pts_" + id).value || "0");
+  const lo = ranges[id]["A"][0];
+  return pts >= Math.ceil(lo); // integer floor/ceil guard
+}
+function allAtLeastA(){
+  return Object.keys(MAXPTS).every(atLeastA);
+}
+function updateAPlusEligibility(){
+  const cb = document.getElementById("consider_a_plus");
+  const eligible = allAtLeastA();
+  cb.disabled = !eligible;
+  if (!eligible) cb.checked = false;
+}
+function showAPlusHint(show){
+  const el = document.getElementById("a_plus_hint");
+  el.style.display = show ? "block" : "none";
+}
+
+/* ---------- Presets & syncing ---------- */
+function preset(id, max, level) {
+  const [lo, hi] = ranges[id][level];
+  let val = mid(lo, hi);
+  val = Math.min(max, Math.max(0, val));
+  document.getElementById("pts_"+id).value = Math.round(val);
+  const sel = document.getElementById("lvl_"+id);
+  if (sel) sel.value = level;
+  updateAPlusEligibility();
+  recalc();
+}
+function syncPreset(id, max, level) {
+  const input = document.getElementById("pts_"+id);
+  const [lo, hi] = ranges[id][level];
+  const cur = parseFloat(input.value || "0");
+  const inBand = cur >= lo && cur <= hi;
+  input.value = Math.round( inBand ? cur : mid(lo, hi) );
+  updateAPlusEligibility();
+  recalc();
+}
+
+/* ---------- Grades ---------- */
+function computeGrade(pct){
+  if (pct >= 90) return "A+";
+  if (pct >= 85) return "A";
+  if (pct >= 80) return "A-";
+  if (pct >= 77) return "B+";
+  if (pct >= 73) return "B";
+  if (pct >= 70) return "B-";
+  return "FZ";
+}
+
+/* ---------- Render anchor blurbs ---------- */
+function renderAnchors() {
+  const order = ["A","A-/B+","B/B-","FZ"];
+  const badgeClass = (k) => {
+    if (k === "A") return "badge badge-a";
+    if (k === "A-/B+") return "badge badge-mid";
+    if (k === "B/B-") return "badge badge-low";
+    return "badge badge-f";
+  };
+  Object.keys(MAXPTS).forEach(id => {
+    const el = document.getElementById("anchors_" + id);
+    if (!el) return;
+    const lines = order.map(k => {
+      const txt = anchors[id][k];
+      if (!txt) return "";
+      return `<div><span class="${badgeClass(k)}">${k}</span> ${txt}${bandPointsText(id, k)}</div>`;
+    }).filter(Boolean);
+    el.innerHTML = lines.join("\n");
+  });
+}
+
+/* ---------- Calculation ---------- */
+function recalc(){
+  const read = id => {
+    const v = parseFloat(document.getElementById("pts_"+id).value || "0");
+    return Number.isFinite(v) ? v : 0;
+  };
+  const total = Object.keys(MAXPTS).map(read).reduce((a,b)=>a+b,0);
+  const pctRaw = Math.floor(total);
+
+  updateAPlusEligibility();
+
+  const eligibleAplus = allAtLeastA();
+  const considerAplus = document.getElementById("consider_a_plus").checked;
+  showAPlusHint(pctRaw >= 90 && eligibleAplus && !considerAplus);
+
+  let grade, pctDisplay, displayTotal = Math.round(total);
+  if (considerAplus && eligibleAplus) {
+    grade = "A+";
+    pctDisplay = 95;    // snap for print/display
+    displayTotal = 95;
+  } else if (pctRaw >= 90) {
+    grade = "A";        // keep A unless explicitly approved to A+
+    pctDisplay = pctRaw;
+  } else {
+    grade = computeGrade(pctRaw);
+    pctDisplay = pctRaw;
+  }
+
+  document.getElementById("total").innerText = displayTotal;
+  document.getElementById("pct").innerText   = pctDisplay;
+  document.getElementById("grade").innerText = grade;
+}
+
+/* ---------- Feedback printout ---------- */
+function generate(){
+  recalc();
+
+  const student = document.getElementById("student").value.trim();
+  const section = document.getElementById("section").value.trim();
+  const ta      = document.getElementById("ta_name").value.trim();
+  const date    = (document.getElementById("date_str").value.trim() || todayISO());
+
+  const levels = {
+    revise: document.getElementById("lvl_revise").value,
+    enhance: document.getElementById("lvl_enhance").value,
+    changelog: document.getElementById("lvl_changelog").value,
+    peer: document.getElementById("lvl_peer").value,
+    narr: document.getElementById("lvl_narr").value
+  };
+  const points = {
+    revise: parseFloat(document.getElementById("pts_revise").value || "0"),
+    enhance: parseFloat(document.getElementById("pts_enhance").value || "0"),
+    changelog: parseFloat(document.getElementById("pts_changelog").value || "0"),
+    peer: parseFloat(document.getElementById("pts_peer").value || "0"),
+    narr: parseFloat(document.getElementById("pts_narr").value || "0")
+  };
+  const comments = {
+    revise: document.getElementById("com_revise").value.trim(),
+    enhance: document.getElementById("com_enhance").value.trim(),
+    changelog: document.getElementById("com_changelog").value.trim(),
+    peer: document.getElementById("com_peer").value.trim(),
+    narr: document.getElementById("com_narr").value.trim()
+  };
+
+  const total = Object.values(points).reduce((a,b)=>a+b,0);
+  const pctRaw = Math.floor(total);
+  const eligibleAplus = allAtLeastA();
+  const approvedAplus = document.getElementById("consider_a_plus").checked && eligibleAplus;
+
+  let grade, pctDisplay, displayTotal = Math.round(total);
+  if (approvedAplus) {
+    grade = "A+";
+    pctDisplay = 95;
+    displayTotal = 95;
+  } else if (pctRaw >= 90) {
+    grade = "A";
+    pctDisplay = pctRaw;
+  } else {
+    grade = computeGrade(pctRaw);
+    pctDisplay = pctRaw;
+  }
+
+  const lines = [];
+  lines.push("INF2170 – A1.5 Enhanced Content Audit Feedback");
+  if (student) lines.push("Student: " + student);
+  if (section) lines.push("Section: " + section);
+  if (ta) lines.push("Instructor / TA: " + ta);
+  lines.push("Date: " + date);
+  lines.push("");
+  lines.push("Scores");
+
+  const rows = [
+    ["revise","1) Revised A1 Parts 3 & 4 (Audit + Recommendations)",35],
+    ["enhance","2) Enhancement (new content in chosen direction)",30],
+    ["changelog","3) Change-log & Response to Feedback",15],
+    ["peer","4) Peer Review Evidence & Integration",10],
+    ["narr","5) Narrative Coherence & Professionalism",10]
+  ];
+  rows.forEach(([k,title,max])=>{
+    const lvl = levels[k];
+    const pts = Math.round(points[k] || 0);
+    const anchorTxt = anchors[k][lvl] || "";
+    lines.push(`${title}: ${pts}/${max} (Band: ${lvl})`);
+    if (anchorTxt) lines.push("  · Anchor: " + anchorTxt + bandPointsText(k, lvl));
+    const com = comments[k];
+    if (com) lines.push("  · Comment: " + com);
+  });
+
+  lines.push("");
+  lines.push(`Total: ${displayTotal}/100 (${pctDisplay}%)`);
+  lines.push(`Grade: ${grade}`);
+
+  const overall = document.getElementById("overall_comment").value.trim();
+  if (overall){
+    lines.push("");
+    lines.push("Overall Comment");
+    lines.push(overall);
+  }
+
+  if (grade === "A+") {
+    lines.push("");
+    lines.push("Instructor Note: A+ awarded for exceptional work among the top ~5–10% of submissions, with originality and depth beyond course coverage.");
+  }
+
+  document.getElementById("out").innerText = lines.join("\n");
+}
+
+/* ---------- Clipboard ---------- */
+function copyOut(){
+  const txt = document.getElementById("out").innerText;
+  navigator.clipboard.writeText(txt).then(()=> alert("Feedback copied!"));
+}
+
+/* ---------- Init ---------- */
+function setDefaultMids(){
+  // set mid-band integers across all criteria (A band by default)
+  Object.keys(MAXPTS).forEach(id => {
+    const sel = document.getElementById("lvl_" + id);
+    const level = sel ? sel.value : "A";
+    const [lo,hi] = ranges[id][level];
+    const val = Math.round(mid(lo,hi));
+    document.getElementById("pts_" + id).value = Math.min(MAXPTS[id], Math.max(0, val));
+  });
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  const dateInput = document.getElementById("date_str");
+  if (dateInput) dateInput.value = todayISO();
+
+  renderAnchors();
+  setDefaultMids();
+
+  const cb = document.getElementById("consider_a_plus");
+  if (cb) {
+    cb.checked = false;
+    cb.addEventListener("change", recalc);
+  }
+
+  updateAPlusEligibility();
+  recalc();
+  generate(); // prefill preview
+});
+</script>
+</body>
+</html>
