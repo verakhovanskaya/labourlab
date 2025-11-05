@@ -236,7 +236,7 @@
       <p class="muted">
         A+ may be awarded only if <strong>all five categories are at A</strong> and you explicitly approve it. <b>A+ work must not only reflect understanding 'considerably surpassing technical
 mastery, and going well beyond anything presented in
-class and/or encountered in readings', it has to 'demonstrate tremendous initiative' and be 'truly exceptional work'. 
+class and/or encountered in readings', it has to 'demonstrate tremendous initiative' and be 'truly exceptional work'.</b> 
       </p>
       <label class="flex">
         <input type="checkbox" id="consider_a_plus" disabled>
@@ -423,6 +423,31 @@ function renderAnchors() {
   });
 }
 
+// --- Warn TA if any comment boxes are empty and list them ---
+function checkCommentsFilled() {
+  const fields = {
+    com_revise:    "Revised Parts 3 & 4",
+    com_enhance:   "Enhancement",
+    com_changelog: "Change-log & Response to Feedback",
+    com_peer:      "Peer Review Evidence",
+    com_narr:      "Narrative & Professionalism"
+  };
+
+  const missing = [];
+  Object.entries(fields).forEach(([id, label]) => {
+    const el = document.getElementById(id);
+    if (el && el.value.trim() === "") missing.push(label);
+  });
+
+  if (missing.length > 0) {
+    alert(
+      "Take note! The following comment box(es) are empty:\n\n" +
+      "• " + missing.join("\n• ") +
+      "\n\nPlease review before printing. You can still proceed if this is intentional."
+    );
+  }
+}
+
 /* ---------- Calculation ---------- */
 function recalc(){
   const read = id => {
@@ -458,6 +483,7 @@ function recalc(){
 
 /* ---------- Feedback printout ---------- */
 function generate(){
+  checkCommentsFilled();
   recalc();
 
   const student = document.getElementById("student").value.trim();
