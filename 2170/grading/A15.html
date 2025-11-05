@@ -552,7 +552,7 @@ function generate(){
     const pts = Math.round(points[k] || 0);
     const anchorTxt = anchors[k][lvl] || "";
     lines.push(`${title}: ${pts}/${max} (Band: ${lvl})`);
-    if (anchorTxt) lines.push("Feedback reference: " + anchorTxt + bandPointsText(k, lvl));
+    if (anchorTxt) lines.push("Work in this marking band generally (but not necessarily) demonstrates: " + anchorTxt + bandPointsText(k, lvl));
     const com = comments[k];
     if (com) lines.push("Comment: " + com);
   });
