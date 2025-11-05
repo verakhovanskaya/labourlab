@@ -41,10 +41,10 @@
 <body>
 <div class="wrap">
   <div class="card">
-    <h1>INF2170 A1.5 Enhanced Content Audit – Grading Rubric</h1>
+    <h1>INF2170 A1.5 Revised/Enhanced Content Audit Grading Rubric</h1>
     <p class="muted">
       Per-criterion bands: <strong>A</strong> 85–89%, <strong>A-/B+</strong> 77–84%, <strong>B/B-</strong> 70–76%, <strong>FZ</strong> 0–69%.<br>
-      Overall grade bands (FOI): <strong>A+</strong> 90–100, <strong>A</strong> 85–89, <strong>A-</strong> 80–84, <strong>B+</strong> 77–79, <strong>B</strong> 73–76, <strong>B-</strong> 70–72, <strong>FZ</strong> 0–69.
+      Overall grade bands (FOI): <strong>A+</strong> 90–100, <strong>A</strong> 85-89, <strong>A-</strong> 80–84, <strong>B+</strong> 77–79, <strong>B</strong> 73–76, <strong>B-</strong> 70–72, <strong>FZ</strong> 0–69.
     </p>
   </div>
 
@@ -234,7 +234,9 @@
     <div class="card">
       <h2>A+ Policy</h2>
       <p class="muted">
-        A+ may be awarded only if <strong>all five categories are at A</strong> and you explicitly approve it.
+        A+ may be awarded only if <strong>all five categories are at A</strong> and you explicitly approve it. <b>A+ work must not only reflect understanding 'considerably surpassing technical
+mastery, and going well beyond anything presented in
+class and/or encountered in readings', it has to 'demonstrate tremendous initiative' and be 'truly exceptional work'. 
       </p>
       <label class="flex">
         <input type="checkbox" id="consider_a_plus" disabled>
@@ -285,31 +287,31 @@ const MAXPTS = { revise:35, enhance:30, changelog:15, peer:10, narr:10 };
 // Qualitative anchors (Vera’s “notes on goodness” reflected)
 const anchors = {
   revise: {
-    "A":       "Substantial, correct, traceable revisions to A1 Part 3 and Part 4. Fixes mis-ratings, duplicates, broken links; priorities re-ordered with lines back to evidence; crawler vs. content issues distinguished.",
+    "A":       "Substantial, correct, traceable revisions to A1 Part 3 and Part 4. Fixes grouping/legibility, duplicates, priorities re-ordered with lines back to audit evidence; crawler vs. content issues distinguished.",
     "A-/B+":   "Meaningful revisions but some earlier issues persist or links to evidence/priorities are uneven.",
-    "B/B-":    "Light edits/cosmetic polish; major issues unresolved; weak traceability to evidence.",
+    "B/B-":    "Light edits or cosmetic polish, with major issues still unresolved and weak traceability to evidence. Work that includes heavy reliance on outlining and off-scope elements dicussed in class (for example, governance plans or implementation timelines) without a clear rationale or tie-back to the assignment brief will be marked in this range.",
     "FZ":      "Minimal/no revision; does not address prior feedback/required components."
   },
   enhance: {
-    "A":       "Ambitious, well-executed enhancement (competitor scan, GA deep-dive, prototype/wireframes, accessibility audit, journey map, critical/literature-informed argument). Method described, limits noted, findings integrated into recommendations.",
+    "A":       "Ambitious, well-executed enhancement (competitor scan, cardsort/tree test, prototype/wireframes, accessibility audit, journey map, critical/literature-informed argument). Method described, limits noted, findings integrated into recommendations.",
     "A-/B+":   "Clear enhancement with adequate method; some gaps in rigor or integration into recommendations.",
     "B/B-":    "Narrow/under-developed; descriptive more than analytical; limited integration.",
     "FZ":      "No meaningful enhancement or effort not demonstrated."
   },
   changelog: {
-    "A":       "Concise (≤1 page) map from feedback → change; rationales for major choices (including intentional deviations); notes any deliberate shortening to meet ~2,500 words while staying legible.",
-    "A-/B+":   "Present and mostly specific, with minor omissions or vague rationales.",
-    "B/B-":    "High-level summary with little specificity; missing rationales or feedback mapping.",
+    "A":       "Concise (≤1 page) summary of revisions taken from feedback, rationales for major choices (including intentional deviations that meet the spirit of the critique); notes any deliberate shortening to meet ~2,500 words while staying legible.",
+    "A-/B+":   "Present and mostly specific, with minor omissions or vague rationales. Partial justifications may be marked in this category.",
+    "B/B-":    "High-level summary with little specificity; missing rationales or engagement with  feedback.",
     "FZ":      "Absent or perfunctory change-log."
   },
   peer: {
-    "A":       "Evidence of silent review and follow-up: email/export attached, check-in scheduled, concrete changes traceably influenced by peer (even if implemented differently).",
-    "A-/B+":   "Documentation included; some influence on changes is described but not strongly evidenced.",
-    "B/B-":    "Sparse documentation; influence of peer input unclear.",
+    "A":       "Evidence of particiaption in silent and convivial review and follow-up: email/export attached, check-in scheduled, proof that they engaged in good faith, even if the format is different.",
+    "A-/B+":   "Documentation included; some sign that student's engagement was light or non-critical.",
+    "B/B-":    "Sparse documentation of the above.",
     "FZ":      "No evidence of peer review participation."
   },
   narr: {
-    "A":       "Clear narrative of motivation/learning goals; cohesive writing; professional formatting; explicit signposting for ‘critical research’/‘language rewrite’; appropriate citations; accessible tone and basic compliance checks (headings/alt text considered).",
+    "A":       "Clear narrative of motivation/learning goals; cohesive writing; professional formatting; explicit signposting for ‘critical research’/‘language rewrite’ when relevant; appropriate citations when relevant.",
     "A-/B+":   "Generally clear and professional; minor issues with structure, signposting, or mechanics.",
     "B/B-":    "Uneven structure/clarity; weak signposting; noticeable mechanical errors.",
     "FZ":      "Disorganized, unclear, or unprofessional presentation."
