@@ -255,6 +255,8 @@ class and/or encountered in readings', it has to 'demonstrate tremendous initiat
   </div>
 
   <div class="card">
+    <div class="out" id="out"></div>
+    <p id="comment_warn" style="color:#ff66cc; font-weight:600; margin-top:8px; display:none;"></p>
     <h2>Result</h2>
     <p class="scoreline">
       Total: <span id="total"></span>/100 &nbsp; | &nbsp;
@@ -424,7 +426,7 @@ function renderAnchors() {
 }
 
 // --- Warn TA if any comment boxes are empty and list them ---
-function checkCommentsFilled() {
+function missingCommentLabels() {
   const fields = {
     com_revise:    "Revised Parts 3 & 4",
     com_enhance:   "Enhancement",
@@ -432,21 +434,29 @@ function checkCommentsFilled() {
     com_peer:      "Peer Review Evidence",
     com_narr:      "Narrative & Professionalism"
   };
-
   const missing = [];
-  Object.entries(fields).forEach(([id, label]) => {
+  for (const [id, label] of Object.entries(fields)) {
     const el = document.getElementById(id);
     if (el && el.value.trim() === "") missing.push(label);
-  });
-
-  if (missing.length > 0) {
-    alert(
-      "Take note! The following comment box(es) are empty:\n\n" +
-      "• " + missing.join("\n• ") +
-      "\n\nPlease review before printing. You can still proceed if this is intentional."
-    );
   }
+  return missing;
 }
+
+function showCommentWarning(labels) {
+  const el = document.getElementById("comment_warn");
+  if (!el) return;
+  if (labels.length === 0) {
+    el.style.display = "none";
+    el.textContent = "";
+    return;
+  }
+  el.style.display = "block";
+  el.innerHTML = "Reminder: the following comment box(es) are empty:<br>• " +
+                 labels.join("<br>• ") +
+                 "<br><span style='font-weight:400'>(You can still print if this is intentional.)</span>";
+}
+
+
 
 /* ---------- Calculation ---------- */
 function recalc(){
@@ -483,7 +493,7 @@ function recalc(){
 
 /* ---------- Feedback printout ---------- */
 function generate(){
-  checkCommentsFilled();
+  showCommentWarning(missingCommentLabels());
   recalc();
 
   const student = document.getElementById("student").value.trim();
