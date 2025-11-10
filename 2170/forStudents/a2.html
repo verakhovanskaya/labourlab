@@ -302,7 +302,17 @@ function populateColumnSelect(sel, includeEmpty=true){
   state.columns.forEach(c => sel.appendChild(new Option(c,c)));
 }
 
-$('#resetSample').onclick = ()=>{ csvTA.value = sampleCSV; };
+$('#resetSample').onclick = ()=>{
+  csvTA.value = sampleCSV;
+  const parsed = parseCSV(sampleCSV);
+  applyParsed(parsed);
+  state.facetState = {};
+  seedDefaultFacets();
+  renderLabelsTab();
+  renderFacetsTab();
+  renderPreview();
+  alert('Loaded sample dataset.');
+};
 $('#loadCsv').onclick = ()=>{
   const parsed = parseCSV(csvTA.value.trim());
   applyParsed(parsed);
