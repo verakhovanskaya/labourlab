@@ -3,540 +3,626 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Coffee Faceted Search Designer – Single File</title>
+<title>Coffee Faceted Search Designer — Single File (Fixed + Nav + Mermaid)</title>
 <style>
-  :root { --bg:#0b0e14; --card:#11151d; --ink:#e6edf3; --muted:#9aa4b2; --line:#232a36; --acc:#6ee7ff; }
-  *{box-sizing:border-box} body{margin:0;font:14px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; background:var(--bg); color:var(--ink)}
-  header,main{max-width:1200px;margin:auto;padding:16px}
-  h1{font-size:20px;margin:0 0 8px}
-  .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 16px}
-  .tab{padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card);cursor:pointer}
-  .tab[aria-selected="true"]{outline:2px solid var(--acc)}
-  .panel{display:none}
-  .panel[aria-hidden="false"]{display:block}
+  :root { --bg:#0b0f14; --card:#121821; --ink:#eef3f8; --muted:#9fb0c4; --accent:#7fd1b9; --line:#223042; --chip:#1a2330; }
+  *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+  header, .container{max-width:1100px;margin:0 auto;padding:16px}
+  header{display:flex;gap:16px;align-items:center;justify-content:space-between}
+  h1{font-size:20px;margin:0}
+  .btn{background:#1e2937;border:1px solid var(--line);color:var(--ink);padding:8px 10px;border-radius:10px;cursor:pointer}
+  .btn.ghost{background:transparent}
+  .btn.small{font-size:12px;padding:4px 8px;border-radius:8px}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px}
+  .card h2{font-size:16px;margin:0 0 8px 0}
+  .card .body{padding:14px}
+  textarea, input, select{width:100%;padding:8px;border-radius:10px;border:1px solid var(--line);background:#0e141c;color:var(--ink)}
+  label{display:block;margin:8px 0 6px 0;color:var(--muted)}
+  .tabs{display:flex;gap:8px;border-bottom:1px solid var(--line);padding:0 16px}
+  .tab{padding:10px 12px;border:1px solid var(--line);border-bottom:none;border-top-left-radius:10px;border-top-right-radius:10px;background:#0e141c;color:var(--muted);cursor:pointer}
+  .tab.active{background:var(--card);color:var(--ink)}
   .grid{display:grid;gap:12px}
-  .g2{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .g3{grid-template-columns:repeat(3,minmax(0,1fr))}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px}
-  label{display:block;margin-bottom:6px;color:var(--muted)}
-  input[type="text"], input[type="number"], textarea, select{width:100%;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:#0d1117;color:var(--ink)}
-  textarea{min-height:180px;font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-size:12px}
-  button{padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:#0d1117;color:var(--ink);cursor:pointer}
-  button.primary{background:#0e7490;border-color:#0e7490}
-  .row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-  .badge{display:inline-flex;align-items:center;padding:4px 8px;border:1px solid var(--line);border-radius:999px;color:var(--ink);background:#0d1117;margin:2px}
+  .two{grid-template-columns:1fr 1fr}
+  .three{grid-template-columns:1fr 1fr 1fr}
+  .chips{display:flex;gap:8px;flex-wrap:wrap}
+  .pill{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:999px;background:#0e141c;border:1px solid var(--line)}
+  .k{color:var(--muted)}
+  .list{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px}
+  .item{padding:12px;border-top:1px solid var(--line)}
+  .badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
   .muted{color:var(--muted)}
-  .sticky{position:sticky;top:12px}
-  .list{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
-  .kv{display:grid;grid-template-columns:1fr auto;gap:6px;color:var(--muted)}
-  .sep{height:1px;background:var(--line);margin:8px 0}
-  .opt{display:flex;align-items:center;gap:6px;margin:4px 0}
-  /* small screen */ @media (max-width: 760px){ .g2,.g3{grid-template-columns:1fr} }
+  .side{position:sticky;top:12px;align-self:start}
+  .facet{border:1px solid var(--line);border-radius:12px;padding:10px}
+  .facet h3{margin:0 0 8px 0;font-size:14px}
+  hr{border:none;border-top:1px solid var(--line);margin:10px 0}
+  .small{font-size:12px}
+  .bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+  .help{color:var(--muted)}
+  .hidden{display:none}
+  .topnav{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 8px}
+  .topnav .tab{border-radius:999px;border-bottom:1px solid var(--line)}
 </style>
 </head>
 <body>
 <header>
-  <h1>Coffee Faceted Search Designer (Single‑File, No Build)</h1>
-  <div class="muted">Paste a CSV, map labels, add facets, and preview search. Everything runs in the browser.</div>
-</header>
-<main>
-  <div class="tabs" role="tablist" aria-label="Steps">
-    <button class="tab" role="tab" id="t-data" aria-controls="p-data" aria-selected="true">1. Data</button>
-    <button class="tab" role="tab" id="t-labels" aria-controls="p-labels" aria-selected="false">2. Labels</button>
-    <button class="tab" role="tab" id="t-facets" aria-controls="p-facets" aria-selected="false">3. Facets</button>
-    <button class="tab" role="tab" id="t-preview" aria-controls="p-preview" aria-selected="false">4. Preview</button>
+  <div>
+    <h1>Coffee Faceted Search Designer</h1>
+    <div class="help small">No backend. Paste/upload CSV → map labels + top navigation → add facets → preview → export JSON/Mermaid.</div>
   </div>
+  <div style="display:flex;gap:8px;align-items:center">
+    <button id="downloadJson" class="btn">Download JSON</button>
+    <label class="btn ghost" style="cursor:pointer">Import JSON
+      <input id="importJson" type="file" accept="application/json" style="display:none" />
+    </label>
+  </div>
+</header>
 
-  <!-- Panels -->
-  <section id="p-data" class="panel" role="tabpanel" aria-labelledby="t-data" aria-hidden="false">
-    <div class="card grid g2">
-      <div>
-        <label for="csv">Paste CSV</label>
-        <textarea id="csv"></textarea>
-        <div class="row" style="margin-top:8px">
-          <button id="load" class="primary">Load</button>
-          <button id="sample">Reset to sample</button>
-        </div>
-      </div>
-      <div>
-        <label>Upload CSV</label>
-        <input type="file" id="file" accept=".csv" />
-        <div class="sep"></div>
-        <div id="cols" class="muted">Columns detected: none</div>
-      </div>
-    </div>
-  </section>
+<div class="tabs">
+  <button class="tab active" data-tab="data">1. Data</button>
+  <button class="tab" data-tab="labels">2. Labels & Nav</button>
+  <button class="tab" data-tab="facets">3. Facets</button>
+  <button class="tab" data-tab="preview">4. Preview</button>
+</div>
 
-  <section id="p-labels" class="panel" role="tabpanel" aria-labelledby="t-labels" aria-hidden="true">
-    <div class="card grid g3">
-      <div>
-        <label>Primary title</label>
-        <select id="titleCol"></select>
-      </div>
-      <div>
-        <label>Price (optional)</label>
-        <select id="priceCol"></select>
-      </div>
-      <div>
-        <label>Primary Navigation</label>
-        <div class="grid g2">
-          <div>
-            <label for="navCol">Nav column</label>
-            <select id="navCol"></select>
-          </div>
-          <div>
-            <label for="navAll">Show "All" tab</label>
-            <div class="row"><input type="checkbox" id="navAll" checked><span class="muted">Include All</span></div>
+<div class="container">
+
+  <!-- DATA TAB -->
+  <section id="tab-data">
+    <div class="row">
+      <div class="card">
+        <div class="body">
+          <h2>Paste CSV</h2>
+          <label for="csv">CSV (first row = headers)</label>
+          <textarea id="csv" rows="16"></textarea>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button id="loadCsv" class="btn">Load</button>
+            <button id="resetSample" class="btn ghost">Reset to sample</button>
           </div>
         </div>
-        <div class="muted">Values of this column render as a top nav; clicking also filters results.</div>
-      </div>
-    </div>
-    <div class="grid g2" style="margin-top:12px">
-      <div class="card">
-        <label>Subtitles (beneath title)</label>
-        <div id="subtitleWrap"></div>
-        <button id="addSubtitle">Add subtitle</button>
       </div>
       <div class="card">
-        <label>Badges (small labels)</label>
-        <div id="badgeWrap"></div>
-        <button id="addBadge">Add badge</button>
+        <div class="body">
+          <h2>Upload CSV</h2>
+          <input id="csvFile" type="file" accept=".csv" />
+          <p class="small help">Detected columns: <span id="colList">none</span></p>
+          <hr>
+          <p class="small help">Tip: schema columns: Coffee ID, Name, Origin (Country), Altitude (m), Cultivar/Varietal, Processing Method, Harvest Year, Certification, Flavor Profile, Acidity, Roast Level, Recommended Brewing Method, Recommended Brewing Method 2, Size, Availability, Price</p>
+        </div>
       </div>
-    </div>
-    <div class="card" style="margin-top:12px">
-      <label>Secondary metadata (small print on cards)</label>
-      <div id="secondaryWrap"></div>
-      <button id="addSecondary">Add secondary</button>
     </div>
   </section>
 
-  <section id="p-facets" class="panel" role="tabpanel" aria-labelledby="t-facets" aria-hidden="true">
-    <div id="facetList" class="grid" style="gap:12px"></div>
-    <div style="margin-top:8px"><button id="addFacet" class="primary">Add facet</button></div>
-  </section>
-
-  <section id="p-preview" class="panel" role="tabpanel" aria-labelledby="t-preview" aria-hidden="true">
-    <div class="grid g2">
-      <aside class="card sticky">
+  <!-- LABELS TAB -->
+  <section id="tab-labels" class="hidden">
+    <div class="card"><div class="body grid">
+      <h2>Primary & Secondary Labels</h2>
+      <div class="grid two">
         <div>
+          <label>Primary title</label>
+          <select id="titleCol"></select>
+        </div>
+        <div>
+          <label>Price (optional)</label>
+          <select id="priceCol"></select>
+        </div>
+      </div>
+
+      <div>
+        <label>Subtitles (beneath title)</label>
+        <div class="grid two">
+          <select id="subtitleAdd"></select>
+          <button id="subtitleAddBtn" class="btn">Add</button>
+        </div>
+        <div id="subtitleChips" class="chips" aria-live="polite"></div>
+      </div>
+
+      <div>
+        <label>Badges (small labels)</label>
+        <div class="grid two">
+          <select id="badgeAdd"></select>
+          <button id="badgeAddBtn" class="btn">Add</button>
+        </div>
+        <div id="badgeChips" class="chips"></div>
+      </div>
+
+      <div>
+        <label>Secondary metadata (small print)</label>
+        <div class="grid two">
+          <select id="secondaryAdd"></select>
+          <button id="secondaryAddBtn" class="btn">Add</button>
+        </div>
+        <div id="secondaryChips" class="chips"></div>
+      </div>
+
+      <hr>
+      <h2>Primary Navigation (also acts as a filter)</h2>
+      <div class="grid two">
+        <div>
+          <label for="navCol">Nav column</label>
+          <select id="navCol"></select>
+        </div>
+        <div>
+          <label for="navAll">Show "All" tab</label>
+          <div style="display:flex;align-items:center;gap:8px"><input type="checkbox" id="navAll" checked><span class="help small">Include an All tab</span></div>
+        </div>
+      </div>
+      <div class="help small">Choose a categorical column (e.g., Origin (Country) or Roast Level). Values render as a top nav; clicking filters results.</div>
+    </div></div>
+  </section>
+
+  <!-- FACETS TAB -->
+  <section id="tab-facets" class="hidden">
+    <div id="facetList" class="grid"></div>
+    <div style="margin-top:8px"><button id="addFacet" class="btn">Add facet</button></div>
+  </section>
+
+  <!-- PREVIEW TAB -->
+  <section id="tab-preview" class="hidden">
+    <div class="row">
+      <div class="card side" style="padding:12px">
+        <div class="body grid">
+          <h2>Filters</h2>
           <label>Primary search</label>
-          <input type="text" id="q" placeholder="Search name, origin, notes…" />
+          <input id="query" placeholder="Search name, origin, notes..." />
+          <div id="facetFilters" class="grid"></div>
+          <button id="clearAll" class="btn ghost">Clear all</button>
         </div>
-        <div class="sep"></div>
-        <div id="filters"></div>
-        <div class="sep"></div>
-        <button id="clear">Clear all</button>
-      </aside>
-      <section>
-        <div id="navBar" class="row" style="flex-wrap:wrap;margin:0 0 8px"></div>
-        <div class="row muted" style="justify-content:space-between;margin:6px 0 12px">
-          <div id="count">0 of 0 coffees</div>
-          <div class="row"><button id="exportMermaid">Export Mermaid</button></div>
-        </div>
-        <div class="list" id="results"></div>
-        <div id="mermaidWrap" class="card" style="display:none; margin-top:12px">
-          <label>Mermaid diagram (copy into Markdown that supports Mermaid)</label>
-          <textarea id="mermaidText"></textarea>
-          <div class="row" style="margin-top:8px">
-            <button id="hideMermaid">Hide</button>
-            <button id="downloadMermaid">Download .md</button>
+      </div>
+      <div>
+        <div id="topNav" class="topnav"></div>
+        <div class="bar small muted">
+          <div><span id="count">0</span> results</div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <button id="exportMermaid" class="btn ghost small">Export Mermaid</button>
           </div>
         </div>
-      </section>
+        <div id="results" class="card">
+          <div id="resultList" class="list"></div>
+        </div>
+        <div id="mermaidWrap" class="card hidden" style="margin-top:12px">
+          <div class="body">
+            <label>Mermaid diagram (copy into Markdown that supports Mermaid)</label>
+            <textarea id="mermaidText" rows="10"></textarea>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <button id="hideMermaid" class="btn ghost small">Hide</button>
+              <button id="downloadMermaid" class="btn small">Download .md</button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
-</main>
 
-<!-- Papaparse CDN -->
-<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+</div>
+
 <script>
-(function(){
-  // ---------- State ----------
-  let rows = [];
-  let columns = [];
-  const config = {
-    primary: { titleCol: undefined, priceCol: undefined, subtitleCols: [], badgeCols: [] },
+/* -------------------------- Minimal CSV parser -------------------------- */
+function parseCSV(text) {
+  const rows = [];
+  let row = [], cell = '', inQuotes = false, i = 0;
+  function pushCell(){ row.push(cell); cell=''; }
+  function pushRow(){ rows.push(row); row=[]; }
+  while (i < text.length) {
+    const ch = text[i];
+    if (inQuotes) {
+      if (ch === '"') { if (text[i+1] === '"') { cell += '"'; i+=2; continue; } inQuotes = false; i++; continue; }
+      cell += ch; i++; continue;
+    }
+    if (ch === '"') { inQuotes = true; i++; continue; }
+    if (ch === ',') { pushCell(); i++; continue; }
+    if (ch === '
+' || ch === '
+') { if (ch === '
+' && text[i+1] === '
+') i++; pushCell(); pushRow(); i++; continue; }
+    cell += ch; i++;
+  }
+  pushCell(); pushRow();
+  const header = rows[0] ? rows[0].map(h => h.trim()) : [];
+  const data = rows.slice(1).filter(r => r.some(x => String(x).trim().length)).map(r => {
+    const o = {}; header.forEach((h, j) => o[h] = (r[j] ?? '').trim()); return o;
+  });
+  return { rows: data, columns: header };
+}
+
+/* -------------------------- Utilities -------------------------- */
+const $ = sel => document.querySelector(sel);
+function create(tag, attrs={}, children=[]) { const el = document.createElement(tag); Object.entries(attrs).forEach(([k,v]) => { if (k==='class') el.className=v; else if (k==='text') el.textContent=v; else el.setAttribute(k,v); }); children.forEach(c => el.appendChild(c)); return el; }
+function uniq(arr){ return Array.from(new Set(arr.filter(Boolean).map(String))).sort((a,b)=>a.localeCompare(b)); }
+function num(v){ const n = Number(String(v).replace(/[^0-9.\-]/g,'')); return Number.isFinite(n) ? n : null; }
+
+/* -------------------------- State -------------------------- */
+let state = {
+  rows: [],
+  columns: [],
+  config: {
+    primary: { titleCol: '', subtitleCols: [], badgeCols: [], priceCol: '' },
     secondaryCols: [],
-    nav: { column: undefined, showAll: true },
-    facets: [] // {id, col, label, type, tokenizeBy}
+    nav: { column: '', showAll: true },
+    facets: [] // {id,col,label,type,tokenizeBy}
+  },
+  facetState: {}, // id -> UI state
+  query: '',
+  activeNavValue: null
+};
+const LS_KEY = 'coffee-facet-designer-v2';
+
+/* -------------------------- Sample CSV -------------------------- */
+const sampleCSV = `Coffee ID,Name,Origin (Country),Altitude (m),Cultivar/Varietal,Processing Method,Harvest Year,Certification,Flavor Profile,Acidity,Roast Level,Recommended Brewing Method,Recommended Brewing Method 2,Size,Availability,Price
+101,El Paraiso Washed,Colombia,1800,Caturra,Washed,2024,Organic,"chocolate, citrus",Medium,Medium,Pour-over,Drip,250g,In stock,18.50
+102,Nyeri PB,Kenya,1900,"SL28; SL34",Washed,2024,,"blackcurrant, grapefruit",High,Light,Pour-over,Aeropress,340g,In stock,22.00
+103,Ethiopia Guji Natural,Ethiopia,2100,Heirloom,Natural,2023,Fairtrade,"blueberry, jasmine",High,Light,Pour-over,Espresso,250g,Pre-order,19.00
+104,Sidamo Decaf,Ethiopia,1800,Bourbon,Swiss Water Decaf,2023,Organic,"cocoa, almond",Low,Medium,Drip,"French Press",340g,In stock,17.00
+105,Sul de Minas Pulped Natural,Brazil,1200,Yellow Catuai,Pulped Natural,2024,Rainforest,"peanut, caramel",Low,Medium-Dark,Espresso,Drip,1000g,In stock,25.00
+106,Peaberry Peñas Blancas,Costa Rica,1600,Typica,White Honey,2024,,"stone fruit, vanilla",Medium,Light,Pour-over,"Cold Brew",250g,In stock,16.50
+107,Sumatra Gayo,Indonesia,1400,Catimor,Wet-Hulled,2023,,"earthy, cedar",Low,Dark,Espresso,"French Press",340g,In stock,20.00
+108,Antigua SHB,Guatemala,1700,Bourbon,Washed,2024,,"toffee, apple",Medium,Medium,Pour-over,Drip,250g,Out of stock,15.50`;
+
+/* -------------------------- Persistence -------------------------- */
+function saveLS(){ localStorage.setItem(LS_KEY, JSON.stringify(state)); }
+function loadLS(){ const s = localStorage.getItem(LS_KEY); if (!s) return false; try { state = JSON.parse(s); return true; } catch { return false; } }
+
+/* -------------------------- Tabs -------------------------- */
+document.querySelectorAll('.tab').forEach(btn=>{
+  btn.onclick = ()=>{
+    document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const id = btn.dataset.tab;
+    ['data','labels','facets','preview'].forEach(t=>{
+      const sec = document.getElementById('tab-'+t);
+      if (t===id) sec.classList.remove('hidden'); else sec.classList.add('hidden');
+    });
+    if (id==='preview') renderPreview();
+    if (id==='labels') renderLabelsTab();
+    if (id==='facets') renderFacetsTab();
   };
-  const facetState = {}; // id -> value
-  let activeNavValue = null; // top-nav selection // id -> value
+});
 
-  // ---------- Sample CSV ----------
-  const sampleCSV = `Coffee ID,Name,Origin (Country),Altitude (m),Cultivar/Varietal,Processing Method,Harvest Year,Certification,Flavor Profile,Acidity,Roast Level,Recommended Brewing Method,Recommended Brewing Method 2,Size,Availability,Price\n101,El Paraiso Washed,Colombia,1800,Caturra,Washed,2024,Organic,"chocolate, citrus",Medium,Medium,Pour-over,Drip,250g,In stock,18.50\n102,Nyeri PB,Kenya,1900,SL28; SL34,Washed,2024,,"blackcurrant, grapefruit",High,Light,Pour-over,Aeropress,340g,In stock,22.00\n103,Ethiopia Guji Natural,Ethiopia,2100,Heirloom,Natural,2023,Fairtrade,"blueberry, jasmine",High,Light,Pour-over,Espresso,250g,Pre-order,19.00\n104,Sidamo Decaf,Ethiopia,1800,Bourbon,Swiss Water Decaf,2023,Organic,"cocoa, almond",Low,Medium,Drip,French Press,340g,In stock,17.00\n105,Sul de Minas Pulped Natural,Brazil,1200,Yellow Catuai,Pulped Natural,2024,Rainforest,"peanut, caramel",Low,Medium-Dark,Espresso,Drip,1000g,In stock,25.00\n106,Peaberry Peñas Blancas,Costa Rica,1600,Typica,White Honey,2024,,"stone fruit, vanilla",Medium,Light,Pour-over,Cold Brew,250g,In stock,16.50\n107,Sumatra Gayo,Indonesia,1400,Catimor,Wet-Hulled,2023,,"earthy, cedar",Low,Dark,Espresso,French Press,340g,In stock,20.00\n108,Antigua SHB,Guatemala,1700,Bourbon,Washed,2024,,"toffee, apple",Medium,Medium,Pour-over,Drip,250g,Out of stock,15.50`;
+/* -------------------------- Data Tab logic -------------------------- */
+const csvTA = $('#csv');
+const colList = $('#colList');
 
-  // ---------- Utilities ----------
-  const $ = sel => document.querySelector(sel);
-  function el(tag, attrs={}, children=[]) {
-    const node = document.createElement(tag);
-    for (const [k,v] of Object.entries(attrs)) {
-      if (k === 'class') node.className = v; else if (k === 'for') node.htmlFor = v; else node.setAttribute(k, v);
+function applyParsed({rows, columns}){
+  state.rows = rows; state.columns = columns;
+  if (!state.config.primary.titleCol) state.config.primary.titleCol = columns.includes('Name') ? 'Name' : (columns[0]||'');
+  ['subtitleAdd','badgeAdd','secondaryAdd','navCol'].forEach(id=>populateColumnSelect($('#'+id), false));
+  ['titleCol','priceCol'].forEach(id=>populateColumnSelect($('#'+id), true));
+  $('#titleCol').value = state.config.primary.titleCol || '';
+  $('#priceCol').value = state.config.primary.priceCol || '';
+  $('#navCol').value = state.config.nav.column || '';
+  colList.textContent = columns.length ? columns.join(', ') : 'none';
+  saveLS();
+}
+
+function populateColumnSelect(sel, includeEmpty=true){
+  sel.innerHTML = '';
+  if (includeEmpty) sel.appendChild(new Option('', ''));
+  state.columns.forEach(c => sel.appendChild(new Option(c,c)));
+}
+
+$('#resetSample').onclick = ()=>{ csvTA.value = sampleCSV; };
+$('#loadCsv').onclick = ()=>{
+  const parsed = parseCSV(csvTA.value.trim());
+  applyParsed(parsed);
+  state.facetState = {};
+  seedDefaultFacets();
+  alert('CSV loaded.');
+};
+$('#csvFile').onchange = (e)=>{
+  const f = e.target.files[0]; if (!f) return;
+  const reader = new FileReader();
+  reader.onload = ()=>{ csvTA.value = String(reader.result); };
+  reader.readAsText(f);
+};
+
+/* -------------------------- Labels Tab logic -------------------------- */
+function renderLabelsTab(){
+  populateColumnSelect($('#titleCol'), true);
+  populateColumnSelect($('#priceCol'), true);
+  ['subtitleAdd','badgeAdd','secondaryAdd','navCol'].forEach(id=>populateColumnSelect($('#'+id), false));
+
+  // chips
+  const subC = $('#subtitleChips'); subC.innerHTML='';
+  state.config.primary.subtitleCols.forEach(c => subC.appendChild(makeChip(c, ()=>{ state.config.primary.subtitleCols = state.config.primary.subtitleCols.filter(x=>x!==c); renderLabelsTab(); saveLS(); })));
+  const badgeC = $('#badgeChips'); badgeC.innerHTML='';
+  state.config.primary.badgeCols.forEach(c => badgeC.appendChild(makeChip(c, ()=>{ state.config.primary.badgeCols = state.config.primary.badgeCols.filter(x=>x!==c); renderLabelsTab(); saveLS(); })));
+  const secC = $('#secondaryChips'); secC.innerHTML='';
+  state.config.secondaryCols.forEach(c => secC.appendChild(makeChip(c, ()=>{ state.config.secondaryCols = state.config.secondaryCols.filter(x=>x!==c); renderLabelsTab(); saveLS(); })));
+
+  // current values
+  $('#titleCol').value = state.config.primary.titleCol || '';
+  $('#priceCol').value = state.config.primary.priceCol || '';
+  $('#navCol').value = state.config.nav.column || '';
+  $('#navAll').checked = !!state.config.nav.showAll;
+}
+
+function makeChip(text, onRemove){
+  const chip = create('span', {class:'pill'});
+  chip.append(text);
+  const x = create('button', {class:'btn ghost small'}, []); x.textContent='✕'; x.onclick = onRemove; chip.append(' ', x);
+  return chip;
+}
+
+$('#titleCol').onchange = e=>{ state.config.primary.titleCol = e.target.value; saveLS(); };
+$('#priceCol').onchange = e=>{ state.config.primary.priceCol = e.target.value; saveLS(); };
+$('#navCol').onchange = e=>{ state.config.nav.column = e.target.value; state.activeNavValue = null; saveLS(); };
+$('#navAll').onchange = e=>{ state.config.nav.showAll = !!e.target.checked; saveLS(); };
+
+$('#subtitleAddBtn').onclick = ()=>{ const v=$('#subtitleAdd').value; if (v && !state.config.primary.subtitleCols.includes(v)) state.config.primary.subtitleCols.push(v); renderLabelsTab(); saveLS(); };
+$('#badgeAddBtn').onclick = ()=>{ const v=$('#badgeAdd').value; if (v && !state.config.primary.badgeCols.includes(v)) state.config.primary.badgeCols.push(v); renderLabelsTab(); saveLS(); };
+$('#secondaryAddBtn').onclick = ()=>{ const v=$('#secondaryAdd').value; if (v && !state.config.secondaryCols.includes(v)) state.config.secondaryCols.push(v); renderLabelsTab(); saveLS(); };
+
+/* -------------------------- Facets Tab logic -------------------------- */
+function seedDefaultFacets(){
+  if (!state.config.facets.length && state.columns.length){
+    const add = (col,label,type,tokenizeBy)=>state.config.facets.push({id:crypto.randomUUID(),col,label,type,tokenizeBy});
+    if (state.columns.includes('Origin (Country)')) add('Origin (Country)','Origin','multi');
+    if (state.columns.includes('Roast Level')) add('Roast Level','Roast','multi');
+    if (state.columns.includes('Altitude (m)')) add('Altitude (m)','Altitude (m)','range');
+    if (state.columns.includes('Flavor Profile')) add('Flavor Profile','Flavor notes','tokens',',');
+    if (state.columns.includes('Price')) add('Price','Price','range');
+    saveLS();
+  }
+}
+
+function renderFacetsTab(){
+  const host = $('#facetList'); host.innerHTML='';
+  state.config.facets.forEach(f=>{
+    const wrap = create('div', {class:'card'});
+    const body = create('div', {class:'body grid'});
+    const head = create('div', {class:'bar'});
+    head.append(create('div', {text:`Facet: ${f.label}`}));
+    const removeBtn = create('button',{class:'btn ghost small'},[]); removeBtn.textContent='Remove';
+    removeBtn.onclick = ()=>{ state.config.facets = state.config.facets.filter(x=>x.id!==f.id); renderFacetsTab(); saveLS(); };
+    head.append(removeBtn);
+    body.append(head);
+
+    const row = create('div',{class:'grid three'});
+    const colSel = create('select'); populateColumnSelect(colSel,false); colSel.value=f.col; colSel.onchange = e=>{ f.col = e.target.value; saveLS(); };
+    const labelIn = create('input'); labelIn.value = f.label; labelIn.oninput=e=>{ f.label = e.target.value; }; labelIn.onchange=saveLS;
+    const typeSel = create('select'); ['multi','range','tokens','text','boolean'].forEach(t=> typeSel.appendChild(new Option(t,t))); typeSel.value = f.type; typeSel.onchange = e=>{ f.type = e.target.value; saveLS(); };
+    row.append(create('div',{},[create('label',{class:'k',text:'Column'}), colSel]));
+    row.append(create('div',{},[create('label',{class:'k',text:'Display label'}), labelIn]));
+    row.append(create('div',{},[create('label',{class:'k',text:'Facet type'}), typeSel]));
+    body.append(row);
+
+    if (f.type === 'tokens'){
+      const tok = create('input'); tok.value = f.tokenizeBy || ','; tok.oninput=e=>{ f.tokenizeBy = e.target.value; }; tok.onchange=saveLS;
+      body.append(create('div',{},[create('label',{class:'k',text:'Token delimiter'}), tok, create('div',{class:'small help',text:'e.g., "," for "blueberry, jasmine" or ";" for "SL28; SL34" '})]));
     }
-    for (const c of children) node.append(c);
-    return node;
-  }
-  function parseCSV(text){
-    const res = Papa.parse(text.trim(), { header: true, skipEmptyLines: true });
-    const rs = res.data.map(r => Object.fromEntries(Object.entries(r).map(([k,v]) => [k.trim(), (typeof v === 'string' ? v.trim() : v)])));
-    const cols = res.meta.fields || (rs[0] ? Object.keys(rs[0]) : []);
-    return { rows: rs, columns: cols };
-  }
-  function uniq(arr){ return Array.from(new Set(arr.filter(Boolean).map(String))).sort((a,b)=>a.localeCompare(b)); }
-  function coerceNumber(v){ if (v==null) return null; const n = Number(String(v).replace(/[^0-9.\-]/g,'')); return isNaN(n)?null:n; }
 
-  // ---------- Tabs (no unmount state loss) ----------
-  const tabs = Array.from(document.querySelectorAll('.tab'));
-  const panels = Array.from(document.querySelectorAll('.panel'));
-  tabs.forEach(t => t.addEventListener('click', () => {
-    tabs.forEach(x => x.setAttribute('aria-selected', x===t ? 'true':'false'));
-    panels.forEach(p => p.setAttribute('aria-hidden', p.id === t.getAttribute('aria-controls') ? 'false':'true'));
-  }));
+    const tip = create('div',{class:'small help',text:`Inferred column type: ${inferredType(f.col)}`});
+    body.append(tip);
 
-  // ---------- Data panel ----------
-  $('#csv').value = sampleCSV;
-  $('#sample').addEventListener('click', ()=>{ $('#csv').value = sampleCSV; });
-  $('#file').addEventListener('change', e => {
-    const f = e.target.files && e.target.files[0]; if(!f) return; const r = new FileReader(); r.onload = () => { $('#csv').value = String(r.result) }; r.readAsText(f);
+    wrap.appendChild(body); host.appendChild(wrap);
   });
-  $('#load').addEventListener('click', () => {
-    const parsed = parseCSV($('#csv').value);
-    rows = parsed.rows; columns = parsed.columns;
-    $('#cols').textContent = 'Columns detected: ' + (columns.length? columns.join(', '): 'none');
-    // init sensible defaults
-    config.primary.titleCol = columns.includes('Name') ? 'Name' : columns[0];
-    if (columns.includes('Price')) config.primary.priceCol = 'Price';
-    config.primary.subtitleCols = ['Origin (Country)','Cultivar/Varietal'].filter(c=>columns.includes(c));
-    config.primary.badgeCols = ['Certification'].filter(c=>columns.includes(c));
-    config.secondaryCols = ['Roast Level','Acidity','Processing Method'].filter(c=>columns.includes(c));
-    // seed facets if none
-    if (!config.facets.length) {
-      if (columns.includes('Origin (Country)')) config.facets.push({ id: crypto.randomUUID(), col:'Origin (Country)', label:'Origin', type:'multi' });
-      if (columns.includes('Roast Level')) config.facets.push({ id: crypto.randomUUID(), col:'Roast Level', label:'Roast', type:'multi' });
-      if (columns.includes('Altitude (m)')) config.facets.push({ id: crypto.randomUUID(), col:'Altitude (m)', label:'Altitude (m)', type:'range' });
-      if (columns.includes('Flavor Profile')) config.facets.push({ id: crypto.randomUUID(), col:'Flavor Profile', label:'Flavor notes', type:'tokens', tokenizeBy:',' });
-      if (columns.includes('Price')) config.facets.push({ id: crypto.randomUUID(), col:'Price', label:'Price', type:'range' });
+}
+
+$('#addFacet').onclick = ()=>{ const first = state.columns[0] || ''; state.config.facets.push({id:crypto.randomUUID(), col:first, label:first || 'Facet', type:'multi'}); renderFacetsTab(); saveLS(); };
+
+function inferredType(col){
+  const vals = state.rows.map(r => r[col]).filter(Boolean);
+  if (!vals.length) return 'text';
+  const numsOnly = vals.map(num).filter(v=>v!==null);
+  if (numsOnly.length === vals.length) return (numsOnly.every(n => Number.isInteger(n))) ? 'integer' : 'number';
+  const low = vals.map(v=>String(v).toLowerCase());
+  if (low.every(v => ['true','false','yes','no'].includes(v))) return 'boolean';
+  const u = new Set(low); if (u.size <= Math.max(12, Math.floor(vals.length * 0.2))) return 'categorical';
+  return 'text';
+}
+
+/* -------------------------- Filtering + Preview -------------------------- */
+$('#query').oninput = e=>{ state.query = e.target.value; renderResults(); };
+$('#clearAll').onclick = ()=>{ state.query=''; $('#query').value=''; state.facetState={}; state.activeNavValue=null; renderPreview(); };
+
+function facetOptionsFor(f){
+  const vals = state.rows.map(r => String(r[f.col] ?? ''));
+  if (f.type === 'tokens') return uniq(vals.flatMap(v => (v||'').split(f.tokenizeBy || ',').map(x=>x.trim()).filter(Boolean)));
+  if (f.type === 'multi') return uniq(vals);
+  return [];
+}
+function ensureFacetDefaults(){
+  state.config.facets.forEach(f=>{
+    if (f.type === 'range'){
+      const nums = state.rows.map(r=>num(r[f.col])).filter(v=>v!==null);
+      const min = nums.length ? Math.min(...nums) : 0;
+      const max = nums.length ? Math.max(...nums) : 100;
+      if (!Array.isArray(state.facetState[f.id])) state.facetState[f.id] = [min, max];
+      state.facetState[f.id]._min = min; state.facetState[f.id]._max = max;
+    } else if (['multi','tokens','boolean'].includes(f.type)){
+      if (!Array.isArray(state.facetState[f.id])) state.facetState[f.id] = [];
+    } else if (f.type === 'text'){
+      if (typeof state.facetState[f.id] !== 'string') state.facetState[f.id] = '';
     }
-    renderLabels(); renderFacets(); renderPreview();
   });
+}
 
-  // ---------- Labels panel ----------
-  function optionsForColumns(sel, allowBlank=false){
-    sel.innerHTML = '';
-    if (allowBlank) sel.append(el('option', {value:''}, ['—']));
-    for (const c of columns) sel.append(el('option', {value:c}, [c]));
+function renderTopNav(){
+  const host = $('#topNav'); host.innerHTML='';
+  const col = state.config.nav.column; if (!col) return;
+  const values = uniq(state.rows.map(r=>String(r[col]||'')));
+  if (state.config.nav.showAll){
+    const all = create('button',{class:'tab'+(state.activeNavValue? '' : ' active')},[]); all.textContent='All';
+    all.onclick = ()=>{ state.activeNavValue=null; renderResults(); renderTopNav(); };
+    host.appendChild(all);
   }
-  function renderListPicker(container, list){
-    container.innerHTML = '';
-    const row = el('div', {class:'row'});
-    const add = el('select'); optionsForColumns(add, true); add.value='';
-    const btn = el('button', {}, ['Add']);
-    btn.addEventListener('click', () => { if(add.value){ list.push(add.value); renderLabels(); renderPreview(); }});
-    container.append(row, add, btn);
-    // chips
-    const chips = el('div');
-    for (const [idx, c] of list.entries()) {
-      const chip = el('span', {class:'badge'}, [c, ' ']);
-      const x = el('button', {}, ['×']); x.addEventListener('click', ()=>{ list.splice(idx,1); renderLabels(); renderPreview(); });
-      chip.append(x); chips.append(chip);
-    }
-    container.prepend(chips);
-  }
-  function renderLabels(){
-    // title + price
-    optionsForColumns($('#titleCol')); $('#titleCol').value = config.primary.titleCol || '';
-    optionsForColumns($('#priceCol'), true); $('#priceCol').value = config.primary.priceCol || '';
-    $('#titleCol').onchange = e => { config.primary.titleCol = e.target.value || undefined; renderPreview(); };
-    $('#priceCol').onchange = e => { config.primary.priceCol = e.target.value || undefined; renderPreview(); };
-    // subtitles, badges, secondary
-    renderListPicker($('#subtitleWrap'), config.primary.subtitleCols);
-    renderListPicker($('#badgeWrap'), config.primary.badgeCols);
-    renderListPicker($('#secondaryWrap'), config.secondaryCols);
-    $('#addSubtitle').onclick = () => {}; // handled inside renderListPicker
-    $('#addBadge').onclick = () => {};
-    $('#addSecondary').onclick = () => {};
-    // nav controls
-    optionsForColumns($('#navCol'), true); $('#navCol').value = (config.nav && config.nav.column) || '';
-    const navAll = $('#navAll'); if (navAll) navAll.checked = !config.nav || config.nav.showAll !== false;
-    $('#navCol').onchange = e => { config.nav = config.nav || {}; config.nav.column = e.target.value || undefined; activeNavValue = null; renderPreview(); };
-    if (navAll) navAll.onchange = e => { config.nav = config.nav || {}; config.nav.showAll = !!e.target.checked; buildNavBar(); };
-  };
-    $('#priceCol').onchange = e => { config.primary.priceCol = e.target.value || undefined; renderPreview(); };
-    // subtitles, badges, secondary
-    renderListPicker($('#subtitleWrap'), config.primary.subtitleCols);
-    renderListPicker($('#badgeWrap'), config.primary.badgeCols);
-    renderListPicker($('#secondaryWrap'), config.secondaryCols);
-    $('#addSubtitle').onclick = () => {}; // handled inside renderListPicker
-    $('#addBadge').onclick = () => {};
-    $('#addSecondary').onclick = () => {};
-  }
-
-  // ---------- Facets panel ----------
-  function inferFacetMeta(col){
-    const vals = rows.map(r => String(r[col]||''));
-    const nums = rows.map(r => coerceNumber(r[col])).filter(n=>n!=null);
-    return {
-      options: uniq(vals),
-      min: nums.length? Math.min(...nums):0,
-      max: nums.length? Math.max(...nums):100
-    };
-  }
-  function facetCard(f){
-    const card = el('div', {class:'card'});
-    const header = el('div', {class:'row'}, [el('strong',{},[`Facet: ${f.label}`])]);
-    const grid = el('div', {class:'grid g3'});
-
-    // Column select
-    const colSel = el('select'); optionsForColumns(colSel); colSel.value = f.col || columns[0] || '';
-    colSel.onchange = e => { f.col = e.target.value; renderFacets(); renderPreview(); };
-
-    // Label input
-    const labelIn = el('input', {type:'text', value:f.label || 'Facet'});
-    labelIn.oninput = e => { f.label = e.target.value; };
-
-    // Type select
-    const typeSel = el('select');
-    [['multi','Multi-select'],['range','Range'],['tokens','Tokens'],['text','Contains'],['boolean','Boolean']].forEach(([v,t])=>{
-      typeSel.append(el('option',{value:v},[t]));
-    });
-    typeSel.value = f.type || 'multi';
-    typeSel.onchange = e => { f.type = e.target.value; renderFacets(); renderPreview(); };
-
-    grid.append(
-      el('div',{},[el('label',{},['Column']), colSel]),
-      el('div',{},[el('label',{},['Display label']), labelIn]),
-      el('div',{},[el('label',{},['Facet type']), typeSel])
-    );
-
-    card.append(header, grid);
-
-    if (f.type === 'tokens') {
-      const tok = el('input',{type:'text', value: f.tokenizeBy || ','});
-      tok.oninput = e => { f.tokenizeBy = e.target.value || ','; renderPreview(); };
-      card.append(el('div',{},[el('label',{},['Token delimiter']), tok]));
-    }
-
-    const remove = el('button',{},['Remove']);
-    remove.addEventListener('click', ()=>{
-      const i = config.facets.findIndex(x => x===f); if(i>=0) config.facets.splice(i,1); renderFacets(); renderPreview();
-    });
-    card.append(el('div',{class:'sep'}));
-    card.append(remove);
-    return card;
-  }
-  function renderFacets(){
-    const list = $('#facetList'); list.innerHTML = '';
-    for (const f of config.facets) list.append(facetCard(f));
-  }
-  $('#addFacet').addEventListener('click', ()=>{
-    config.facets.push({ id: crypto.randomUUID(), col: columns[0]||'', label:'Facet', type:'multi' });
-    renderFacets();
+  values.forEach(v=>{
+    const b = create('button',{class:'tab'+(String(state.activeNavValue)===v? ' active':'' )},[]); b.textContent=v || '(blank)';
+    b.onclick = ()=>{ state.activeNavValue=v; renderResults(); renderTopNav(); };
+    host.appendChild(b);
   });
+}
 
-  // ---------- Preview panel ----------
-  function buildNavBar(){
-    const bar = $('#navBar'); if (!bar) return; bar.innerHTML='';
-    if (!config.nav || !config.nav.column) return;
-    const values = uniq(rows.map(r=>String(r[config.nav.column]||'')));
-    if (config.nav.showAll){
-      const btnAll = el('button', {class:'tab', 'aria-selected': activeNavValue? 'false':'true'}, ['All']);
-      btnAll.onclick = () => { activeNavValue = null; renderResults(); buildNavBar(); };
-      bar.append(btnAll);
+function renderPreview(){ ensureFacetDefaults(); renderFacetControls(); renderTopNav(); renderResults(); }
+
+function renderFacetControls(){
+  const host = $('#facetFilters'); host.innerHTML='';
+  state.config.facets.forEach(f=>{
+    const box = create('div',{class:'facet'});
+    box.append(create('h3',{text:f.label}));
+    if (f.type === 'range'){
+      const s = state.facetState[f.id]; const [lo,hi] = Array.isArray(s)? s : [0,100];
+      const loIn = create('input', {type:'number', value:String(lo)});
+      const hiIn = create('input', {type:'number', value:String(hi)});
+      loIn.onchange = e=>{ state.facetState[f.id][0]= Number(e.target.value); renderResults(); };
+      hiIn.onchange = e=>{ state.facetState[f.id][1]= Number(e.target.value); renderResults(); };
+      box.append(create('div',{class:'small help',text:`${lo} – ${hi}`}))
+      box.append(create('div',{class:'grid two'},[loIn,hiIn]));
     }
-    for (const v of values) {
-      const btn = el('button', {class:'tab', 'aria-selected': String(activeNavValue)===v ? 'true':'false'}, [v]);
-      btn.onclick = () => { activeNavValue = v; renderResults(); buildNavBar(); };
-      bar.append(btn);
+    if (f.type === 'multi' || f.type === 'tokens'){
+      const opts = facetOptionsFor(f);
+      if (!opts.length) box.append(create('div',{class:'small help',text:'No options found'}));
+      opts.forEach(opt=>{
+        const row = create('label', {class:'small'}, []);
+        const cb = create('input',{type:'checkbox'});
+        cb.checked = (state.facetState[f.id]||[]).includes(opt);
+        cb.onchange = ()=>{
+          const set = new Set(state.facetState[f.id]||[]);
+          if (cb.checked) set.add(opt); else set.delete(opt);
+          state.facetState[f.id] = Array.from(set);
+          renderResults();
+        };
+        row.append(cb, document.createTextNode(' ' + opt));
+        box.append(row, create('br'));
+      });
     }
-  }
-
-  function buildFacetControls(){
-    const wrap = $('#filters'); wrap.innerHTML = '';
-    for (const f of config.facets) {
-      const block = el('div', {class:'card'});
-      block.append(el('div',{},[el('strong',{},[f.label||f.col])]))
-      const meta = inferFacetMeta(f.col);
-      if (f.type === 'range') {
-        const min = meta.min, max = meta.max;
-        if (!Array.isArray(facetState[f.id])) facetState[f.id] = [min, max];
-        const lo = el('input',{type:'number', value: facetState[f.id][0]});
-        const hi = el('input',{type:'number', value: facetState[f.id][1]});
-        lo.oninput = ()=>{ facetState[f.id] = [Number(lo.value), Number(hi.value)]; renderResults(); };
-        hi.oninput = ()=>{ facetState[f.id] = [Number(lo.value), Number(hi.value)]; renderResults(); };
-        block.append(el('div',{class:'grid g2'},[
-          el('div',{},[el('label',{},['Min']), lo]),
-          el('div',{},[el('label',{},['Max']), hi])
-        ]));
-      } else if (f.type === 'tokens' || f.type === 'multi') {
-        const chosen = new Set(facetState[f.id] || []);
-        for (const opt of (f.type==='tokens' ? tokenSet(rows.map(r=>String(r[f.col]||'')), f.tokenizeBy||',') : meta.options)) {
-          const id = `${f.id}:${opt}`;
-          const cb = el('input',{type:'checkbox', id}); cb.checked = chosen.has(opt);
-          cb.onchange = ()=>{ if(cb.checked) chosen.add(opt); else chosen.delete(opt); facetState[f.id] = Array.from(chosen); renderResults(); };
-          const lab = el('label',{for:id},[opt]);
-          const row = el('div',{class:'opt'},[cb, lab]);
-          block.append(row);
-        }
-      } else if (f.type === 'text') {
-        const t = el('input',{type:'text', value: facetState[f.id] || ''});
-        t.oninput = ()=>{ facetState[f.id] = t.value; renderResults(); };
-        block.append(t);
-      } else if (f.type === 'boolean') {
-        const options = ['true','false'];
-        const chosen = new Set(facetState[f.id] || []);
-        for (const opt of options) {
-          const id = `${f.id}:${opt}`;
-          const cb = el('input',{type:'checkbox', id}); cb.checked = chosen.has(opt);
-          cb.onchange = ()=>{ if(cb.checked) chosen.add(opt); else chosen.delete(opt); facetState[f.id] = Array.from(chosen); renderResults(); };
-          const lab = el('label',{for:id},[opt==='true'?'Yes':'No']);
-          block.append(el('div',{class:'opt'},[cb, lab]));
-        }
-      }
-      wrap.append(block);
+    if (f.type === 'text'){
+      const inp = create('input',{placeholder:'Contains...', value: state.facetState[f.id]||''});
+      inp.oninput = e=>{ state.facetState[f.id] = e.target.value; renderResults(); };
+      box.append(inp);
     }
-  }
-  function tokenSet(values, delim){
-    const out = new Set();
-    for (const v of values) for (const t of v.split(delim).map(x=>x.trim()).filter(Boolean)) out.add(t);
-    return Array.from(out).sort((a,b)=>a.localeCompare(b));
-  }
-  function renderResults(){
-    const q = $('#q').value.trim().toLowerCase();
-    const list = $('#results'); list.innerHTML = '';
-    let filtered = rows.filter(r => {
-      const title = config.primary.titleCol ? String(r[config.primary.titleCol]||'') : '';
-      const fields = [title, ...config.primary.subtitleCols.map(c=>String(r[c]||'')), ...config.primary.badgeCols.map(c=>String(r[c]||'')), ...config.secondaryCols.map(c=>String(r[c]||''))];
-      if (q && !fields.join(' ').toLowerCase().includes(q)) return false;
-      // nav filter
-      if (config.nav && config.nav.column && activeNavValue && String(r[config.nav.column]) !== String(activeNavValue)) return false;
-      // facets
-      for (const f of config.facets) {
-        const val = r[f.col];
-        if (f.type === 'range') {
-          const [lo,hi] = facetState[f.id] || [-Infinity, Infinity];
-          const n = coerceNumber(val); if (n==null || n<lo || n>hi) return false;
-        } else if (f.type === 'text') {
-          const needle = (facetState[f.id]||'').toLowerCase(); if (needle && !String(val||'').toLowerCase().includes(needle)) return false;
-        } else if (f.type === 'tokens') {
-          const need = new Set(facetState[f.id]||[]); if (need.size){
-            const tokens = String(val||'').split(f.tokenizeBy||',').map(x=>x.trim().toLowerCase()).filter(Boolean);
-            for (const n of need) if (!tokens.includes(String(n).toLowerCase())) return false;
-          }
-        } else if (f.type === 'multi') {
-          const need = new Set(facetState[f.id]||[]); if (need.size && !need.has(String(val))) return false;
-        } else if (f.type === 'boolean') {
-          const need = facetState[f.id]||[]; if (need.length){
-            const norm = String(val||'').toLowerCase(); const truth = (norm==='true'||norm==='yes') ? 'true':'false';
-            if (!need.includes(truth)) return false;
-          }
-        }
-      }
-      return true;
-    });
-
-    $('#count').textContent = `${filtered.length} of ${rows.length} coffees`;
-
-    for (const r of filtered) {
-      const card = el('div',{class:'card'});
-      const title = config.primary.titleCol ? r[config.primary.titleCol] : '(Untitled)';
-      card.append(el('div',{class:'row', style:'justify-content:space-between'},[
-        el('div',{},[
-          el('div',{style:'font-weight:600'},[title]),
-          el('div',{class:'muted'},[config.primary.subtitleCols.map((c,i)=>`${r[c]}`).filter(Boolean).join(' • ') || ''])
-        ]),
-        config.primary.priceCol ? el('div',{style:'font-weight:600'},[`$${Number(r[config.primary.priceCol]).toFixed? Number(r[config.primary.priceCol]).toFixed(2): r[config.primary.priceCol]}`]) : el('span')
-      ]));
-      const badges = config.primary.badgeCols.flatMap(c => String(r[c]||'').split(/[,;]/).map(x=>x.trim()).filter(Boolean));
-      const bag = el('div',{class:'row'}); for (const b of badges) bag.append(el('span',{class:'badge'},[b])); card.append(bag);
-      if (config.secondaryCols.length){
-        const kv = el('div',{class:'kv'});
-        for (const c of config.secondaryCols) { kv.append(el('div',{class:'muted'},[c]), el('div',{},[String(r[c]||'')])); }
-        card.append(kv);
-      }
-      list.append(card);
+    if (f.type === 'boolean'){
+      ['true','false'].forEach(opt=>{
+        const row = create('label', {class:'small'}, []);
+        const cb = create('input',{type:'checkbox'});
+        cb.checked = (state.facetState[f.id]||[]).includes(opt);
+        cb.onchange = ()=>{
+          const set = new Set(state.facetState[f.id]||[]);
+          if (cb.checked) set.add(opt); else set.delete(opt);
+          state.facetState[f.id] = Array.from(set);
+          renderResults();
+        };
+        row.append(cb, document.createTextNode(' ' + (opt==='true'?'Yes':'No')));
+        box.append(row, create('br'));
+      });
     }
-  } else if (f.type === 'text') {
-          const needle = (facetState[f.id]||'').toLowerCase(); if (needle && !String(val||'').toLowerCase().includes(needle)) return false;
-        } else if (f.type === 'tokens') {
-          const need = new Set(facetState[f.id]||[]); if (need.size){
-            const tokens = String(val||'').split(f.tokenizeBy||',').map(x=>x.trim().toLowerCase()).filter(Boolean);
-            for (const n of need) if (!tokens.includes(String(n).toLowerCase())) return false;
-          }
-        } else if (f.type === 'multi') {
-          const need = new Set(facetState[f.id]||[]); if (need.size && !need.has(String(val))) return false;
-        } else if (f.type === 'boolean') {
-          const need = facetState[f.id]||[]; if (need.length){
-            const norm = String(val||'').toLowerCase(); const truth = (norm==='true'||norm==='yes') ? 'true':'false';
-            if (!need.includes(truth)) return false;
-          }
-        }
-      }
-      return true;
-    });
-
-    $('#count').textContent = `${filtered.length} of ${rows.length} coffees`;
-
-    for (const r of filtered) {
-      const card = el('div',{class:'card'});
-      const title = config.primary.titleCol ? r[config.primary.titleCol] : '(Untitled)';
-      card.append(el('div',{class:'row', style:'justify-content:space-between'},[
-        el('div',{},[
-          el('div',{style:'font-weight:600'},[title]),
-          el('div',{class:'muted'},[config.primary.subtitleCols.map((c,i)=>`${r[c]}`).filter(Boolean).join(' • ') || ''])
-        ]),
-        config.primary.priceCol ? el('div',{style:'font-weight:600'},[`$${Number(r[config.primary.priceCol]).toFixed? Number(r[config.primary.priceCol]).toFixed(2): r[config.primary.priceCol]}`]) : el('span')
-      ]));
-      const badges = config.primary.badgeCols.flatMap(c => String(r[c]||'').split(/[,;]/).map(x=>x.trim()).filter(Boolean));
-      const bag = el('div',{class:'row'}); for (const b of badges) bag.append(el('span',{class:'badge'},[b])); card.append(bag);
-      if (config.secondaryCols.length){
-        const kv = el('div',{class:'kv'});
-        for (const c of config.secondaryCols) { kv.append(el('div',{class:'muted'},[c]), el('div',{},[String(r[c]||'')])); }
-        card.append(kv);
-      }
-      list.append(card);
-    }
-  }
-  function renderPreview(){ buildFacetControls(); buildNavBar(); renderResults(); }
-  $('#q').addEventListener('input', renderResults);
-  $('#clear').addEventListener('click', ()=>{ Object.keys(facetState).forEach(k=>delete facetState[k]); $('#q').value=''; renderPreview(); });
-
-  // Mermaid export
-  function makeMermaid(){
-    const lines = [];
-    lines.push('flowchart TD');
-    lines.push('  A[Coffee Faceted Search]');
-    if (config.nav && config.nav.column) lines.push(`  A --> B[Primary Nav: ${config.nav.column}]`);
-    lines.push('  A --> C[Primary Search]');
-    if (config.facets.length){
-      lines.push('  A --> D[Facets]');
-      config.facets.forEach((f,i)=>{ lines.push(`  D --> D${i}[${f.label||f.col} (${f.type})]`); });
-    }
-    lines.push('  A --> E[Result Card]');
-    if (config.primary.titleCol) lines.push(`  E --> E1[Title: ${config.primary.titleCol}]`);
-    if (config.primary.subtitleCols.length) lines.push(`  E --> E2[Subtitles: ${config.primary.subtitleCols.join(' | ')}]`);
-    if (config.primary.badgeCols.length) lines.push(`  E --> E3[Badges: ${config.primary.badgeCols.join(' | ')}]`);
-    if (config.secondaryCols.length) lines.push(`  E --> E4[Secondary: ${config.secondaryCols.join(' | ')}]`);
-    return lines.join('\n');
-  }
-  const exportBtn = document.getElementById('exportMermaid');
-  if (exportBtn){
-    exportBtn.addEventListener('click', ()=>{
-      const code = makeMermaid();
-      const ta = document.getElementById('mermaidText');
-      const wrap = document.getElementById('mermaidWrap');
-      if (ta && wrap){ ta.value = code; wrap.style.display='block'; }
-    });
-  }
-  const hideBtn = document.getElementById('hideMermaid'); if (hideBtn) hideBtn.addEventListener('click', ()=>{ document.getElementById('mermaidWrap').style.display='none'; });
-  const dlBtn = document.getElementById('downloadMermaid'); if (dlBtn) dlBtn.addEventListener('click', ()=>{
-    const blob = new Blob([document.getElementById('mermaidText').value], {type:'text/markdown'});
-    const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download='coffee-ia-mermaid.md'; a.click(); URL.revokeObjectURL(url);
+    host.appendChild(box);
   });
+}
 
-  // Load sample immediately for convenience
-  $('#load').click();
-  const clearBtn = document.getElementById('clear'); if (clearBtn) clearBtn.addEventListener('click', ()=>{ activeNavValue = null; buildNavBar(); });
+function rowMatches(r){
+  const title = state.config.primary.titleCol ? (r[state.config.primary.titleCol]||'') : '';
+  const fields = [title]
+    .concat(state.config.primary.subtitleCols.map(c=>r[c]||''))
+    .concat(state.config.primary.badgeCols.map(c=>r[c]||''))
+    .concat(state.config.secondaryCols.map(c=>r[c]||''));
+  const q = (state.query||'').toLowerCase().trim();
+  if (q && !fields.join(' ').toLowerCase().includes(q)) return false;
+
+  // top nav filter
+  if (state.config.nav.column && state.activeNavValue!==null){
+    if (String(r[state.config.nav.column]) !== String(state.activeNavValue)) return false;
+  }
+
+  // facets
+  for (const f of state.config.facets){
+    const val = r[f.col];
+    if (f.type === 'range'){
+      const [lo,hi] = state.facetState[f.id] || [-Infinity, Infinity];
+      const n = num(val); if (n===null || n<lo || n>hi) return false;
+    } else if (f.type === 'text'){
+      const needle = (state.facetState[f.id]||'').toLowerCase();
+      if (needle && !String(val||'').toLowerCase().includes(needle)) return false;
+    } else if (f.type === 'tokens'){
+      const need = new Set(state.facetState[f.id]||[]);
+      if (need.size){
+        const tokens = String(val||'').split(f.tokenizeBy||',').map(x=>x.trim().toLowerCase()).filter(Boolean);
+        for (const n of need){ if (!tokens.includes(String(n).toLowerCase())) return false; }
+      }
+    } else if (f.type === 'multi'){
+      const need = new Set(state.facetState[f.id]||[]);
+      if (need.size && !need.has(String(val))) return false;
+    } else if (f.type === 'boolean'){
+      const need = state.facetState[f.id]||[];
+      if (need.length){
+        const norm = String(val||'').toLowerCase();
+        const truth = (norm==='true'||norm==='yes') ? 'true' : 'false';
+        if (!need.includes(truth)) return false;
+      }
+    }
+  }
+  return true;
+}
+
+function renderResults(){
+  const list = $('#resultList'); list.innerHTML='';
+  const rows = state.rows.filter(rowMatches);
+  $('#count').textContent = `${rows.length} of ${state.rows.length}`;
+  rows.forEach((r, idx)=>{
+    const card = create('div',{class:'item'});
+    const title = state.config.primary.titleCol ? r[state.config.primary.titleCol] : `Item #${idx+1}`;
+    const h = create('div', {style:'display:flex;align-items:flex-start;justify-content:space-between;gap:12px'});
+    const left = create('div');
+    left.append(create('div',{text:title}));
+    const subs = state.config.primary.subtitleCols.map(c=>r[c]).filter(Boolean).join(' • ');
+    left.append(create('div',{class:'muted small',text:subs}));
+    h.append(left);
+    const priceCol = state.config.primary.priceCol;
+    if (priceCol){ const val = r[priceCol]; const shown = (Number(val)===Number(val)) ? Number(val).toFixed(2) : String(val||''); h.append(create('div',{text:'$'+shown})); }
+    card.appendChild(h);
+    const badgeWrap = create('div',{class:'badges'});
+    state.config.primary.badgeCols.flatMap(c => String(r[c]||'').split(/[;,]/).map(x=>x.trim()).filter(Boolean)).forEach(b => badgeWrap.append(create('span',{class:'pill'},[document.createTextNode(b)])));
+    if (badgeWrap.children.length) card.appendChild(badgeWrap);
+    if (state.config.secondaryCols.length){
+      const meta = create('div',{class:'grid two', style:'margin-top:8px'});
+      state.config.secondaryCols.forEach(c=>{ const row = create('div',{style:'display:flex;align-items:center;justify-content:space-between;gap:10px'}); row.append(create('span',{class:'muted small',text:c}), create('span',{class:'small',text:String(r[c]||'')})); meta.append(row); });
+      card.appendChild(meta);
+    }
+    list.appendChild(card);
+  });
+}
+
+/* -------------------------- Import/Export -------------------------- */
+$('#downloadJson').onclick = ()=>{ const blob = new Blob([JSON.stringify({config: state.config, data: state.rows}, null, 2)], {type:'application/json'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'coffee-faceted-search-config.json'; a.click(); URL.revokeObjectURL(url); };
+$('#importJson').onchange = (e)=>{ const f = e.target.files[0]; if (!f) return; const reader = new FileReader(); reader.onload = ()=>{ try { const j = JSON.parse(String(reader.result)); if (j.data && j.config){ const parsedAgain = parseCSV(toCSV(j.data)); state.rows = parsedAgain.rows; state.columns = parsedAgain.columns; state.config = j.config; state.facetState = {}; colList.textContent = state.columns.join(', '); renderLabelsTab(); renderFacetsTab(); renderPreview(); saveLS(); alert('Imported JSON (config + data).'); } else { alert('JSON missing {config,data}'); } } catch { alert('Invalid JSON'); } }; reader.readAsText(f); };
+function toCSV(rows){ if (!rows.length) return ''; const cols = Object.keys(rows[0]); const esc = v => { const s = String(v ?? ''); return /[",
+]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s; }; const lines = [cols.join(',')]; rows.forEach(r => lines.push(cols.map(c=>esc(r[c])).join(','))); return lines.join('
+'); }
+
+/* -------------------------- Mermaid export -------------------------- */
+function makeMermaid(){
+  const lines = [];
+  lines.push('flowchart TD');
+  lines.push('  A[Coffee Faceted Search]');
+  if (state.config.nav && state.config.nav.column) lines.push(`  A --> B[Primary Nav: ${state.config.nav.column}]`);
+  lines.push('  A --> C[Primary Search]');
+  if (state.config.facets.length){ lines.push('  A --> D[Facets]'); state.config.facets.forEach((f,i)=>{ lines.push(`  D --> D${i}[${f.label||f.col} (${f.type})]`); }); }
+  lines.push('  A --> E[Result Card]');
+  if (state.config.primary.titleCol) lines.push(`  E --> E1[Title: ${state.config.primary.titleCol}]`);
+  if (state.config.primary.subtitleCols.length) lines.push(`  E --> E2[Subtitles: ${state.config.primary.subtitleCols.join(' | ')}]`);
+  if (state.config.primary.badgeCols.length) lines.push(`  E --> E3[Badges: ${state.config.primary.badgeCols.join(' | ')}]`);
+  if (state.config.secondaryCols.length) lines.push(`  E --> E4[Secondary: ${state.config.secondaryCols.join(' | ')}]`);
+  return lines.join('
+');
+}
+$('#exportMermaid').onclick = ()=>{ $('#mermaidText').value = makeMermaid(); $('#mermaidWrap').classList.remove('hidden'); };
+$('#hideMermaid').onclick = ()=>{ $('#mermaidWrap').classList.add('hidden'); };
+$('#downloadMermaid').onclick = ()=>{ const blob = new Blob([$('#mermaidText').value], {type:'text/markdown'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download='coffee-ia-mermaid.md'; a.click(); URL.revokeObjectURL(url); };
+
+/* -------------------------- Boot -------------------------- */
+(function boot(){
+  if (!loadLS()){
+    csvTA.value = sampleCSV;
+    const parsed = parseCSV(sampleCSV);
+    applyParsed(parsed);
+    seedDefaultFacets();
+  } else {
+    applyParsed({rows:state.rows, columns:state.columns});
+  }
+  renderLabelsTab();
+  renderFacetsTab();
 })();
 </script>
 </body>
