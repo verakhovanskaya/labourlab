@@ -1,0 +1,64 @@
+[
+  {
+    "label": "All",
+    "filters": {}
+  },
+  {
+    "label": "By Region",
+    "children": [
+      {
+        "label": "Africa",
+        "filters": {
+          "Region": [
+            "Africa"
+          ]
+        }
+      },
+      {
+        "label": "Central America",
+        "filters": {
+          "Region": [
+            "Central America"
+          ]
+        }
+      },
+      {
+        "label": "South America",
+        "filters": {
+          "Region": [
+            "South America"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "label": "By Processing",
+    "children": [
+      {
+        "label": "Washed",
+        "filters": {
+          "Processing Method": [
+            "Washed"
+          ]
+        }
+      },
+      {
+        "label": "Natural",
+        "filters": {
+          "Processing Method": [
+            "Natural"
+          ]
+        }
+      },
+      {
+        "label": "Decaf",
+        "filters": {
+          "Processing Method": [
+            "Decaffeinated"
+          ]
+        }
+      }
+    ]
+  }
+]

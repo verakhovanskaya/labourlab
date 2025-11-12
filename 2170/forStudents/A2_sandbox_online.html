@@ -1,0 +1,563 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>IA Faceted Search Sandbox</title>
+<style>
+  :root{ --bg:#fafafa; --ink:#222; --muted:#6b6b6b; --line:#d9d9d9; --accent:#0a7; --chip:#eee; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 system-ui, -apple-system, Segoe UI, Roboto, sans-serif}
+  header{border-bottom:2px solid var(--line);background:#fff;position:sticky;top:0;z-index:2}
+  .wrap{max-width:1200px;margin:0 auto;padding:12px 16px}
+  .navline{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+  .navline input[type=text]{padding:6px 8px;border:1px dashed var(--line);min-width:150px}
+  .nav-pill{padding:6px 10px;border:1px dashed var(--line);background:#fff}
+  main{display:grid;grid-template-columns:340px 1fr;gap:16px;align-items:start}
+  aside{border-right:2px solid var(--line);padding-right:16px}
+  h1{font-size:18px;margin:8px 0 4px}
+  h2{font-size:13px;margin:16px 0 6px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+  label{display:block;margin:6px 0}
+  input[type=checkbox],input[type=radio]{margin-right:6px}
+  .tree ul{list-style:none;padding-left:14px;margin:4px 0}
+  .tree li{margin:2px 0}
+  .tree button{border:0;background:none;color:#064;cursor:pointer;padding:0}
+  details{border:1px dashed var(--line);background:#fff;padding:6px 8px;margin:8px 0}
+  summary{cursor:pointer;color:#333}
+  .chip{display:inline-flex;gap:6px;align-items:center;padding:4px 8px;border:1px dashed var(--line);background:var(--chip);margin:3px 4px 0 0}
+  .chip button{border:0;background:none;color:var(--muted);cursor:pointer}
+  .controls{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 12px}
+  .controls input[type=text], .controls select, .controls button{padding:6px 8px;border:1px dashed var(--line);background:#fff}
+  .btn{padding:6px 10px;border:1px dashed var(--line);background:#fff;cursor:pointer}
+  .btn.primary{border-color:var(--accent);color:#064}
+  .help{font-size:12px;color:#666}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+  .card{border:2px solid var(--line);background:#fff;padding:10px}
+  .kvs{display:grid;grid-template-columns:90px 1fr;gap:4px;font-size:12px;color:#333}
+  .kvs div{padding:2px 0;border-bottom:1px dotted #eee}
+  .kvs div:nth-child(odd){color:#666}
+  .bar{display:flex;justify-content:space-between;align-items:center;margin:6px 0 10px}
+  .bar strong{font-size:16px}
+  textarea{width:100%;min-height:110px;border:1px dashed var(--line);padding:8px;background:#fff}
+  .section{border:2px dashed var(--line);padding:10px;background:#fff;margin:10px 0}
+  .footer{margin:40px 0 80px;color:#777;font-size:12px}
+  .breadcrumb{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:6px}
+  .crumb{padding:4px 8px;border:1px dashed var(--line);background:#fff}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="navline">
+      <strong>Static Navigation:</strong>
+      <input id="nav1" type="text" placeholder="Nav item 1" value="Home">
+      <input id="nav2" type="text" placeholder="Nav item 2" value="Catalog">
+      <input id="nav3" type="text" placeholder="Nav item 3" value="About">
+      <input id="nav4" type="text" placeholder="Nav item 4" value="Contact">
+      <button class="btn" id="applyNav">Apply</button>
+      <div id="navPreview" style="margin-left:auto;"></div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <main>
+    <aside>
+      <h1>Navigation</h1>
+      <div class="help">Click a node to drill down. Each node can set filters (e.g., Region, Origin, Roast).</div>
+      <details open>
+        <summary>Nested Nav (paste JSON)</summary>
+        <div class="controls">
+          <button class="btn" id="insertNavSample">Insert sample</button>
+          <button class="btn primary" id="applyNavJson">Apply</button>
+        </div>
+        <textarea id="navJson" placeholder='[
+  {"label":"All", "filters":{}},
+  {"label":"By Region", "children":[
+    {"label":"Africa", "filters":{"Region":["Africa"]}},
+    {"label":"Central America", "filters":{"Region":["Central America"]}}
+  ]}
+]'></textarea>
+        <div id="navTree" class="tree"></div>
+        <div class="breadcrumb" id="crumbs"></div>
+      </details>
+
+      <h1>Facets</h1>
+      <div class="help">Order, labels, and include/exclude are controlled by the Facet Config JSON.</div>
+      <div id="facetHost"></div>
+
+      <div class="section">
+        <h2>Facet Config JSON</h2>
+        <div class="help">Keys: {"order":[labels...], "rename":{"Old":"New"}, "hide":[labels...]}</div>
+        <div class="controls">
+          <button class="btn" id="insertFacetSample">Insert sample</button>
+          <button class="btn primary" id="applyFacetJson">Apply</button>
+        </div>
+        <textarea id="facetJson" placeholder='{
+  "order": ["Altitude Bucket","Origin (Country)","Region","Roast Level","Processing Method","Certification","Recommended Brewing Method","Recommended Brewing Method 2","Flavor Category","Flavor Profile","Acidity","Cultivar/Varietal","Harvest Year","Size (g)","Availability","Price"],
+  "rename": {"Origin (Country)": "Origin", "Processing Method": "Process"},
+  "hide": []
+}'></textarea>
+      </div>
+
+      <div class="section">
+        <h2>Data</h2>
+        <button class="btn" id="loadSample">Load sample data</button>
+        <button class="btn" id="clearFilters">Clear filter chips</button>
+        <div class="help">Or paste CSV (headers listed below)</div>
+        <textarea id="csvIn" placeholder="Paste CSV here..."></textarea>
+        <button class="btn primary" id="importCsv">Import CSV</button>
+      </div>
+
+      <div class="section">
+        <h2>Export</h2>
+        <div class="help">Download current CSV + Nav JSON + Facet JSON as a single .zip</div>
+        <button class="btn primary" id="downloadZip">Download current state (.zip)</button>
+      </div>
+    </aside>
+
+    <section>
+      <div class="bar">
+        <div>
+          <strong>Catalog</strong>
+          <span id="count"></span>
+        </div>
+        <div class="controls">
+          <input id="q" type="text" placeholder="Search name, flavor, cultivar">
+          <select id="sort">
+            <option value="name-asc">Name A–Z</option>
+            <option value="price-asc">Price low→high</option>
+            <option value="price-desc">Price high→low</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="chips"></div>
+      <div class="grid" id="grid"></div>
+
+      <div class="section">
+  <h2>Assignment prompts</h2>
+  <ul>
+    <li>Load data (sample or CSV). Paste <strong>nav.json</strong> and <strong>facets.json</strong>.</li>
+    <li>IA v1: keep 3–6 facets (ordered), make nested nav that filters. Screenshot: <em>default</em> + <em>drilled</em>.</li>
+    <li>IA v2: try an unusual angle (e.g., flavor-first or brew-first). Screenshot: <em>default</em> + <em>drilled</em>.</li>
+    <li>Export .zip and submit: <code>nav.json</code>, <code>facets.json</code>, screenshots, facets assessment, rationale and a 2-task mini-test (see Quercus).</li>
+  </ul>
+  <div class="help">CSV header (first row): Coffee ID, Slug, Name, SKU, Origin (Country), Region, Altitude (m), Cultivar/Varietal, Processing Method, Harvest Year, Certification, Flavor Profile, Flavor Category, Acidity, Roast Level, Recommended Brewing Method, Recommended Brewing Method 2, Size (g), Availability, Price (CAD)</div>
+</div>
+<section class="section">
+  <h2>Download the Class Dataset and Config Files</h2>
+  
+  <ul style="list-style:none; padding-left:0; margin-top:8px;">
+    <li>
+      <a href="https://yourdomain.ca/sandbox/data.csv" target="_blank" rel="noopener">data.csv</a> 
+    </li>
+    <li>
+      <a href="https://yourdomain.ca/sandbox/facets.json" target="_blank" rel="noopener">facets.json</a>
+    </li>
+    <li>
+      <a href="https://yourdomain.ca/sandbox/nav.json" target="_blank" rel="noopener">nav.json</a>
+    </li>
+  </ul>
+  <p class="help">
+    Open these links in your browser to view the raw text. You can then copy and paste the content directly into the Sandbox text areas.
+  </p>
+</section>
+
+
+      <div class="footer">IA Sandbox [EXPERIMENTAL VERSION]</div>
+    </section>
+  </main>
+</div>
+
+<script>
+const $ = sel => document.querySelector(sel);
+const $$ = sel => Array.from(document.querySelectorAll(sel));
+function slugify(s){return String(s).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'')}
+function uniq(xs){return [...new Set(xs)].filter(Boolean).sort()}
+
+function parseCSV(text){
+  const rows=[]; let i=0, field='', row=[], inQ=false;
+  function pushField(){row.push(field); field=''}
+  function pushRow(){rows.push(row); row=[]}
+  while(i<text.length){
+    const c=text[i];
+    if(c=='"'){ if(inQ && text[i+1]=='"'){field+='"'; i++;} else {inQ=!inQ;} }
+    else if(c==',' && !inQ){ pushField(); }
+    else if((c=='\n' || c=='\r') && !inQ){
+      if(field.length || row.length){ pushField(); pushRow(); }
+      while(text[i+1]=='\n' || text[i+1]=='\r') i++;
+    } else { field+=c; }
+    i++;
+  }
+  if(field.length || row.length){ pushField(); pushRow(); }
+  return rows;
+}
+
+function toCSV(objects, header){
+  const esc = v => {
+    const s = (v==null? "" : String(v));
+    return /[",\n\r]/.test(s) ? '"'+s.replace(/"/g,'""')+'"' : s;
+  };
+  const rows = [header.join(',')];
+  for(const o of objects){ rows.push(header.map(h=>esc(o[h])).join(',')); }
+  return rows.join('\n');
+}
+
+// ---------- Derived helpers ----------
+function altitudeBucketFrom(val){
+  const n = parseFloat(String(val||"").replace(/[^0-9.]/g,""));
+  if(!isFinite(n)) return "Unknown";
+  if(n <= 1200) return "Low (≤1200 m)";
+  if(n <= 1599) return "Mid (1200–1599 m)";
+  if(n <= 1899) return "High (1600–1899 m)";
+  return "Very High (≥1900 m)";
+}
+function deriveAltitudeBucketForAll(){
+  (DATA||[]).forEach(r=>{ r["Altitude Bucket"] = altitudeBucketFrom(r["Altitude (m)"]); });
+}
+
+const SAMPLE = [
+  {"Coffee ID":"1","Slug":"brazil-lagoa-1","Name":"Brazil Fazenda Lagoa","Origin (Country)":"Brazil","Region":"South America","Altitude (m)":"1100","Cultivar/Varietal":"Bourbon","Processing Method":"Washed","Harvest Year":"2024","Certification":"Fair Trade","Flavor Profile":"Nutty","Flavor Category":"Nutty","Acidity":"Mild Acidity","Roast Level":"Medium","Recommended Brewing Method":"Espresso","Recommended Brewing Method 2":"French Press","Size (g)":"500","Availability":"Regular","Price (CAD)":"21.50"},
+  {"Coffee ID":"2","Slug":"colombia-decaf-2","Name":"Colombian Decaf","Origin (Country)":"Colombia","Region":"South America","Altitude (m)":"1600","Cultivar/Varietal":"Bourbon","Processing Method":"Decaffeinated","Harvest Year":"2025","Certification":"Fair Trade","Flavor Profile":"Chocolate","Flavor Category":"Chocolatey","Acidity":"Balanced","Roast Level":"Medium","Recommended Brewing Method":"Drip","Recommended Brewing Method 2":"Espresso","Size (g)":"500","Availability":"Regular","Price (CAD)":"22.00"},
+  {"Coffee ID":"3","Slug":"ethiopia-guji-3","Name":"Ethiopia Guji","Origin (Country)":"Ethiopia","Region":"Africa","Altitude (m)":"2000","Cultivar/Varietal":"Heirloom","Processing Method":"Natural","Harvest Year":"2025","Certification":"Organic","Flavor Profile":"Berry","Flavor Category":"Fruity","Acidity":"Complex","Roast Level":"Light","Recommended Brewing Method":"Pour Over","Recommended Brewing Method 2":"Chemex","Size (g)":"500","Availability":"Limited Edition","Price (CAD)":"31.00"},
+  {"Coffee ID":"4","Slug":"kenya-peaberry-4","Name":"Kenya Peaberry","Origin (Country)":"Kenya","Region":"Africa","Altitude (m)":"1800","Cultivar/Varietal":"SL28","Processing Method":"Washed","Harvest Year":"2024","Certification":"Organic","Flavor Profile":"Fruity","Flavor Category":"Fruity","Acidity":"Bright Finish","Roast Level":"Medium","Recommended Brewing Method":"Pour Over","Recommended Brewing Method 2":"French Press","Size (g)":"250","Availability":"Regular","Price (CAD)":"27.50"},
+  {"Coffee ID":"5","Slug":"panama-geisha-5","Name":"Panama Geisha Boquete","Origin (Country)":"Panama","Region":"Central America","Altitude (m)":"1600","Cultivar/Varietal":"Geisha","Processing Method":"Natural","Harvest Year":"2025","Certification":"Organic","Flavor Profile":"Jasmine","Flavor Category":"Floral","Acidity":"Delicate","Roast Level":"Light","Recommended Brewing Method":"Pour Over","Recommended Brewing Method 2":"Chemex","Size (g)":"500","Availability":"Seasonal","Price (CAD)":"42.00"},
+  {"Coffee ID":"6","Slug":"uganda-sipi-6","Name":"Uganda Sipi Falls","Origin (Country)":"Uganda","Region":"Africa","Altitude (m)":"1600","Cultivar/Varietal":"SL14","Processing Method":"Washed","Harvest Year":"2025","Certification":"Fair Trade","Flavor Profile":"Chocolate","Flavor Category":"Chocolatey","Acidity":"Balanced","Roast Level":"Medium","Recommended Brewing Method":"Drip","Recommended Brewing Method 2":"Espresso","Size (g)":"250","Availability":"Seasonal","Price (CAD)":"24.00"},
+  {"Coffee ID":"7","Slug":"house-blend-7","Name":"House Blend","Origin (Country)":"Canada","Region":"North America","Altitude (m)":"200","Cultivar/Varietal":"Blend","Processing Method":"Washed","Harvest Year":"2024","Certification":"Organic","Flavor Profile":"Nutty","Flavor Category":"Nutty","Acidity":"Mild","Roast Level":"Medium","Recommended Brewing Method":"Drip","Recommended Brewing Method 2":"Espresso","Size (g)":"250","Availability":"Regular","Price (CAD)":"18.00"}
+];
+
+
+let DATA = [...SAMPLE];
+deriveAltitudeBucketForAll();
+let ACTIVE = {origin:new Set(), region:new Set(), altbucket:new Set(), roast:new Set(), processing:new Set(), cert:new Set(), brew1:new Set(), brew2:new Set(), flavorcat:new Set(), flavor:new Set(), acidity:new Set(), cultivar:new Set(), harvest:new Set(), size:new Set(), avail:new Set(), price:"all"};
+let NAV_FILTERS = {}; let NAV_PATH = [];
+
+let FACET_CONFIG = {
+  order: ["Origin (Country)","Region","Altitude Bucket","Roast Level","Processing Method","Certification","Recommended Brewing Method","Recommended Brewing Method 2","Flavor Category","Flavor Profile","Acidity","Cultivar/Varietal","Harvest Year","Size (g)","Availability","Price"],
+  rename: {},
+  hide: []
+};
+
+const FACET_DEFS = {
+  "Origin (Country)": {key:"Origin (Country)", group:"origin", type:"checkbox"},
+  "Region": {key:"Region", group:"region", type:"checkbox"},
+  "Altitude Bucket": {key:"Altitude Bucket", group:"altbucket", type:"checkbox"},
+  "Roast Level": {key:"Roast Level", group:"roast", type:"checkbox"},
+  "Processing Method": {key:"Processing Method", group:"processing", type:"checkbox"},
+  "Certification": {key:"Certification", group:"cert", type:"checkbox"},
+  "Recommended Brewing Method": {key:"Recommended Brewing Method", group:"brew1", type:"checkbox"},
+  "Recommended Brewing Method 2": {key:"Recommended Brewing Method 2", group:"brew2", type:"checkbox"},
+  "Flavor Category": {key:"Flavor Category", group:"flavorcat", type:"checkbox"},
+  "Flavor Profile": {key:"Flavor Profile", group:"flavor", type:"checkbox"},
+  "Acidity": {key:"Acidity", group:"acidity", type:"checkbox"},
+  "Cultivar/Varietal": {key:"Cultivar/Varietal", group:"cultivar", type:"checkbox"},
+  "Harvest Year": {key:"Harvest Year", group:"harvest", type:"checkbox"},
+  "Size (g)": {key:"Size (g)", group:"size", type:"checkbox"},
+  "Availability": {key:"Availability", group:"avail", type:"checkbox"},
+  "Price": {key:"Price (CAD)", group:"price", type:"radio"}
+};
+
+function renderHeaderNav(){
+  const items = [$("#nav1").value,$("#nav2").value,$("#nav3").value,$("#nav4").value].filter(Boolean);
+  $("#navPreview").innerHTML = items.map(t=>`<span class="nav-pill">${t}</span>`).join("");
+}
+
+function facetValues(key){ return uniq(DATA.map(x => String(x[key]||"").trim()).filter(Boolean)); }
+
+function buildFacet(label){
+  const def = FACET_DEFS[label]; if(!def) return "";
+  const display = FACET_CONFIG.rename[label] || label;
+  if(def.type==="checkbox"){
+    const values = facetValues(def.key);
+    return `<h2>${display}</h2>
+      <div>${values.map(v=>{
+        const id = `${def.group}-${slugify(v)}`;
+        const checked = ACTIVE[def.group].has(v) ? "checked" : "";
+        return `<label><input type=\"checkbox\" data-group=\"${def.group}\" value=\"${v}\" id=\"${id}\" ${checked}> ${v}</label>`;
+      }).join("")}</div>`;
+  } else {
+    const v = ACTIVE.price || "all";
+    return `<h2>${display}</h2>
+      <label><input type="radio" name="price" value="all" ${v==="all"?"checked":""}> All</label>
+      <label><input type="radio" name="price" value="lt20" ${v==="lt20"?"checked":""}> &lt; $20</label>
+      <label><input type="radio" name="price" value="20to30" ${v==="20to30"?"checked":""}> $20–$30</label>
+      <label><input type="radio" name="price" value="gt30" ${v==="gt30"?"checked":""}> &gt; $30</label>`;
+  }
+}
+
+function renderFacets(){
+  const host = $("#facetHost");
+  const order = FACET_CONFIG.order.filter(l => !FACET_CONFIG.hide.includes(l) && FACET_DEFS[l]);
+  host.innerHTML = order.map(buildFacet).join("");
+}
+
+function applyFilters(){
+  let out = DATA.slice();
+  const q = $("#q").value.trim().toLowerCase();
+  if(q){
+    out = out.filter(r =>
+    inSet(ACTIVE.origin, r["Origin (Country)"]) &&
+    inSet(ACTIVE.region, r["Region"]) &&
+    inSet(ACTIVE.altbucket, r["Altitude Bucket"]) &&
+    inSet(ACTIVE.roast, r["Roast Level"]) &&
+    inSet(ACTIVE.processing, r["Processing Method"]) &&
+    inSet(ACTIVE.cert, r["Certification"]) &&
+    inSet(ACTIVE.brew1, r["Recommended Brewing Method"]) &&
+    inSet(ACTIVE.brew2, r["Recommended Brewing Method 2"]) &&
+    inSet(ACTIVE.flavorcat, r["Flavor Category"]) &&
+    inSet(ACTIVE.flavor, r["Flavor Profile"]) &&
+    inSet(ACTIVE.acidity, r["Acidity"]) &&
+    inSet(ACTIVE.cultivar, r["Cultivar/Varietal"]) &&
+    inSet(ACTIVE.harvest, r["Harvest Year"]) &&
+    inSet(ACTIVE.size, r["Size (g)"]) &&
+    inSet(ACTIVE.avail, r["Availability"]) );
+  }
+  function inSet(set, v){return set.size===0 || set.has(String(v))}
+  out = out.filter(r =>
+    inSet(ACTIVE.origin, r["Origin (Country)"]) &&
+    inSet(ACTIVE.region, r["Region"]) &&
+    inSet(ACTIVE.roast, r["Roast Level"]) &&
+    inSet(ACTIVE.processing, r["Processing Method"]) &&
+    inSet(ACTIVE.cert, r["Certification"]) &&
+    inSet(ACTIVE.brew1, r["Recommended Brewing Method"]) &&
+    inSet(ACTIVE.brew2, r["Recommended Brewing Method 2"]) &&
+    inSet(ACTIVE.flavorcat, r["Flavor Category"]) &&
+    inSet(ACTIVE.flavor, r["Flavor Profile"]) &&
+    inSet(ACTIVE.acidity, r["Acidity"]) &&
+    inSet(ACTIVE.cultivar, r["Cultivar/Varietal"]) &&
+    inSet(ACTIVE.harvest, r["Harvest Year"]) &&
+    inSet(ACTIVE.size, r["Size (g)"]) &&
+    inSet(ACTIVE.avail, r["Availability"]) );
+
+  const priceSel = ACTIVE.price || "all";
+  out = out.filter(r => {
+    const p = parseFloat(r["Price (CAD)"]||0);
+    if(priceSel==="lt20") return p < 20;
+    if(priceSel==="20to30") return p >= 20 && p <= 30;
+    if(priceSel==="gt30") return p > 30;
+    return true;
+  });
+
+  const navKeys = Object.keys(NAV_FILTERS||{});
+  if(navKeys.length){
+    out = out.filter(r => navKeys.every(k => {
+      const v = NAV_FILTERS[k];
+      const cell = String(r[k] ?? "");
+      return v.length===0 || v.includes(cell);
+    }));
+  }
+
+  const sort = $("#sort").value;
+  if(sort==="name-asc") out.sort((a,b)=>String(a.Name).localeCompare(String(b.Name)));
+  if(sort==="price-asc") out.sort((a,b)=>parseFloat(a["Price (CAD)"])-parseFloat(b["Price (CAD)"]));
+  if(sort==="price-desc") out.sort((a,b)=>parseFloat(b["Price (CAD)"])-parseFloat(a["Price (CAD)"]));
+
+  const chips = [];
+  for(const [g,set] of Object.entries(ACTIVE)){
+    if(g==="price"){ if(ACTIVE.price && ACTIVE.price!=="all") chips.push({g:"price", v: ACTIVE.price}); continue; }
+    set.forEach(v => chips.push({g,v}));
+  }
+  for(const k of navKeys){ (NAV_FILTERS[k]||[]).forEach(v => chips.push({g:`nav:${k}`, v})); }
+  $("#chips").innerHTML = chips.map(c=>`<span class="chip">${c.g}: <strong>${c.v}</strong> <button data-chip="${c.g}::${c.v}" title="remove">✕</button></span>`).join("");
+
+  $("#count").textContent = ` — ${out.length} results`;
+  $("#grid").innerHTML = out.map(r=>`
+    <article class="card">
+      <div style="font-weight:600">${r.Name}</div>
+      <div class="kvs">
+        <div>Origin</div><div>${r["Origin (Country)"]} (${r.Region||"-"})</div>
+        <div>Roast</div><div>${r["Roast Level"]}</div>
+        <div>Processing</div><div>${r["Processing Method"]}</div>
+        <div>Cultivar</div><div>${r["Cultivar/Varietal"]||"-"}</div>
+        <div>Flavor</div><div>${r["Flavor Profile"]||"-"}</div>
+        <div>Size</div><div>${r["Size (g)"]||"-"} g</div>
+        <div>Price</div><div>$${Number(r["Price (CAD)"]).toFixed(2)}</div>
+      </div>
+    </article>
+  `).join("");
+}
+
+let NAV_JSON = [
+  { label: "All", filters: {} },
+  { label: "By Region", children: [
+      { label: "Africa", filters: {"Region":["Africa"]} },
+      { label: "Central America", filters: {"Region":["Central America"]} },
+      { label: "South America", filters: {"Region":["South America"]} }
+  ]},
+  { label: "By Processing", children: [
+      { label: "Washed", filters: {"Processing Method":["Washed"]}},
+      { label: "Natural", filters: {"Processing Method":["Natural"]}},
+      { label: "Decaf", filters: {"Processing Method":["Decaffeinated"]}}
+  ]}
+];
+
+function renderNavTree(){
+  const host = $("#navTree");
+  function nodeHTML(n, path){
+    const hasKids = Array.isArray(n.children) && n.children.length;
+    const click = `data-path="${encodeURIComponent(JSON.stringify(path))}"`;
+    return `<li>
+      <button ${click} class="navNode">${n.label}</button>
+      ${hasKids? `<ul>${n.children.map((c,i)=>nodeHTML(c, path.concat(i))).join("")}</ul>`: ""}
+    </li>`;
+  }
+  host.innerHTML = `<ul>${NAV_JSON.map((n,i)=>nodeHTML(n,[i])).join("")}</ul>`;
+  renderBreadcrumb();
+}
+
+function getNodeByPath(path){
+  let node = {children:NAV_JSON};
+  for(const idx of path){ node = node.children[idx]; if(!node) break; }
+  return node;
+}
+
+function applyNavNode(path){
+  const node = getNodeByPath(path);
+  NAV_PATH = path.slice();
+  NAV_FILTERS = JSON.parse(JSON.stringify(node.filters || {}));
+  renderBreadcrumb();
+  applyFilters();
+}
+
+function renderBreadcrumb(){
+  let parts = [];
+  let node = {children:NAV_JSON};
+  let labels = ["Root"];
+  for(const idx of NAV_PATH){ node = node.children[idx]; labels.push(node.label); }
+  const crumbs = labels.map((lab,depth)=>`<span class="crumb" data-depth="${depth}">${lab}</span>`).join("");
+  $("#crumbs").innerHTML = crumbs;
+}
+
+function csvToObjects(text){
+  const rows = parseCSV(text).filter(r=>r.length && r.some(x=>String(x).trim().length));
+  const header = rows[0].map(h => h.trim());
+  const out = [];
+  for(let i=1;i<rows.length;i++){
+    const row = rows[i]; if(!row.length) continue;
+    const obj = {};
+    for(let c=0;c<header.length;c++){ obj[header[c]] = (row[c] ?? "").toString().trim(); }
+    if(!obj.Slug){ obj.Slug = slugify(`${obj["Name"]||"item"}-${obj["Origin (Country)"]||""}-${obj["Coffee ID"]||i}`) }
+    if(!obj["Region"]) {
+      const oc = (obj["Origin (Country)"]||"").toLowerCase();
+      obj["Region"] = ["ethiopia","kenya","uganda","rwanda","tanzania"].some(x=>oc.includes(x))?"Africa"
+        : ["colombia","peru","brazil"].some(x=>oc.includes(x))?"South America"
+        : ["guatemala","honduras","costa rica","el salvador","mexico","panama"].some(x=>oc.includes(x))?"Central America"
+        : ["indonesia","papua"].some(x=>oc.includes(x))?"Asia-Pacific"
+        : oc.includes("canada")?"North America":"Other";
+    }
+    out.push(obj);
+  }
+  return out;
+}
+
+function crc32Table(){ let t=new Uint32Array(256); for(let n=0;n<256;n++){ let c=n; for(let k=0;k<8;k++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1); t[n]=c>>>0;} return t; }
+const CRC_TABLE = crc32Table();
+function crc32(u8){
+  let c = 0 ^ (-1);
+  for (let i = 0; i < u8.length; i++) {
+    c = (c >>> 8) ^ CRC_TABLE[(c ^ u8[i]) & 0xFF];
+  }
+  return (c ^ (-1)) >>> 0;
+}
+function strToU8(s){ return new TextEncoder().encode(s); }
+function le32(n){ const b=new Uint8Array(4); new DataView(b.buffer).setUint32(0,n,true); return b; }
+function le16(n){ const b=new Uint8Array(2); new DataView(b.buffer).setUint16(0,n,true); return b; }
+function makeZip(files){
+  const fileRecs=[]; let offset=0; const chunks=[];
+  for(const f of files){
+    const nameU8=strToU8(f.name); const data=f.data instanceof Uint8Array?f.data:strToU8(String(f.data||""));
+    const crc=crc32(data); const comp=data.length; const uncomp=data.length;
+    chunks.push(strToU8("PK\x03\x04")); chunks.push(le16(20)); chunks.push(le16(0)); chunks.push(le16(0));
+    chunks.push(le16(0)); chunks.push(le16(0)); chunks.push(le32(crc)); chunks.push(le32(comp)); chunks.push(le32(uncomp));
+    chunks.push(le16(nameU8.length)); chunks.push(le16(0)); chunks.push(nameU8); chunks.push(data);
+    fileRecs.push({nameU8,crc,compSize:comp,uncompSize:uncomp,offset});
+    offset += 30 + nameU8.length + data.length;
+  }
+  const centralDirOffset = offset;
+  for(const r of fileRecs){
+    chunks.push(strToU8("PK\x01\x02")); chunks.push(le16(20)); chunks.push(le16(20)); chunks.push(le16(0)); chunks.push(le16(0));
+    chunks.push(le16(0)); chunks.push(le16(0)); chunks.push(le32(r.crc)); chunks.push(le32(r.compSize)); chunks.push(le32(r.uncompSize));
+    chunks.push(le16(r.nameU8.length)); chunks.push(le16(0)); chunks.push(le16(0)); chunks.push(le16(0)); chunks.push(le16(0));
+    chunks.push(le32(0)); chunks.push(le32(r.offset)); chunks.push(r.nameU8);
+  }
+  const lenBeforeEnd = chunks.reduce((a,c)=>a+(c.byteLength||c.length),0);
+  const centralDirSize = lenBeforeEnd - centralDirOffset;
+  chunks.push(strToU8("PK\x05\x06")); chunks.push(le16(0)); chunks.push(le16(0));
+  chunks.push(le16(fileRecs.length)); chunks.push(le16(fileRecs.length));
+  chunks.push(le32(centralDirSize)); chunks.push(le32(centralDirOffset)); chunks.push(le16(0));
+  const totalLen = chunks.reduce((a,c)=>a+(c.byteLength||c.length),0);
+  const out = new Uint8Array(totalLen); let p=0; for(const c of chunks){ out.set(c,p); p+=c.byteLength||c.length; }
+  return out;
+}
+
+/* duplicate renderAll removed to avoid confusion */
+
+$("#applyNav").addEventListener("click", renderHeaderNav);
+$("#insertNavSample").addEventListener("click", ()=>{ $("#navJson").value = JSON.stringify(NAV_JSON, null, 2); });
+$("#applyNavJson").addEventListener("click", ()=>{ try{ const parsed=JSON.parse($("#navJson").value||"[]"); if(!Array.isArray(parsed)) throw new Error("Nav JSON must be an array"); NAV_JSON=parsed; NAV_PATH=[]; NAV_FILTERS={}; renderNavTree(); applyFilters(); }catch(e){ alert("Nav JSON error: "+e.message); } });
+
+$("#insertFacetSample").addEventListener("click", ()=>{ const sample={ order: ["Region","Origin (Country)","Processing Method","Roast Level","Certification","Recommended Brewing Method","Recommended Brewing Method 2","Flavor Category","Flavor Profile","Acidity","Cultivar/Varietal","Harvest Year","Size (g)","Availability","Price"], rename: {"Origin (Country)":"Origin","Processing Method":"Process"}, hide: []}; $("#facetJson").value = JSON.stringify(sample, null, 2); });
+$("#applyFacetJson").addEventListener("click", ()=>{ try{ const cfg=JSON.parse($("#facetJson").value||"{}"); FACET_CONFIG=Object.assign({order:[],rename:{},hide:[]},cfg); renderFacets(); applyFilters(); }catch(e){ alert("Facet JSON error: "+e.message);} });
+
+$("#navTree").addEventListener("click", e=>{ const btn=e.target.closest(".navNode"); if(!btn) return; const path=JSON.parse(decodeURIComponent(btn.dataset.path)); applyNavNode(path); });
+$("#crumbs").addEventListener("click", e=>{ const c=e.target.closest(".crumb"); if(!c) return; const depth=+c.dataset.depth; if(depth===0){ NAV_PATH=[]; NAV_FILTERS={}; } else { NAV_PATH = NAV_PATH.slice(0, depth); const node = getNodeByPath(NAV_PATH); NAV_FILTERS = JSON.parse(JSON.stringify(node.filters||{})); } renderBreadcrumb(); applyFilters(); });
+
+$("#clearFilters").addEventListener("click", ()=>{ ACTIVE = {origin:new Set(), region:new Set(), roast:new Set(), processing:new Set(), cert:new Set(), brew1:new Set(), brew2:new Set(), flavorcat:new Set(), flavor:new Set(), acidity:new Set(), cultivar:new Set(), harvest:new Set(), size:new Set(), avail:new Set(), price:"all"}; $$('input[type=checkbox]').forEach(cb=>cb.checked=false); $$('input[name=price]').forEach(r=>{ if(r.value==="all") r.checked=true; }); $("#q").value=""; applyFilters(); });
+
+$("#importCsv").addEventListener("click", ()=>{ const txt=$("#csvIn").value.trim(); if(!txt){ alert("Paste CSV first."); return; } try{ const objs=csvToObjects(txt); if(!objs.length){ alert("Parsed, but found no rows."); return; } DATA=objs; deriveAltitudeBucketForAll(); renderFacets(); applyFilters(); }catch(e){ console.error(e); alert("Could not parse CSV. Ensure headers match the help block."); } });
+$("#loadSample").addEventListener("click", ()=>{ DATA=[...SAMPLE]; deriveAltitudeBucketForAll(); renderFacets(); applyFilters(); });
+
+document.addEventListener("input", e=>{ const t=e.target; if(t.matches('input[type=checkbox]')){ const group=t.dataset.group; if(t.checked) ACTIVE[group].add(t.value); else ACTIVE[group].delete(t.value); applyFilters(); } if(t.id==="q"){ applyFilters(); } if(t.name==="price"){ ACTIVE.price=t.value; applyFilters(); }});
+$("#sort").addEventListener("change", applyFilters);
+
+$("#chips").addEventListener("click", e=>{ if(e.target.tagName==="BUTTON"){ const [g,v]=e.target.dataset.chip.split("::"); if(g==="price"){ ACTIVE.price="all"; $$('input[name=price]').forEach(r=>{if(r.value==="all") r.checked=true}); } else if(g.startsWith('nav:')){ const key=g.slice(4); const arr=NAV_FILTERS[key]||[]; NAV_FILTERS[key]=arr.filter(x=>x!==v); } else { ACTIVE[g].delete(v); const id = `#${g}-${slugify(v)}`; const cb = document.querySelector(id); if(cb) cb.checked=false; } applyFilters(); }});
+
+document.addEventListener("DOMContentLoaded", () => {
+$("#downloadZip").addEventListener("click", ()=>{
+  try {
+    const header = [
+      "Coffee ID","Slug","Name","SKU","Origin (Country)","Region","Altitude (m)",
+      "Cultivar/Varietal","Processing Method","Harvest Year","Certification",
+      "Flavor Profile","Flavor Category","Acidity","Roast Level",
+      "Recommended Brewing Method","Recommended Brewing Method 2",
+      "Size (g)","Availability","Price (CAD)"
+    ];
+
+    const csvText  = toCSV(DATA, header);
+    const navText  = JSON.stringify(NAV_JSON,   null, 2);
+    const facetText= JSON.stringify(FACET_CONFIG, null, 2);
+
+    const zipU8 = makeZip([
+      { name: "data.csv",   data: strToU8(csvText)  },
+      { name: "nav.json",   data: strToU8(navText)  },
+      { name: "facets.json",data: strToU8(facetText)}
+    ]);
+
+    const blob = new Blob([zipU8], { type: "application/zip" });
+    const url  = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "ia-sandbox-export.zip";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    setTimeout(()=> URL.revokeObjectURL(url), 2000);
+  } catch (err) {
+    console.error("ZIP export error:", err);
+    alert("ZIP export failed: " + (err?.message || err));
+  }
+});
+});
+
+
+function renderBreadcrumb(){ let node={children:NAV_JSON}; const labels=["Root", ...NAV_PATH.map((idx,i)=>{ node=(i? node.children : NAV_JSON)[idx]; return node.label; })]; $("#crumbs").innerHTML = labels.map((lab,depth)=>`<span class=\"crumb\" data-depth=\"${depth}\">${lab}</span>`).join(''); }
+function renderNavTree(){ const host=$("#navTree"); function nodeHTML(n,path){ const kids=Array.isArray(n.children)&&n.children.length; const click=`data-path="${encodeURIComponent(JSON.stringify(path))}"`; return `<li><button ${click} class="navNode">${n.label}</button>${kids? `<ul>${n.children.map((c,i)=>nodeHTML(c,path.concat(i))).join('')}</ul>`:''}</li>`; } host.innerHTML = `<ul>${NAV_JSON.map((n,i)=>nodeHTML(n,[i])).join('')}</ul>`; renderBreadcrumb(); }
+function renderAll(){ renderHeaderNav(); renderNavTree(); renderFacets(); applyFilters(); }
+
+renderAll();
+</script>
+</body>
+</html>

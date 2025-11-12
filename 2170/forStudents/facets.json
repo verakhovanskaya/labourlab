@@ -1,0 +1,22 @@
+{
+  "order": [
+    "Origin (Country)",
+    "Region",
+    "Altitude Bucket",
+    "Roast Level",
+    "Processing Method",
+    "Certification",
+    "Recommended Brewing Method",
+    "Recommended Brewing Method 2",
+    "Flavor Category",
+    "Flavor Profile",
+    "Acidity",
+    "Cultivar/Varietal",
+    "Harvest Year",
+    "Size (g)",
+    "Availability",
+    "Price"
+  ],
+  "rename": {},
+  "hide": []
+}

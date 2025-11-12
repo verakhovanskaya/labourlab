@@ -1,0 +1,41 @@
+Coffee ID,Slug,Name,SKU,Origin (Country),Region,Altitude (m),Cultivar/Varietal,Processing Method,Harvest Year,Certification,Flavor Profile,Flavor Category,Acidity,Roast Level,Recommended Brewing Method,Recommended Brewing Method 2,Size (g),Availability,Price (CAD)
+1,brazil-fazenda-lagoa-brazil-1,Brazil Fazenda Lagoa,CF-001,Brazil,South America,1100,Bourbon,Washed,2024,Fair Trade,Nutty,Nutty,Mild Acidity,Medium,Espresso,French Press,500,Regular,21.00
+2,colombian-decaf-colombia-2,Colombian Decaf,CF-002,Colombia,South America,1600,Bourbon,Decaffeinated,2025,Fair Trade,Chocolate,Chocolate,Balanced,Medium,Drip,Espresso,500,Regular,22.00
+3,de-mello-colombia-narino-colombia-3,De Mello Colombia Narino,CF-003,Colombia,South America,1800,Caturra,Washed,2024,Fair Trade,Caramel,Caramel,Smooth,Light,Pour Over,Drip,500,Seasonal,21.00
+4,de-mello-el-salvador-bourbon-el-salvador-4,De Mello El Salvador Bourbon,CF-004,El Salvador,Central America,1500,Bourbon,Washed,2025,Organic,Chocolate,Chocolate,Bright,Medium,Drip,Espresso,250,Seasonal,18.00
+5,de-mello-ethiopia-guji-ethiopia-5,De Mello Ethiopia Guji,CF-005,Ethiopia,Africa,2000,Heirloom,Natural,2025,Organic,Berry,Berry,Complex,Light,Pour Over,Chemex,500,Limited Edition,21.00
+6,de-mello-kenyan-peaberry-kenya-6,De Mello Kenyan Peaberry,CF-006,Kenya,Africa,1800,Peaberry,Washed,2024,Organic,Fruity,Fruity,Juicy,Medium,Pour Over,Aeropress,250,Regular,18.00
+7,de-mello-nicaragua-jinotega-nicaragua-7,De Mello Nicaragua Jinotega,CF-007,Nicaragua,Other,1400,Catuai,Washed,2024,Fair Trade,Chocolate,Chocolate,Mild Acidity,Medium,Drip,Espresso,500,Regular,21.00
+8,de-mello-peru-cajamarca-peru-8,De Mello Peru Cajamarca,CF-008,Peru,South America,1700,Bourbon,Washed,2024,Organic,Chocolate,Chocolate,Mild Acidity,Medium,Drip,Espresso,500,Regular,21.00
+9,espresso-blend-canada-9,Espresso Blend,CF-009,Canada,North America,200,Blend,Washed,2024,Organic,Chocolate,Chocolate,Smooth,Dark,Espresso,French Press,250,Regular,18.00
+10,ethica-el-salvador-pacamara-el-salvador-10,Ethica El Salvador Pacamara,CF-010,El Salvador,Central America,1700,Pacamara,Washed,2024,Organic,Chocolate,Chocolate,Bright Acidity,Medium,Drip,Pour Over,250,Limited Edition,18.00
+11,ethica-ethiopia-kochere-ethiopia-11,Ethica Ethiopia Kochere,CF-011,Ethiopia,Africa,1900,Heirloom,Natural,2025,Organic,Fruity,Fruity,Smooth,Light,Pour Over,Chemex,500,Seasonal,21.00
+12,ethica-guatemala-huehuetenango-guatemala-12,Ethica Guatemala Huehuetenango,CF-012,Guatemala,Central America,1700,Bourbon,Washed,2024,Fair Trade,Bright,Bright,Floral,Light,Pour Over,Aeropress,250,Seasonal,18.00
+13,ethica-rwanda-nyamagabe-rwanda-13,Ethica Rwanda Nyamagabe,CF-013,Rwanda,Africa,1700,Bourbon,Washed,2025,Fair Trade,Bright,Bright,Medium Acidity,Medium,Pour Over,Chemex,250,Limited Edition,18.00
+14,ethiopian-sidamo-ethiopia-14,Ethiopian Sidamo,CF-014,Ethiopia,Africa,1800,Heirloom,Washed,2025,Organic,Floral,Floral,Mild,Light,Pour Over,Aeropress,250,Limited Edition,18.00
+15,gimme-ethiopia-yirgacheffe-ethiopia-15,Gimme Ethiopia Yirgacheffe,CF-015,Ethiopia,Africa,1900,Heirloom,Natural,2025,Organic,Fruity,Fruity,Wine-Like Acidity,Light,Pour Over,Chemex,500,Seasonal,21.00
+16,gimme-guatemala-antigua-guatemala-16,Gimme Guatemala Antigua,CF-016,Guatemala,Central America,1700,Caturra,Decaffeinated,2024,Fair Trade,Citrus,Citrus,Medium Acidity,Light,Pour Over,Drip,500,Limited Edition,21.00
+17,gimme-honduras-la-paz-honduras-17,Gimme Honduras La Paz,CF-017,Honduras,Central America,1600,Catuai,Washed,2025,Organic,Chocolate,Chocolate,Creamy Body,Medium,Espresso,French Press,500,Seasonal,21.00
+18,gimme-mexico-chiapas-mexico-18,Gimme Mexico Chiapas,CF-018,Mexico,Central America,1600,Typica,Washed,2024,Fair Trade,Chocolate,Chocolate,Mild Acidity,Medium,Drip,French Press,500,Seasonal,21.00
+19,gimme-papua-new-guinea-goroka-papua-new-guinea-19,Gimme Papua New Guinea Goroka,CF-019,Papua New Guinea,Asia-Pacific,1600,Typica,Washed,2024,Organic,Fruity,Fruity,Medium Acidity,Medium,Drip,French Press,500,Seasonal,21.00
+20,gimme-sumatra-mandheling-indonesia-20,Gimme Sumatra Mandheling,CF-020,Indonesia,Asia-Pacific,1200,Bourbon,Decaffeinated,2025,Fair Trade,Earthy,Earthy,Low Acidity,Dark,Drip,French Press,500,Seasonal,21.00
+21,gimme-uganda-sipi-falls-uganda-21,Gimme Uganda Sipi Falls,CF-021,Uganda,Africa,1600,SL14,Washed,2025,Fair Trade,Chocolate,Chocolate,Balanced,Medium,Drip,Espresso,250,Seasonal,18.00
+22,hatch-colombia-el-mirador-colombia-22,Hatch Colombia El Mirador,CF-022,Colombia,South America,1800,Caturra,Washed,2025,Organic,Citrus,Citrus,Medium Acidity,Medium,Drip,Espresso,250,Regular,18.00
+23,hatch-costa-rica-tarrazu-costa-rica-23,Hatch Costa Rica Tarrazu,CF-023,Costa Rica,Central America,1700,Caturra,Washed,2025,Organic,Citrus,Citrus,Medium Acidity,Medium,Espresso,Pour Over,250,Limited Edition,18.00
+24,hatch-ethiopia-sidama-ethiopia-24,Hatch Ethiopia Sidama,CF-024,Ethiopia,Africa,1900,Heirloom,Natural,2025,Organic,Bright,Bright,Berry,Light,Pour Over,Chemex,250,Limited Edition,18.00
+25,hatch-guatemala-atitlan-guatemala-25,Hatch Guatemala Atitlan,CF-025,Guatemala,Central America,1700,Bourbon,Washed,2024,Organic,Citrus,Citrus,Balanced,Light,Pour Over,Espresso,500,Regular,21.00
+26,hatch-kenya-nyeri-ab-kenya-26,Hatch Kenya Nyeri AB,CF-026,Kenya,Africa,1700,SL28,Decaffeinated,2024,Fair Trade,Stone Fruit,Stone,Bright,Medium,Pour Over,Drip,500,Regular,21.00
+27,hatch-tanzania-aa-tanzania-27,Hatch Tanzania AA,CF-027,Tanzania,Africa,1800,Bourbon,Washed,2024,Fair Trade,Blackberry,Blackberry,Smooth,Medium,Pour Over,French Press,250,Limited Edition,18.00
+28,house-blend-canada-28,House Blend,CF-028,Canada,North America,200,Blend,Washed,2024,Organic,Nutty,Nutty,Medium Acidity,Medium,Drip,Espresso,250,Regular,18.00
+29,panama-geisha-boquete-panama-29,Panama Geisha Boquete,CF-029,Panama,Central America,1600,Geisha,Natural,2025,Organic,Jasmine,Jasmine,Complex,Light,Pour Over,Chemex,500,Seasonal,39.00
+30,peru-amazonas-peru-30,Peru Amazonas,CF-030,Peru,South America,1500,Bourbon,Washed,2025,Fair Trade,Chocolate,Chocolate,Smooth,Medium,Drip,French Press,250,Seasonal,18.00
+31,toronto-signature-blend-canada-31,Toronto Signature Blend,CF-031,Canada,North America,200,Blend,Washed,2025,Organic,Caramel,Caramel,Smooth,Medium,Drip,Espresso,500,Regular,21.00
+32,toronto-winter-blend-canada-32,Toronto Winter Blend,CF-032,Canada,North America,200,Blend,Washed,2025,Organic,Spicy,Spicy,Warm,Dark,French Press,Espresso,500,Seasonal,21.00
+33,atlas-kenya-kirinyaga-ab-kenya-33,Atlas Kenya Kirinyaga AB,CF-033,Kenya,Africa,1700,SL34,Washed,2024,Fair Trade,Bright Citrus,Bright,Juicy Acidity,Light,Pour Over,Aeropress,500,Limited Edition,21.00
+34,atlas-colombia-huila-honey-colombia-34,Atlas Colombia Huila Honey,CF-034,Colombia,South America,1600,Caturra,Honey,2024,Rainforest Alliance,Red Apple,Red,Smooth,Medium,Drip,Espresso,500,Seasonal,21.00
+35,atlas-blend-canada-35,Atlas Blend,CF-035,Canada,North America,200,Blend,Washed,2025,Organic,Floral,Floral,Delicate,Light,Pour Over,French Press,250,Limited Edition,18.00
+36,atlas-guatemala-acatenango-geisha-guatemala-36,Atlas Guatemala Acatenango Geisha,CF-036,Guatemala,Central America,1900,Geisha,Washed,2024,Organic,Jasmine,Jasmine,Silky,Light,Pour Over,Chemex,250,Limited Edition,36.00
+37,atlas-honduras-santa-barbara-natural-honduras-37,Atlas Honduras Santa Barbara Natural,CF-037,Honduras,Central America,1600,Bourbon,Natural,2025,Fair Trade,Blueberry,Blueberry,Bold Acidity,Medium,Drip,Espresso,500,Seasonal,21.00
+38,atlas-brazil-mantiqueira-yellow-bourbon-brazil-38,Atlas Brazil Mantiqueira Yellow Bourbon,CF-038,Brazil,South America,1200,Yellow Bourbon,Decaffeinated,2025,Fair Trade,Nutty,Nutty,Low Acidity,Dark,Drip,Espresso,250,Regular,18.00
+39,atlas-peru-cusco-decaf-peru-39,Atlas Peru Cusco Decaf,CF-039,Peru,South America,1600,Typica,Decaffeinated,2025,Organic,Creamy,Creamy,Smooth,Medium,Drip,French Press,500,Regular,22.00
+40,atlas-costa-rica-tarrazu-honey-costa-rica-40,Atlas Costa Rica Tarrazu Honey,CF-040,Costa Rica,Central America,1500,Catuai,Decaffeinated,2024,Fair Trade,Caramel,Caramel,Smooth,Medium,Pour Over,Chemex,500,Seasonal,21.00
