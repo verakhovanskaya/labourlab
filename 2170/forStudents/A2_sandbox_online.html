@@ -43,7 +43,12 @@
   .footer{margin:40px 0 80px;color:#777;font-size:12px}
   .breadcrumb{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:6px}
   .crumb{padding:4px 8px;border:1px dashed var(--line);background:#fff}
+
+  .json-error { margin-top:8px; padding:8px; border:1px dashed #d33; background:#fff5f5; color:#6b1616; font:12px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; white-space:pre-wrap }
+  .json-error code { display:block; padding:6px; background:#fff; border:1px dashed #f0a; overflow:auto }
+  .json-bad { outline:2px solid #d33; outline-offset:2px }
 </style>
+
 </head>
 <body>
 <header>
@@ -491,17 +496,162 @@ function makeZip(files){
   return out;
 }
 
-/* duplicate renderAll removed to avoid confusion */
+/* error messages nicer */
+function posToLineCol(text, pos){
+  let line = 1, col = 1;
+  for (let i=0; i<pos && i<text.length; i++){
+    if (text[i] === '\n'){ line++; col = 1; } else { col++; }
+  }
+  return {line, col};
+}
+function codeFrame(text, pos, context=2){
+  const lines = text.split(/\r?\n/);
+  // compute line number for pos
+  let cur=0, lineIdx=0;
+  for (; lineIdx<lines.length; lineIdx++){
+    const L = lines[lineIdx].length + 1; // +1 for newline
+    if (cur + L > pos) break;
+    cur += L;
+  }
+  const start = Math.max(0, lineIdx - context);
+  const end   = Math.min(lines.length - 1, lineIdx + context);
+  const width = String(end+1).length;
+  const pointerCol = Math.max(1, pos - cur + 1);
+  const frame = [];
+  for (let i=start;i<=end;i++){
+    const ln = String(i+1).padStart(width,' ');
+    frame.push(`${ln} | ${lines[i]}`);
+    if (i === lineIdx){
+      frame.push(`${' '.repeat(width)} | ${' '.repeat(pointerCol-1)}^`);
+    }
+  }
+  return frame.join('\n');
+}
+// Common mistake hints (very light heuristics)
+function hintFrom(text, pos, msg){
+  // Trailing comma before '}' or ']'
+  const prev = text[pos-1] || '';
+  const next = text[pos] || '';
+  if ((next === '}' || next === ']') && /Unexpected token/.test(msg)){
+    const before = text.slice(Math.max(0,pos-10), pos);
+    if (before.includes(',')) return 'Likely trailing comma before closing bracket. Remove the final comma.';
+  }
+  if (/Unexpected token ' in JSON/.test(msg)) return 'Use double quotes "..." for JSON keys/strings (no single quotes).';
+  if (/Unexpected string in JSON/.test(msg)) return 'Strings must be quoted and separated by commas. Check commas between items.';
+  if (/Unexpected token }/.test(msg) || /Unexpected token ]/.test(msg)) return 'Check for missing commas or stray commas in arrays/objects.';
+  return '';
+}
+function renderJsonError(targetTextarea, err, sourceText){
+  // create / reuse error box just after the textarea
+  let box = targetTextarea.nextElementSibling;
+  if (!box || !box.classList.contains('json-error')){
+    box = document.createElement('div');
+    box.className = 'json-error';
+    targetTextarea.after(box);
+  }
+  // Parse error position from message ("position 123")
+  const m = String(err && err.message || '').match(/position\s+(\d+)/);
+  const pos = m ? Math.max(0, parseInt(m[1],10)) : 0;
+  const lc  = posToLineCol(sourceText, pos);
+  const frame = codeFrame(sourceText, pos, 2);
+  const hint = hintFrom(sourceText, pos, String(err && err.message || ''));
+  box.innerHTML =
+    `JSON error at line ${lc.line}, col ${lc.col}\n` +
+    (hint ? `Hint: ${hint}\n` : '') +
+    `Message: ${err && err.message}\n\n` +
+    `<code>${frame.replace(/&/g,'&amp;').replace(/</g,'&lt;')}</code>`;
+  targetTextarea.classList.add('json-bad');
+}
+function clearJsonError(targetTextarea){
+  const sib = targetTextarea.nextElementSibling;
+  if (sib && sib.classList.contains('json-error')) sib.remove();
+  targetTextarea.classList.remove('json-bad');
+}
+
 
 $("#applyNav").addEventListener("click", renderHeaderNav);
-$("#insertNavSample").addEventListener("click", ()=>{ $("#navJson").value = JSON.stringify(NAV_JSON, null, 2); });
-$("#applyNavJson").addEventListener("click", ()=>{ try{ const parsed=JSON.parse($("#navJson").value||"[]"); if(!Array.isArray(parsed)) throw new Error("Nav JSON must be an array"); NAV_JSON=parsed; NAV_PATH=[]; NAV_FILTERS={}; renderNavTree(); applyFilters(); }catch(e){ alert("Nav JSON error: "+e.message); } });
 
-$("#insertFacetSample").addEventListener("click", ()=>{ const sample={ order: ["Region","Origin (Country)","Processing Method","Roast Level","Certification","Recommended Brewing Method","Recommended Brewing Method 2","Flavor Category","Flavor Profile","Acidity","Cultivar/Varietal","Harvest Year","Size (g)","Availability","Price"], rename: {"Origin (Country)":"Origin","Processing Method":"Process"}, hide: []}; $("#facetJson").value = JSON.stringify(sample, null, 2); });
-$("#applyFacetJson").addEventListener("click", ()=>{ try{ const cfg=JSON.parse($("#facetJson").value||"{}"); FACET_CONFIG=Object.assign({order:[],rename:{},hide:[]},cfg); renderFacets(); applyFilters(); }catch(e){ alert("Facet JSON error: "+e.message);} });
+$("#insertNavSample").addEventListener("click", ()=>{
+  $("#navJson").value = JSON.stringify(NAV_JSON, null, 2);
+  clearJsonError($("#navJson"));
+});
 
-$("#navTree").addEventListener("click", e=>{ const btn=e.target.closest(".navNode"); if(!btn) return; const path=JSON.parse(decodeURIComponent(btn.dataset.path)); applyNavNode(path); });
-$("#crumbs").addEventListener("click", e=>{ const c=e.target.closest(".crumb"); if(!c) return; const depth=+c.dataset.depth; if(depth===0){ NAV_PATH=[]; NAV_FILTERS={}; } else { NAV_PATH = NAV_PATH.slice(0, depth); const node = getNodeByPath(NAV_PATH); NAV_FILTERS = JSON.parse(JSON.stringify(node.filters||{})); } renderBreadcrumb(); applyFilters(); });
+$("#applyNavJson").addEventListener("click", ()=>{
+  const ta = $("#navJson");
+  const src = ta.value || "[]";
+  clearJsonError(ta);
+  try {
+    const parsed = JSON.parse(src);
+    if (!Array.isArray(parsed)) {
+      throw new Error("Nav JSON must be an array at the top level");
+    }
+    NAV_JSON = parsed;
+    NAV_PATH = [];
+    NAV_FILTERS = {};
+    renderNavTree();
+    applyFilters();
+  } catch (e) {
+    console.error("Nav JSON error:", e);
+    renderJsonError(ta, e, src);
+    // optional: still show a lightweight alert
+    // alert("Nav JSON error: " + e.message);
+  }
+});
+
+$("#insertFacetSample").addEventListener("click", ()=>{
+  const sample = {
+    order: [
+      "Region","Origin (Country)","Processing Method","Roast Level",
+      "Certification","Recommended Brewing Method","Recommended Brewing Method 2",
+      "Flavor Category","Flavor Profile","Acidity","Cultivar/Varietal",
+      "Harvest Year","Size (g)","Availability","Price"
+    ],
+    rename: {"Origin (Country)":"Origin","Processing Method":"Process"},
+    hide: []
+  };
+  $("#facetJson").value = JSON.stringify(sample, null, 2);
+  clearJsonError($("#facetJson"));
+});
+
+$("#applyFacetJson").addEventListener("click", ()=>{
+  const ta = $("#facetJson");
+  const src = ta.value || "{}";
+  clearJsonError(ta);
+  try {
+    const cfg = JSON.parse(src);
+    FACET_CONFIG = Object.assign({order:[], rename:{}, hide:[]}, cfg);
+    renderFacets();
+    applyFilters();
+  } catch (e) {
+    console.error("Facet JSON error:", e);
+    renderJsonError(ta, e, src);
+    // optional tiny alert if you still want it:
+    // alert("Facet JSON error: " + e.message);
+  }
+});
+
+$("#navTree").addEventListener("click", e=>{
+  const btn = e.target.closest(".navNode");
+  if (!btn) return;
+  const path = JSON.parse(decodeURIComponent(btn.dataset.path));
+  applyNavNode(path);
+});
+
+$("#crumbs").addEventListener("click", e=>{
+  const c = e.target.closest(".crumb");
+  if (!c) return;
+  const depth = +c.dataset.depth;
+  if (depth === 0){
+    NAV_PATH = [];
+    NAV_FILTERS = {};
+  } else {
+    NAV_PATH = NAV_PATH.slice(0, depth);
+    const node = getNodeByPath(NAV_PATH);
+    NAV_FILTERS = JSON.parse(JSON.stringify(node.filters || {}));
+  }
+  renderBreadcrumb();
+  applyFilters();
+});
 
 $("#clearFilters").addEventListener("click", ()=>{ ACTIVE = {origin:new Set(), region:new Set(), roast:new Set(), processing:new Set(), cert:new Set(), brew1:new Set(), brew2:new Set(), flavorcat:new Set(), flavor:new Set(), acidity:new Set(), cultivar:new Set(), harvest:new Set(), size:new Set(), avail:new Set(), price:"all"}; $$('input[type=checkbox]').forEach(cb=>cb.checked=false); $$('input[name=price]').forEach(r=>{ if(r.value==="all") r.checked=true; }); $("#q").value=""; applyFilters(); });
 
@@ -558,6 +708,8 @@ function renderNavTree(){ const host=$("#navTree"); function nodeHTML(n,path){ c
 function renderAll(){ renderHeaderNav(); renderNavTree(); renderFacets(); applyFilters(); }
 
 renderAll();
+
+
 </script>
 </body>
 </html>
