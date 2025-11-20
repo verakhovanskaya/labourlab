@@ -144,7 +144,7 @@
   <h2>Assignment prompts</h2>
   <ul>
     <li>Load data (sample or CSV). Paste <strong>nav.json</strong> and <strong>facets.json</strong>.</li>
-    <li>IA v1: keep 3–6 facets (ordered), make nested nav that filters. Screenshot: <em>default</em> + <em>drilled</em>.</li>
+    <li>IA v1: keep 3-6 facets (ordered), make nested nav that filters. Screenshot: <em>default</em> + <em>drilled</em>.</li>
     <li>IA v2: try an unusual angle (e.g., flavor-first or brew-first). Screenshot: <em>default</em> + <em>drilled</em>.</li>
     <li>Export .zip and submit: <code>nav.json</code>, <code>facets.json</code>, screenshots, facets assessment, rationale and a 2-task mini-test (see Quercus).</li>
   </ul>
@@ -170,7 +170,7 @@
 </section>
 
 
-      <div class="footer">IA Sandbox [EXPERIMENTAL VERSION]</div>
+      <div class="footer">IA Sandbox [EXPERIMENTAL VERSION v2]</div>
     </section>
   </main>
 </div>
@@ -366,7 +366,7 @@ function applyFilters(){
   for(const k of navKeys){ (NAV_FILTERS[k]||[]).forEach(v => chips.push({g:`nav:${k}`, v})); }
   $("#chips").innerHTML = chips.map(c=>`<span class="chip">${c.g}: <strong>${c.v}</strong> <button data-chip="${c.g}::${c.v}" title="remove">✕</button></span>`).join("");
 
-  $("#count").textContent = ` — ${out.length} results`;
+  $("#count").textContent = `: ${out.length} results`;
   $("#grid").innerHTML = out.map(r=>`
     <article class="card">
       <div style="font-weight:600">${r.Name}</div>
