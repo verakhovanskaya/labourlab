@@ -299,79 +299,92 @@ function renderFacets(){
 
 function applyFilters(){
   let out = DATA.slice();
-  const q = $("#q").value.trim().toLowerCase();
-  if(q){
-    out = out.filter(r =>
-    inSet(ACTIVE.origin, r["Origin (Country)"]) &&
-    inSet(ACTIVE.region, r["Region"]) &&
-    inSet(ACTIVE.altbucket, r["Altitude Bucket"]) &&
-    inSet(ACTIVE.roast, r["Roast Level"]) &&
-    inSet(ACTIVE.processing, r["Processing Method"]) &&
-    inSet(ACTIVE.cert, r["Certification"]) &&
-    inSet(ACTIVE.brew1, r["Recommended Brewing Method"]) &&
-    inSet(ACTIVE.brew2, r["Recommended Brewing Method 2"]) &&
-    inSet(ACTIVE.flavorcat, r["Flavor Category"]) &&
-    inSet(ACTIVE.flavor, r["Flavor Profile"]) &&
-    inSet(ACTIVE.acidity, r["Acidity"]) &&
-    inSet(ACTIVE.cultivar, r["Cultivar/Varietal"]) &&
-    inSet(ACTIVE.harvest, r["Harvest Year"]) &&
-    inSet(ACTIVE.size, r["Size (g)"]) &&
-    inSet(ACTIVE.avail, r["Availability"]) );
-  }
-  function inSet(set, v){return set.size===0 || set.has(String(v))}
-  out = out.filter(r =>
-    inSet(ACTIVE.origin, r["Origin (Country)"]) &&
-    inSet(ACTIVE.region, r["Region"]) &&
-    inSet(ACTIVE.roast, r["Roast Level"]) &&
-    inSet(ACTIVE.processing, r["Processing Method"]) &&
-    inSet(ACTIVE.cert, r["Certification"]) &&
-    inSet(ACTIVE.brew1, r["Recommended Brewing Method"]) &&
-    inSet(ACTIVE.brew2, r["Recommended Brewing Method 2"]) &&
-    inSet(ACTIVE.flavorcat, r["Flavor Category"]) &&
-    inSet(ACTIVE.flavor, r["Flavor Profile"]) &&
-    inSet(ACTIVE.acidity, r["Acidity"]) &&
-    inSet(ACTIVE.cultivar, r["Cultivar/Varietal"]) &&
-    inSet(ACTIVE.harvest, r["Harvest Year"]) &&
-    inSet(ACTIVE.size, r["Size (g)"]) &&
-    inSet(ACTIVE.avail, r["Availability"]) );
 
+  // ----- text search -----
+  const q = $("#q").value.trim().toLowerCase();
+  if (q){
+    out = out.filter(r =>
+      String(r["Name"]||"").toLowerCase().includes(q) ||
+      String(r["Flavor Profile"]||"").toLowerCase().includes(q) ||
+      String(r["Cultivar/Varietal"]||"").toLowerCase().includes(q)
+    );
+  }
+
+  // ----- facet filtering helper -----
+  const inSet = (set, v) => (set.size === 0 || set.has(String(v)));
+
+  // ----- facet filters -----
+  out = out.filter(r =>
+    inSet(ACTIVE.origin,     r["Origin (Country)"]) &&
+    inSet(ACTIVE.region,     r["Region"]) &&
+    inSet(ACTIVE.altbucket,  r["Altitude Bucket"]) &&   // <-- altitude bucket works now
+    inSet(ACTIVE.roast,      r["Roast Level"]) &&
+    inSet(ACTIVE.processing, r["Processing Method"]) &&
+    inSet(ACTIVE.cert,       r["Certification"]) &&
+    inSet(ACTIVE.brew1,      r["Recommended Brewing Method"]) &&
+    inSet(ACTIVE.brew2,      r["Recommended Brewing Method 2"]) &&
+    inSet(ACTIVE.flavorcat,  r["Flavor Category"]) &&
+    inSet(ACTIVE.flavor,     r["Flavor Profile"]) &&
+    inSet(ACTIVE.acidity,    r["Acidity"]) &&
+    inSet(ACTIVE.cultivar,   r["Cultivar/Varietal"]) &&
+    inSet(ACTIVE.harvest,    r["Harvest Year"]) &&
+    inSet(ACTIVE.size,       r["Size (g)"]) &&
+    inSet(ACTIVE.avail,      r["Availability"])
+  );
+
+  // ----- price facets -----
   const priceSel = ACTIVE.price || "all";
   out = out.filter(r => {
     const p = parseFloat(r["Price (CAD)"]||0);
-    if(priceSel==="lt20") return p < 20;
-    if(priceSel==="20to30") return p >= 20 && p <= 30;
-    if(priceSel==="gt30") return p > 30;
+    if(priceSel==="lt20")    return p < 20;
+    if(priceSel==="20to30")  return p >= 20 && p <= 30;
+    if(priceSel==="gt30")    return p > 30;
     return true;
   });
 
+  // ----- nav-based filters -----
   const navKeys = Object.keys(NAV_FILTERS||{});
-  if(navKeys.length){
-    out = out.filter(r => navKeys.every(k => {
-      const v = NAV_FILTERS[k];
-      const cell = String(r[k] ?? "");
-      return v.length===0 || v.includes(cell);
-    }));
+  if (navKeys.length){
+    out = out.filter(r =>
+      navKeys.every(k => {
+        const allowed = NAV_FILTERS[k] || [];
+        const val = String(r[k] ?? "");
+        return allowed.length === 0 || allowed.includes(val);
+      })
+    );
   }
 
+  // ----- sorting -----
   const sort = $("#sort").value;
-  if(sort==="name-asc") out.sort((a,b)=>String(a.Name).localeCompare(String(b.Name)));
+  if(sort==="name-asc")  out.sort((a,b)=>String(a.Name).localeCompare(String(b.Name)));
   if(sort==="price-asc") out.sort((a,b)=>parseFloat(a["Price (CAD)"])-parseFloat(b["Price (CAD)"]));
-  if(sort==="price-desc") out.sort((a,b)=>parseFloat(b["Price (CAD)"])-parseFloat(a["Price (CAD)"]));
+  if(sort==="price-desc")out.sort((a,b)=>parseFloat(b["Price (CAD)"])-parseFloat(a["Price (CAD)"]));
 
+  // ----- chips -----
   const chips = [];
   for(const [g,set] of Object.entries(ACTIVE)){
-    if(g==="price"){ if(ACTIVE.price && ACTIVE.price!=="all") chips.push({g:"price", v: ACTIVE.price}); continue; }
+    if(g==="price"){
+      if(ACTIVE.price && ACTIVE.price!=="all") chips.push({g:"price", v:ACTIVE.price});
+      continue;
+    }
     set.forEach(v => chips.push({g,v}));
   }
-  for(const k of navKeys){ (NAV_FILTERS[k]||[]).forEach(v => chips.push({g:`nav:${k}`, v})); }
-  $("#chips").innerHTML = chips.map(c=>`<span class="chip">${c.g}: <strong>${c.v}</strong> <button data-chip="${c.g}::${c.v}" title="remove">✕</button></span>`).join("");
+  for(const k of navKeys){ (NAV_FILTERS[k]||[]).forEach(v=>chips.push({g:`nav:${k}`, v})); }
 
+  $("#chips").innerHTML = chips.map(c =>
+    `<span class="chip">${c.g}: <strong>${c.v}</strong>
+       <button data-chip="${c.g}::${c.v}" title="remove">✕</button>
+     </span>`
+  ).join("");
+
+  // ----- result grid -----
   $("#count").textContent = `: ${out.length} results`;
   $("#grid").innerHTML = out.map(r=>`
     <article class="card">
       <div style="font-weight:600">${r.Name}</div>
       <div class="kvs">
         <div>Origin</div><div>${r["Origin (Country)"]} (${r.Region||"-"})</div>
+        <div>Altitude</div><div>${r["Altitude (m)"]} m (${r["Altitude Bucket"]||"-"})</div>
         <div>Roast</div><div>${r["Roast Level"]}</div>
         <div>Processing</div><div>${r["Processing Method"]}</div>
         <div>Cultivar</div><div>${r["Cultivar/Varietal"]||"-"}</div>
@@ -382,6 +395,7 @@ function applyFilters(){
     </article>
   `).join("");
 }
+
 
 let NAV_JSON = [
   { label: "All", filters: {} },
