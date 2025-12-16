@@ -1,0 +1,723 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>INF2170 A2 Faceted Search IA Grading Rubric</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root { --bg:#0b0c10; --card:#15171c; --ink:#eaeaea; --muted:#b7bcc6; --accent:#78d0b6; --warn:#f5a97f; --bad:#f38ba8; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; background:var(--bg); color:var(--ink); }
+    .wrap { max-width: 980px; margin: 24px auto; padding: 0 16px; }
+    .card { background: var(--card); border-radius: 16px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.25); margin-bottom: 16px; }
+    h1, h2, h3 { margin: 0 0 10px; }
+    p { margin: 0 0 10px; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    label { display:block; font-weight:600; margin-bottom:6px; color: var(--muted); }
+    input[type="text"], input[type="number"], textarea, select {
+      width:100%; padding:10px 12px; border-radius:10px; border:1px solid #2a2f3a; background:#0f1116; color:var(--ink);
+    }
+    textarea { min-height: 80px; }
+    .crit { border:1px solid #2a2f3a; border-radius: 14px; padding: 12px; margin-top: 10px; }
+    .flex { display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+    .right { text-align:right; }
+    .muted { color: var(--muted); }
+    .scoreline { font-weight:700; }
+    .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; background:#0f1116; border:1px solid #2a2f3a; padding:2px 6px; border-radius:6px; }
+    .out { white-space: pre-wrap; background:#0f1116; border:1px dashed #2a2f3a; border-radius: 12px; padding: 12px; }
+    .badge { padding:4px 8px; border-radius:8px; font-weight:700; }
+    .badge-a  { background:#10352c; color:#a0eacf; }
+    .badge-mid{ background:#2a2d39; color:#dee1e8; }
+    .badge-low{ background:#332a14; color:#f1d7a2; }
+    .badge-f  { background:#3b1f24; color:#ffb4c0; }
+    .pill { padding:8px 12px; border-radius: 999px; background:#0f1116; border:1px solid #2a2f3a; cursor:pointer; color:#ff66cc; }
+    .btn { appearance:none; border:none; border-radius:12px; padding:12px 16px; cursor:pointer; font-weight:700; }
+    .btn-primary { background: var(--accent); color:#0b0c10; }
+    .btn-ghost { background: transparent; color: var(--ink); border:1px solid #2a2f3a; }
+    ul { margin: 0 0 0 18px; }
+    li { margin: 6px 0; }
+    .note { border:1px solid #2a2f3a; background:#0f1116; border-radius:12px; padding:12px; }
+    hr { border:none; border-top:1px solid #2a2f3a; margin: 14px 0; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <h1>INF2170 A2 Faceted Search IA Grading Rubric</h1>
+    <p class="muted">
+      Per-criterion bands: <strong>A</strong> 85–89%, <strong>A-/B+</strong> 77–84%, <strong>B/B-</strong> 70–76%, <strong>FZ</strong> 0–69%.<br>
+      Overall grade bands (FOI): <strong>A+</strong> 90–100, <strong>A</strong> 85–89, <strong>A-</strong> 80–84, <strong>B+</strong> 77–79, <strong>B</strong> 73–76, <strong>B-</strong> 70–72, <strong>FZ</strong> 0–69.
+    </p>
+
+    <div class="note">
+      <div style="font-weight:700; margin-bottom:6px;">Assessment principles</div>
+      <ul class="muted">
+        <li>Evaluation emphasizes observable behavior in the sandbox and alignment between claimed intent and demonstrated evidence.</li>
+        <li>Relabeling is allowed. Assessment focuses on coherent mapping, not exact field naming.</li>
+        <li>Evidence may be lightweight. Claims should indicate that the student inspected the dataset, sandbox, or competitor patterns.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Student Info</h2>
+    <div class="row">
+      <div>
+        <label>Student</label>
+        <input type="text" id="student" placeholder="Name">
+      </div>
+      <div>
+        <label>Section</label>
+        <select id="section">
+          <option value="">Select section</option>
+          <option value="5101">5101</option>
+          <option value="101">101</option>
+          <option value="102">102</option>
+        </select>
+      </div>
+      <div>
+        <label>Instructor / TA Name</label>
+        <input type="text" id="ta_name" placeholder="Name of person grading">
+      </div>
+      <div>
+        <label>Date</label>
+        <input type="text" id="date_str" value="">
+      </div>
+    </div>
+
+    <h2 style="margin-top:16px;">Criteria</h2>
+
+    <!-- 1) Part 1 triage -->
+    <div class="crit" id="crit-triage">
+      <h3>1) Part 1 triage: evidence-based facet decisions <span class="muted">(max 25 pts)</span></h3>
+
+      <div class="note" style="margin-top:10px;">
+        <div style="font-weight:700; margin-bottom:6px;">What to evaluate in this category</div>
+        <ul class="muted">
+          <li>Competitor scan includes Intelligentsia and documents patterns relevant to facets and navigation.</li>
+          <li>Facet decisions refer to the assignment heuristics (popularity, coverage, utility, UI fit).</li>
+          <li>Evidence may be lightweight but should indicate actual inspection of the dataset, sandbox, or competitor patterns.</li>
+          <li>2 to 3 implementable improvements are proposed beyond simple keep or hide decisions.</li>
+        </ul>
+      </div>
+
+      <div class="row" style="margin-top:10px;">
+        <div>
+          <label>Band</label>
+          <select id="lvl_triage" onchange="syncPreset('triage', 25, this.value)">
+            <option value="A">A</option>
+            <option value="A-/B+">A-/B+</option>
+            <option value="B/B-">B/B-</option>
+            <option value="FZ">FZ</option>
+          </select>
+          <div class="muted" style="margin-top:8px;" id="anchors_triage"></div>
+        </div>
+        <div>
+          <label>Points Awarded (0–25)</label>
+          <input type="number" id="pts_triage" min="0" max="25" step="0.5" oninput="recalc()">
+          <div class="flex" style="margin-top:8px;">
+            <button class="pill" type="button" onclick="preset('triage',25,'A')">Fill A</button>
+            <button class="pill" type="button" onclick="preset('triage',25,'A-/B+')">Fill A-/B+</button>
+            <button class="pill" type="button" onclick="preset('triage',25,'B/B-')">Fill B/B-</button>
+            <button class="pill" type="button" onclick="preset('triage',25,'FZ')">Fill FZ</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:8px;">
+        <label>Comments</label>
+        <textarea id="com_triage" placeholder="Note strengths and gaps in the competitor scan, heuristic application, and evidence linkage to facet decisions."></textarea>
+      </div>
+    </div>
+
+    <!-- 2) Primary IA -->
+    <div class="crit" id="crit-primary">
+      <h3>2) Primary IA: functional faceted search model <span class="muted">(max 30 pts)</span></h3>
+
+      <div class="note" style="margin-top:10px;">
+        <div style="font-weight:700; margin-bottom:6px;">Sandbox functionality check</div>
+        <label class="flex" style="margin:0; color:var(--ink); font-weight:700;">
+          <input type="checkbox" id="gate_loads" checked onchange="applyLoadGate()">
+          Primary nav.json and facets.json load in the sandbox and filtering functions
+        </label>
+        <p class="muted" style="margin:8px 0 0 0;">
+          If unchecked, points in this category are capped at 18.
+        </p>
+      </div>
+
+      <hr>
+
+      <div class="note">
+        <div style="font-weight:700; margin-bottom:6px;">What to evaluate in this category</div>
+        <ul class="muted">
+          <li>Facet discipline. 3 to 6 facets visible and ordered to support scanning and narrowing.</li>
+          <li>Coherent mapping. Labels may be renamed. Facets and nav reflect the underlying data consistently.</li>
+          <li>Predictable narrowing. A nav choice plus 1 to 2 facets produces sensible subsets without frequent dead ends.</li>
+          <li>Evidence alignment. Screenshots correspond to the loaded behavior. Rationale matches what the IA supports.</li>
+          <li>Redundancy control. If nav and facets reference similar concepts, the distinction remains understandable in use.</li>
+        </ul>
+      </div>
+
+      <div class="row" style="margin-top:10px;">
+        <div>
+          <label>Band</label>
+          <select id="lvl_primary" onchange="syncPreset('primary', 30, this.value)">
+            <option value="A">A</option>
+            <option value="A-/B+">A-/B+</option>
+            <option value="B/B-">B/B-</option>
+            <option value="FZ">FZ</option>
+          </select>
+          <div class="muted" style="margin-top:8px;" id="anchors_primary"></div>
+        </div>
+        <div>
+          <label>Points Awarded (0–30)</label>
+          <input type="number" id="pts_primary" min="0" max="30" step="0.5" oninput="recalc()">
+          <div class="flex" style="margin-top:8px;">
+            <button class="pill" type="button" onclick="preset('primary',30,'A')">Fill A</button>
+            <button class="pill" type="button" onclick="preset('primary',30,'A-/B+')">Fill A-/B+</button>
+            <button class="pill" type="button" onclick="preset('primary',30,'B/B-')">Fill B/B-</button>
+            <button class="pill" type="button" onclick="preset('primary',30,'FZ')">Fill FZ</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:8px;">
+        <label>Comments</label>
+        <textarea id="com_primary" placeholder="Briefly note what works well and what limits usability (facet set, ordering, redundancy, dead ends, screenshot alignment)."></textarea>
+      </div>
+    </div>
+
+    <!-- 3) Alternative IA -->
+    <div class="crit" id="crit-alt">
+      <h3>3) Alternative IA: coherent twist with clear tradeoffs <span class="muted">(max 15 pts)</span></h3>
+
+      <div class="note" style="margin-top:10px;">
+        <div style="font-weight:700; margin-bottom:6px;">What to evaluate in this category</div>
+        <ul class="muted">
+          <li>One clear organizing twist relative to the primary IA.</li>
+          <li>Still supports constrained finding, not only browsing.</li>
+          <li>Screenshots and rationale reflect the twist and describe tradeoffs.</li>
+        </ul>
+      </div>
+
+      <div class="row" style="margin-top:10px;">
+        <div>
+          <label>Band</label>
+          <select id="lvl_alt" onchange="syncPreset('alt', 15, this.value)">
+            <option value="A">A</option>
+            <option value="A-/B+">A-/B+</option>
+            <option value="B/B-">B/B-</option>
+            <option value="FZ">FZ</option>
+          </select>
+          <div class="muted" style="margin-top:8px;" id="anchors_alt"></div>
+        </div>
+        <div>
+          <label>Points Awarded (0–15)</label>
+          <input type="number" id="pts_alt" min="0" max="15" step="0.5" oninput="recalc()">
+          <div class="flex" style="margin-top:8px;">
+            <button class="pill" type="button" onclick="preset('alt',15,'A')">Fill A</button>
+            <button class="pill" type="button" onclick="preset('alt',15,'A-/B+')">Fill A-/B+</button>
+            <button class="pill" type="button" onclick="preset('alt',15,'B/B-')">Fill B/B-</button>
+            <button class="pill" type="button" onclick="preset('alt',15,'FZ')">Fill FZ</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:8px;">
+        <label>Comments</label>
+        <textarea id="com_alt" placeholder="Note whether the twist is clear, still functional, and supported by screenshots and rationale."></textarea>
+      </div>
+    </div>
+
+    <!-- 4) Discount evaluation -->
+    <div class="crit" id="crit-eval">
+      <h3>4) Discount evaluation: measurable results and appropriate next steps <span class="muted">(max 20 pts)</span></h3>
+
+      <div class="note" style="margin-top:10px;">
+        <div style="font-weight:700; margin-bottom:6px;">What to evaluate in this category</div>
+        <ul class="muted">
+          <li>Two feasible tasks that the IA is intended to support.</li>
+          <li>Timing in seconds recorded for 3 participants for each task.</li>
+          <li>Results table is complete and readable.</li>
+          <li>Interpretation links outcomes to concrete IA choices.</li>
+          <li>Proposed follow-up testing is plausible and justified for the domain.</li>
+        </ul>
+      </div>
+
+      <div class="row" style="margin-top:10px;">
+        <div>
+          <label>Band</label>
+          <select id="lvl_eval" onchange="syncPreset('eval', 20, this.value)">
+            <option value="A">A</option>
+            <option value="A-/B+">A-/B+</option>
+            <option value="B/B-">B/B-</option>
+            <option value="FZ">FZ</option>
+          </select>
+          <div class="muted" style="margin-top:8px;" id="anchors_eval"></div>
+        </div>
+        <div>
+          <label>Points Awarded (0–20)</label>
+          <input type="number" id="pts_eval" min="0" max="20" step="0.5" oninput="recalc()">
+          <div class="flex" style="margin-top:8px;">
+            <button class="pill" type="button" onclick="preset('eval',20,'A')">Fill A</button>
+            <button class="pill" type="button" onclick="preset('eval',20,'A-/B+')">Fill A-/B+</button>
+            <button class="pill" type="button" onclick="preset('eval',20,'B/B-')">Fill B/B-</button>
+            <button class="pill" type="button" onclick="preset('eval',20,'FZ')">Fill FZ</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:8px;">
+        <label>Comments</label>
+        <textarea id="com_eval" placeholder="Note what the evaluation shows, what is missing, and whether conclusions follow from observed results."></textarea>
+      </div>
+    </div>
+
+    <!-- 5) Completeness and communication -->
+    <div class="crit" id="crit-comm">
+      <h3>5) Submission completeness and clarity <span class="muted">(max 10 pts)</span></h3>
+
+      <div class="note" style="margin-top:10px;">
+        <div style="font-weight:700; margin-bottom:6px;">What to evaluate in this category</div>
+        <ul class="muted">
+          <li>All required files and written components are included and easy to locate.</li>
+          <li>Short rationales are within range and explain choices without contradiction.</li>
+          <li>Visual evidence is legible and corresponds to the submitted JSON behavior.</li>
+        </ul>
+      </div>
+
+      <div class="row" style="margin-top:10px;">
+        <div>
+          <label>Band</label>
+          <select id="lvl_comm" onchange="syncPreset('comm', 10, this.value)">
+            <option value="A">A</option>
+            <option value="A-/B+">A-/B+</option>
+            <option value="B/B-">B/B-</option>
+            <option value="FZ">FZ</option>
+          </select>
+          <div class="muted" style="margin-top:8px;" id="anchors_comm"></div>
+        </div>
+        <div>
+          <label>Points Awarded (0–10)</label>
+          <input type="number" id="pts_comm" min="0" max="10" step="0.5" oninput="recalc()">
+          <div class="flex" style="margin-top:8px;">
+            <button class="pill" type="button" onclick="preset('comm',10,'A')">Fill A</button>
+            <button class="pill" type="button" onclick="preset('comm',10,'A-/B+')">Fill A-/B+</button>
+            <button class="pill" type="button" onclick="preset('comm',10,'B/B-')">Fill B/B-</button>
+            <button class="pill" type="button" onclick="preset('comm',10,'FZ')">Fill FZ</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:8px;">
+        <label>Comments</label>
+        <textarea id="com_comm" placeholder="Note any missing pieces, unclear organization, or evidence that does not match the submitted files."></textarea>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px;">
+      <h2>A+ Policy</h2>
+      <p class="muted">
+        A+ may be awarded only if <strong>all five categories are at A</strong> and you explicitly approve it.
+      </p>
+      <label class="flex">
+        <input type="checkbox" id="consider_a_plus" disabled>
+        Approve A+ (all categories must be A and work is exceptional)
+      </label>
+    </div>
+
+    <div class="crit">
+      <label>Overall Comment (optional)</label>
+      <textarea id="overall_comment" placeholder="Short synthesis and next steps."></textarea>
+    </div>
+
+    <div class="flex right">
+      <button class="btn btn-primary" onclick="generate();return false;">Print Feedback Summary</button>
+    </div>
+    <p id="comment_warn" style="color:#ff66cc; font-weight:600; margin-top:8px; display:none;"></p>
+  </div>
+
+  <div class="card">
+    <div class="out" id="out"></div>
+    <h2>Result</h2>
+    <p class="scoreline">
+      Total: <span id="total"></span>/100 &nbsp; | &nbsp;
+      Percent: <span id="pct"></span>% &nbsp; | &nbsp;
+      Grade: <span class="kbd" id="grade"></span>
+    </p>
+    <p id="a_plus_hint" style="color:#ff66cc; font-weight:600; display:none;">
+      Note: score is in the A+ band but A+ is not approved. If ≥92, double-check manual entries.
+    </p>
+    <div class="flex" style="margin-top:10px;">
+      <button class="btn btn-ghost" onclick="copyOut()">Copy to Clipboard</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Marking Notes</h2>
+    <ul>
+      <li>Per-criterion bands: <strong>A</strong> / <strong>A-/B+</strong> / <strong>B/B-</strong> / <strong>FZ</strong> computed from each criterion’s max.</li>
+      <li>Overall bands (FOI): <strong>A+</strong> 90–100, <strong>A</strong> 85–89, <strong>A-</strong> 80–84, <strong>B+</strong> 77–79, <strong>B</strong> 73–76, <strong>B-</strong> 70–72, <strong>FZ</strong> 0–69.</li>
+      <li>A+ requires all categories at A and checkbox approval.</li>
+      <li>Primary IA category includes a sandbox functionality cap to preserve consistent standards.</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+/* ---------- Config ---------- */
+const MAXPTS = { triage:25, primary:30, alt:15, eval:20, comm:10 };
+
+const anchors = {
+  triage: {
+    "A":       "Competitor scan includes Intelligentsia and provides concrete observations. Facet decisions use the assignment heuristics with evidence of inspection. Includes implementable improvements beyond keep or hide.",
+    "A-/B+":   "Competitor scan and heuristic use are present. Evidence is lighter or uneven. Improvements are plausible but not consistently grounded or specific.",
+    "B/B-":    "Mostly descriptive. Limited evidence of inspection. Heuristic application is vague, inconsistent, or not connected to decisions. Improvements are thin or generic.",
+    "FZ":      "Missing major components or lacks evidence-based reasoning."
+  },
+  primary: {
+    "A":       "Loads and behaves consistently in the sandbox. Facet set is disciplined (3–6 visible). Ordering supports scanning and narrowing. Navigation and facets are coherent in use. Screenshots and rationale match observed behavior.",
+    "A-/B+":   "Loads and mostly behaves consistently. Minor redundancy, ordering, or predictability issues. Evidence is present but the mapping or rationale alignment is uneven in places.",
+    "B/B-":    "Loads but usability is limited by redundancy, dead ends, unclear ordering, or mismatch between rationale and behavior. Facet choices may not support predictable narrowing.",
+    "FZ":      "Does not load, or behavior is inconsistent, or core required elements are missing."
+  },
+  alt: {
+    "A":       "Alternative IA has a clear organizing twist and remains a valid faceted model. Tradeoffs are described and supported by screenshots and JSON behavior.",
+    "A-/B+":   "Twist is present but weakly reflected in the IA, or tradeoffs are underdeveloped. Still functional overall.",
+    "B/B-":    "Alternative is not meaningfully different, or the twist undermines constrained finding. Evidence alignment is weak.",
+    "FZ":      "Missing, not functional, or not aligned to the assignment."
+  },
+  eval: {
+    "A":       "Tasks are feasible and reflect the IA. Timing data and a complete results table are provided. Interpretation is linked to concrete IA choices. Follow-up testing is plausible and justified.",
+    "A-/B+":   "Core elements are present. Some measures, interpretations, or follow-up recommendations are thin or not clearly connected to results.",
+    "B/B-":    "Missing key pieces such as feasible tasks, timing, or complete results. Interpretation is largely generic or not supported by the evidence presented.",
+    "FZ":      "Missing or does not meet the minimal evaluation requirements."
+  },
+  comm: {
+    "A":       "All required components are included, organized, and legible. Short rationales are within scope and consistent with the submitted files. Evidence is easy to verify.",
+    "A-/B+":   "Mostly complete and clear. Minor missing items, organization issues, or evidence mismatches.",
+    "B/B-":    "Noticeable missing items, unclear organization, or evidence that does not correspond to submitted files.",
+    "FZ":      "Major missing components or presentation prevents assessment."
+  }
+};
+
+function buildRanges() {
+  const r = {};
+  Object.entries(MAXPTS).forEach(([id, max]) => {
+    const pct = p => +(max * p).toFixed(2);
+    r[id] = {
+      "A":       [pct(0.85), pct(0.89)],
+      "A-/B+":   [pct(0.77), pct(0.84)],
+      "B/B-":    [pct(0.70), pct(0.76)],
+      "FZ":      [0,           pct(0.69)]
+    };
+  });
+  return r;
+}
+let ranges = buildRanges();
+
+function todayISO(){
+  const d = new Date();
+  const m = String(d.getMonth()+1).padStart(2,"0");
+  const day = String(d.getDate()).padStart(2,"0");
+  return `${d.getFullYear()}-${m}-${day}`;
+}
+function mid(a,b){ return ( (parseFloat(a) + parseFloat(b)) / 2 ); }
+function bandPointsText(id, level) {
+  const [lo, hi] = ranges[id][level];
+  const max = MAXPTS[id];
+  const f = (x)=> (Math.round(x*10)/10).toFixed(1);
+  return ` (${f(lo)}–${f(hi)} out of ${max})`;
+}
+
+/* ---------- A+ gating ---------- */
+function atLeastA(id){
+  const pts = parseFloat(document.getElementById("pts_" + id).value || "0");
+  const lo = ranges[id]["A"][0];
+  return pts >= Math.ceil(lo);
+}
+function allAtLeastA(){
+  return Object.keys(MAXPTS).every(atLeastA);
+}
+function updateAPlusEligibility(){
+  const cb = document.getElementById("consider_a_plus");
+  const eligible = allAtLeastA();
+  cb.disabled = !eligible;
+  if (!eligible) cb.checked = false;
+}
+function showAPlusHint(show){
+  const el = document.getElementById("a_plus_hint");
+  el.style.display = show ? "block" : "none";
+}
+
+/* ---------- Presets ---------- */
+function preset(id, max, level) {
+  const [lo, hi] = ranges[id][level];
+  let val = mid(lo, hi);
+  val = Math.min(max, Math.max(0, val));
+  document.getElementById("pts_"+id).value = Math.round(val);
+  const sel = document.getElementById("lvl_"+id);
+  if (sel) sel.value = level;
+  applyLoadGate();
+  updateAPlusEligibility();
+  recalc();
+}
+function syncPreset(id, max, level) {
+  const input = document.getElementById("pts_"+id);
+  const [lo, hi] = ranges[id][level];
+  const cur = parseFloat(input.value || "0");
+  const inBand = cur >= lo && cur <= hi;
+  input.value = Math.round( inBand ? cur : mid(lo, hi) );
+  applyLoadGate();
+  updateAPlusEligibility();
+  recalc();
+}
+
+/* ---------- Load gate cap ---------- */
+function applyLoadGate(){
+  const gate = document.getElementById("gate_loads");
+  const ptsEl = document.getElementById("pts_primary");
+  const lvlEl = document.getElementById("lvl_primary");
+  const cap = 18;
+
+  if (!gate.checked) {
+    const cur = parseFloat(ptsEl.value || "0");
+    if (cur > cap) ptsEl.value = cap;
+    if (lvlEl.value === "A") lvlEl.value = "A-/B+";
+  }
+}
+
+/* ---------- Grades ---------- */
+function computeGrade(pct){
+  if (pct >= 90) return "A+";
+  if (pct >= 85) return "A";
+  if (pct >= 80) return "A-";
+  if (pct >= 77) return "B+";
+  if (pct >= 73) return "B";
+  if (pct >= 70) return "B-";
+  return "FZ";
+}
+
+/* ---------- Render anchors ---------- */
+function renderAnchors() {
+  const order = ["A","A-/B+","B/B-","FZ"];
+  const badgeClass = (k) => {
+    if (k === "A") return "badge badge-a";
+    if (k === "A-/B+") return "badge badge-mid";
+    if (k === "B/B-") return "badge badge-low";
+    return "badge badge-f";
+  };
+  Object.keys(MAXPTS).forEach(id => {
+    const el = document.getElementById("anchors_" + id);
+    if (!el) return;
+    const lines = order.map(k => {
+      const txt = anchors[id][k];
+      if (!txt) return "";
+      return `<div><span class="${badgeClass(k)}">${k}</span> ${txt}${bandPointsText(id, k)}</div>`;
+    }).filter(Boolean);
+    el.innerHTML = lines.join("\n");
+  });
+}
+
+/* ---------- Comment warning ---------- */
+function missingCommentLabels() {
+  const fields = {
+    com_triage:  "Part 1 Triage",
+    com_primary: "Primary IA",
+    com_alt:     "Alternative IA",
+    com_eval:    "Evaluation",
+    com_comm:    "Completeness and Clarity"
+  };
+  const missing = [];
+  for (const [id, label] of Object.entries(fields)) {
+    const el = document.getElementById(id);
+    if (el && el.value.trim() === "") missing.push(label);
+  }
+  return missing;
+}
+function showCommentWarning(labels) {
+  const el = document.getElementById("comment_warn");
+  if (!el) return;
+  if (labels.length === 0) {
+    el.style.display = "none";
+    el.textContent = "";
+    return;
+  }
+  el.style.display = "block";
+  el.innerHTML = "Reminder: the following comment box(es) are empty:<br>• " +
+                 labels.join("<br>• ") +
+                 "<br><span style='font-weight:400'>(Printing is still allowed.)</span>";
+}
+
+/* ---------- Calculation ---------- */
+function recalc(){
+  applyLoadGate();
+
+  const read = id => {
+    const v = parseFloat(document.getElementById("pts_"+id).value || "0");
+    return Number.isFinite(v) ? v : 0;
+  };
+  const total = Object.keys(MAXPTS).map(read).reduce((a,b)=>a+b,0);
+  const pctRaw = Math.floor(total);
+
+  updateAPlusEligibility();
+
+  const eligibleAplus = allAtLeastA();
+  const considerAplus = document.getElementById("consider_a_plus").checked;
+  showAPlusHint(pctRaw >= 90 && eligibleAplus && !considerAplus);
+
+  let grade, pctDisplay, displayTotal = Math.round(total);
+  if (considerAplus && eligibleAplus) {
+    grade = "A+";
+    pctDisplay = 95;
+    displayTotal = 95;
+  } else if (pctRaw >= 90) {
+    grade = "A";
+    pctDisplay = pctRaw;
+  } else {
+    grade = computeGrade(pctRaw);
+    pctDisplay = pctRaw;
+  }
+
+  document.getElementById("total").innerText = displayTotal;
+  document.getElementById("pct").innerText   = pctDisplay;
+  document.getElementById("grade").innerText = grade;
+}
+
+/* ---------- Feedback printout ---------- */
+function generate(){
+  showCommentWarning(missingCommentLabels());
+  recalc();
+
+  const student = document.getElementById("student").value.trim();
+  const section = document.getElementById("section").value.trim();
+  const ta      = document.getElementById("ta_name").value.trim();
+  const date    = (document.getElementById("date_str").value.trim() || todayISO());
+
+  const levels = {
+    triage: document.getElementById("lvl_triage").value,
+    primary: document.getElementById("lvl_primary").value,
+    alt: document.getElementById("lvl_alt").value,
+    eval: document.getElementById("lvl_eval").value,
+    comm: document.getElementById("lvl_comm").value
+  };
+  const points = {
+    triage: parseFloat(document.getElementById("pts_triage").value || "0"),
+    primary: parseFloat(document.getElementById("pts_primary").value || "0"),
+    alt: parseFloat(document.getElementById("pts_alt").value || "0"),
+    eval: parseFloat(document.getElementById("pts_eval").value || "0"),
+    comm: parseFloat(document.getElementById("pts_comm").value || "0")
+  };
+  const comments = {
+    triage: document.getElementById("com_triage").value.trim(),
+    primary: document.getElementById("com_primary").value.trim(),
+    alt: document.getElementById("com_alt").value.trim(),
+    eval: document.getElementById("com_eval").value.trim(),
+    comm: document.getElementById("com_comm").value.trim()
+  };
+
+  const total = Object.values(points).reduce((a,b)=>a+b,0);
+  const pctRaw = Math.floor(total);
+  const eligibleAplus = allAtLeastA();
+  const approvedAplus = document.getElementById("consider_a_plus").checked && eligibleAplus;
+
+  let grade, pctDisplay, displayTotal = Math.round(total);
+  if (approvedAplus) {
+    grade = "A+";
+    pctDisplay = 95;
+    displayTotal = 95;
+  } else if (pctRaw >= 90) {
+    grade = "A";
+    pctDisplay = pctRaw;
+  } else {
+    grade = computeGrade(pctRaw);
+    pctDisplay = pctRaw;
+  }
+
+  const lines = [];
+  lines.push("INF2170 – A2 Faceted Search IA Feedback");
+  if (student) lines.push("Student: " + student);
+  if (section) lines.push("Section: " + section);
+  if (ta) lines.push("Instructor / TA: " + ta);
+  lines.push("Date: " + date);
+  lines.push("");
+
+  lines.push("Scores");
+
+  const rows = [
+    ["triage","1) Part 1 triage: evidence-based facet decisions",25],
+    ["primary","2) Primary IA: functional faceted search model",30],
+    ["alt","3) Alternative IA: coherent twist with clear tradeoffs",15],
+    ["eval","4) Discount evaluation: measurable results and appropriate next steps",20],
+    ["comm","5) Submission completeness and clarity",10]
+  ];
+
+  const gateLoads = document.getElementById("gate_loads").checked;
+  lines.push("Sandbox functionality check (Primary IA): " + (gateLoads ? "PASS" : "NOT MET"));
+
+  rows.forEach(([k,title,max])=>{
+    const lvl = levels[k];
+    const pts = Math.round(points[k] || 0);
+    const anchorTxt = anchors[k][lvl] || "";
+    lines.push(`${title}: ${pts}/${max} (Band: ${lvl})`);
+    if (anchorTxt) lines.push("Band description: " + anchorTxt + bandPointsText(k, lvl));
+    const com = comments[k];
+    if (com) lines.push("Comment: " + com);
+  });
+
+  lines.push("");
+  lines.push(`Total: ${displayTotal}/100 (${pctDisplay}%)`);
+  lines.push(`Grade: ${grade}`);
+
+  const overall = document.getElementById("overall_comment").value.trim();
+  if (overall){
+    lines.push("");
+    lines.push("Overall Comment");
+    lines.push(overall);
+  }
+
+  if (grade === "A+") {
+    lines.push("");
+    lines.push("Instructor Note: A+ awarded only when all categories meet the A band and the work is exceptional.");
+  }
+
+  document.getElementById("out").innerText = lines.join("\n");
+}
+
+/* ---------- Clipboard ---------- */
+function copyOut(){
+  const txt = document.getElementById("out").innerText;
+  navigator.clipboard.writeText(txt).then(()=> alert("Feedback copied!"));
+}
+
+/* ---------- Init ---------- */
+function setDefaultMids(){
+  Object.keys(MAXPTS).forEach(id => {
+    const sel = document.getElementById("lvl_" + id);
+    const level = sel ? sel.value : "A";
+    const [lo,hi] = ranges[id][level];
+    const val = Math.round(mid(lo,hi));
+    document.getElementById("pts_" + id).value = Math.min(MAXPTS[id], Math.max(0, val));
+  });
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  const dateInput = document.getElementById("date_str");
+  if (dateInput) dateInput.value = todayISO();
+
+  renderAnchors();
+  setDefaultMids();
+
+  const cb = document.getElementById("consider_a_plus");
+  if (cb) {
+    cb.checked = false;
+    cb.addEventListener("change", recalc);
+  }
+
+  updateAPlusEligibility();
+  recalc();
+  generate();
+});
+</script>
+</body>
+</html>
