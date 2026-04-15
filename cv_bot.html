@@ -397,6 +397,19 @@
       return authors.join(', ');
     }
 
+    function extractYear(fields) {
+      if (!fields) return '';
+      const yearCandidate = fields.year || '';
+      const yearMatch = yearCandidate.match(/[0-9]{4}/);
+      if (yearMatch) return yearMatch[0];
+
+      const dateCandidate = fields.date || '';
+      const dateMatch = dateCandidate.match(/[0-9]{4}/);
+      if (dateMatch) return dateMatch[0];
+
+      return '';
+    }
+
     function bibVenue(fields, entryType) {
       return fields.booktitle || fields.journal || fields.publisher || fields.school || fields.institution || ((entryType === 'phdthesis' || entryType === 'mastersthesis') ? 'Thesis' : '');
     }
@@ -424,7 +437,7 @@
     function getPublicationYear(pub) {
       const parsed = parseBibTeXEntry(pub.bibtex);
       if (!parsed) return -9999;
-      const rawYear = parsed.fields.year || '';
+      const rawYear = extractYear(parsed.fields) || '';
       const match = rawYear.match(/[0-9]{4}/);
       return match ? parseInt(match[0], 10) : -9999;
     }
@@ -446,7 +459,8 @@
       const f = parsed.fields;
       const authors = splitAuthors(f.author).map(a => formatAuthor(a, nameToBold));
       const authorText = joinAuthors(authors);
-      const year = pub.status === 'to_appear' ? `To appear in ${f.year || ''}`.trim() : (f.year || 'n.d.');
+      const extractedYear = extractYear(f);
+      const year = pub.status === 'to_appear' ? `To appear in ${extractedYear || ''}`.trim() : (extractedYear || 'n.d.');
       const title = f.title || 'Untitled';
       const venue = bibVenue(f, parsed.entryType);
       const volumeIssue = [f.volume, f.number ? `(${f.number})` : ''].filter(Boolean).join('');
@@ -471,14 +485,14 @@
       }
 
       if (pub.genre === 'thesis') {
-        return `${authorText} (${f.year || 'n.d.'}). ${latexEscape(title)}. ${latexEscape(f.school || venue)}.`;
+        return `${authorText} (${extractYear(f) || 'n.d.'}). ${latexEscape(title)}. ${latexEscape(f.school || venue)}.`;
       }
 
       if (pub.genre === 'patent') {
-        return `${authorText} (${f.year || 'n.d.'}). ${latexEscape(title)}.`;
+        return `${authorText} (${extractYear(f) || 'n.d.'}). ${latexEscape(title)}.`;
       }
 
-      return `${authorText} (${f.year || 'n.d.'}). ${latexEscape(title)}. ${latexEscape(venue)}.`;
+      return `${authorText} (${extractYear(f) || 'n.d.'}). ${latexEscape(title)}. ${latexEscape(venue)}.`;
     }
 
     function talkLine(talk) {
@@ -558,7 +572,7 @@
           <div><strong>Key:</strong> ${escapeHtml(parsed.citationKey || '—')}</div>
           <div style="grid-column: 1 / -1;"><strong>Title:</strong> ${escapeHtml(parsed.fields.title || '—')}</div>
           <div style="grid-column: 1 / -1;"><strong>Authors:</strong> ${escapeHtml(parsed.fields.author || '—')}</div>
-          <div><strong>Year:</strong> ${escapeHtml(parsed.fields.year || '—')}</div>
+          <div><strong>Year:</strong> ${escapeHtml(extractYear(parsed.fields) || '—')}</div>
           <div><strong>Venue:</strong> ${escapeHtml(bibVenue(parsed.fields, parsed.entryType) || '—')}</div>
         </div>` : `<p class="muted">${parsed && parsed.error ? escapeHtml(parsed.error) : 'Paste a BibTeX entry to preview it.'}</p>`;
 
