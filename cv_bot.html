@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CV Form to LaTeX Generator</title>
+  <style>
+    :root {
+      --bg: #f5f5f4;
+      --card: #ffffff;
+      --border: #d6d3d1;
+      --text: #1c1917;
+      --muted: #57534e;
+      --accent: #111827;
+      --accent-text: #ffffff;
+      --soft: #fafaf9;
+      --shadow: 0 1px 2px rgba(0,0,0,0.06), 0 6px 18px rgba(0,0,0,0.04);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.4;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin: 0 0 8px;
+    }
+
+    .lead {
+      color: var(--muted);
+      max-width: 820px;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px;
+      margin-bottom: 18px;
+    }
+
+    .card h2, .card h3 {
+      margin-top: 0;
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .grid-2 {
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    }
+
+    .grid-3 {
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+
+    label {
+      display: block;
+      font-size: 0.92rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    input, select, textarea, button {
+      font: inherit;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 12px;
+      background: #fff;
+      color: var(--text);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 110px;
+    }
+
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .big-textarea { min-height: 220px; }
+    .output-textarea { min-height: 540px; }
+
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .tab-button, .button, .button-secondary, .button-danger {
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 10px 14px;
+      background: #fff;
+      cursor: pointer;
+      transition: 0.15s ease;
+    }
+
+    .tab-button.active, .button {
+      background: var(--accent);
+      color: var(--accent-text);
+      border-color: var(--accent);
+    }
+
+    .button-secondary:hover, .tab-button:hover, .button:hover, .button-danger:hover {
+      transform: translateY(-1px);
+    }
+
+    .button-danger {
+      background: #fff;
+      color: #991b1b;
+      border-color: #fecaca;
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    .item-card {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 16px;
+      background: var(--soft);
+    }
+
+    .item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .item-header h3 {
+      margin: 0;
+      font-size: 1.05rem;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .preview {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      font-size: 0.95rem;
+    }
+
+    .preview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 8px 16px;
+    }
+
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>CV Form to LaTeX Generator</h1>
+    <p class="lead">Paste BibTeX, import a whole <code>.bib</code> file, add talks, grants, and service items, and generate LaTeX sections in a style shaped to match your current CV genres.</p>
+
+    <div class="card grid grid-2">
+      <div>
+        <label for="nameToBold">Last name to bold in author lists</label>
+        <input id="nameToBold" value="Khovanskaya" />
+      </div>
+      <div>
+        <label for="miscSectionTitle">Label for non-refereed section</label>
+        <input id="miscSectionTitle" value="Non-Refereed Publications" />
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-button active" data-tab="publications">Publications</button>
+      <button class="tab-button" data-tab="talks">Talks</button>
+      <button class="tab-button" data-tab="grants">Grants</button>
+      <button class="tab-button" data-tab="service">Service</button>
+      <button class="tab-button" data-tab="output">Output</button>
+    </div>
+
+    <div id="publications" class="tab-panel active">
+      <div class="card">
+        <h2>Import a whole .bib file or paste multiple entries</h2>
+        <div class="button-row" style="margin-bottom: 12px;">
+          <input id="bibFileInput" type="file" accept=".bib,.txt" class="hidden" />
+          <button class="button-secondary" id="uploadBibButton">Upload .bib</button>
+          <button class="button" id="importBibButton">Import pasted BibTeX</button>
+        </div>
+        <div>
+          <label for="bulkBibtex">Paste multiple BibTeX entries</label>
+          <textarea id="bulkBibtex" class="mono big-textarea"></textarea>
+        </div>
+      </div>
+      <div id="publicationsList"></div>
+      <button class="button" id="addPublicationButton">Add publication</button>
+    </div>
+
+    <div id="talks" class="tab-panel">
+      <div id="talksList"></div>
+      <button class="button" id="addTalkButton">Add talk</button>
+    </div>
+
+    <div id="grants" class="tab-panel">
+      <div id="grantsList"></div>
+      <button class="button" id="addGrantButton">Add grant or award</button>
+    </div>
+
+    <div id="service" class="tab-panel">
+      <div id="serviceList"></div>
+      <button class="button" id="addServiceButton">Add service item</button>
+    </div>
+
+    <div id="output" class="tab-panel">
+      <div class="card">
+        <div class="item-header">
+          <h2>Generated LaTeX</h2>
+          <div class="button-row">
+            <button class="button-secondary" id="copyOutputButton">Copy</button>
+            <button class="button" id="downloadOutputButton">Export .tex</button>
+          </div>
+        </div>
+        <textarea id="outputLatex" class="mono output-textarea" readonly></textarea>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const state = {
+      nameToBold: 'Khovanskaya',
+      miscSectionTitle: 'Non-Refereed Publications',
+      bulkBibtex: '',
+      publications: [
+        {
+          bibtex: `@inproceedings{khovanskaya2020,
+  author = {Khovanskaya, Vera and Sengers, Phoebe and Dombrowski, Lynn},
+  title = {Bottom-Up Organizing with Tools from On High: Understanding the Data Practices of Labor Organizers},
+  booktitle = {Proceedings of the 2020 CHI Conference on Human Factors in Computing Systems},
+  year = {2020},
+  pages = {1--13}
+}`,
+          genre: 'proceedings',
+          status: 'published',
+          includeDoi: false,
+        }
+      ],
+      talks: [
+        {
+          role: 'Speaker',
+          title: 'Tech, Labor, and the Ecology of Production',
+          event: 'the CyberMarx@25 event at Centre of Culture and Technology',
+          preposition: 'at',
+          location: '',
+          date: '2/28/2025',
+          note: '',
+        }
+      ],
+      grants: [
+        {
+          title: 'Computing Innovation Fellow',
+          sponsor: 'Computing Research Association (CRA) and the Computing Community Consortium (CCC)',
+          amount: '',
+          years: '2020',
+          role: '',
+          note: '',
+        }
+      ],
+      serviceItems: [
+        {
+          role: 'Associate Chair',
+          organization: 'ACM-DIS',
+          years: '2018-2025',
+          note: '',
+        }
+      ]
+    };
+
+    function parseBibTeXEntry(input) {
+      const text = input.trim();
+      if (!text) return null;
+
+      const typeMatch = text.match(/^@([a-zA-Z]+)\s*\{\s*([^,]+),/s);
+      if (!typeMatch) {
+        return { raw: text, entryType: 'misc', citationKey: '', fields: {}, error: 'Could not parse BibTeX entry header.' };
+      }
+
+      const entryType = typeMatch[1].toLowerCase();
+      const citationKey = typeMatch[2].trim();
+      const bodyStart = typeMatch[0].length;
+      const body = text.slice(bodyStart, text.lastIndexOf('}'));
+      const fields = {};
+      const regex = /(\w+)\s*=\s*(\{(?:[^{}]|\{[^{}]*\})*\}|"(?:[^"\\]|\\.)*"|[^,\n]+)\s*,?/gs;
+      let match;
+
+      while ((match = regex.exec(body)) !== null) {
+        const key = match[1].toLowerCase();
+        let value = match[2].trim();
+        if ((value.startsWith('{') && value.endsWith('}')) || (value.startsWith('"') && value.endsWith('"'))) {
+          value = value.slice(1, -1);
+        }
+        value = value.replace(/\s+/g, ' ').trim();
+        fields[key] = value;
+      }
+
+      return { raw: text, entryType, citationKey, fields, error: null };
+    }
+
+    function parseBibTeXEntries(input) {
+      const text = input.trim();
+      if (!text) return [];
+      const entries = [];
+      let i = 0;
+
+      while (i < text.length) {
+        const at = text.indexOf('@', i);
+        if (at === -1) break;
+        const braceStart = text.indexOf('{', at);
+        if (braceStart === -1) break;
+        let depth = 0;
+        let end = -1;
+        for (let j = braceStart; j < text.length; j++) {
+          if (text[j] === '{') depth += 1;
+          else if (text[j] === '}') {
+            depth -= 1;
+            if (depth === 0) {
+              end = j;
+              break;
+            }
+          }
+        }
+        if (end === -1) break;
+        const chunk = text.slice(at, end + 1).trim();
+        if (chunk) entries.push(chunk);
+        i = end + 1;
+      }
+      return entries;
+    }
+
+    function splitAuthors(authorField) {
+      if (!authorField) return [];
+      return authorField.split(/\s+and\s+/i).map(a => a.trim()).filter(Boolean);
+    }
+
+    function normalizeAuthorName(name) {
+      if (!name) return '';
+      if (name.includes(',')) {
+        const [last, first] = name.split(',').map(x => x.trim());
+        return `${first} ${last}`.trim();
+      }
+      return name.trim();
+    }
+
+    function toLastName(name) {
+      const normalized = normalizeAuthorName(name);
+      const parts = normalized.split(/\s+/).filter(Boolean);
+      return parts.length ? parts[parts.length - 1].replace(/[{}]/g, '') : '';
+    }
+
+    function formatAuthor(name, targetLastName) {
+      const normalized = normalizeAuthorName(name).replace(/[{}]/g, '');
+      if (!normalized) return '';
+      return toLastName(normalized).toLowerCase() === targetLastName.toLowerCase()
+        ? `\\textbf{${normalized}}`
+        : normalized;
+    }
+
+    function joinAuthors(authors) {
+      return authors.join(', ');
+    }
+
+    function bibVenue(fields, entryType) {
+      return fields.booktitle || fields.journal || fields.publisher || fields.school || fields.institution || ((entryType === 'phdthesis' || entryType === 'mastersthesis') ? 'Thesis' : '');
+    }
+
+    function formatPages(fields) {
+      if (!fields.pages) return '';
+      return ` (pp. ${fields.pages.replace(/--/g, '-')})`;
+    }
+
+    function latexEscape(text) {
+      if (!text) return '';
+      return text
+        .replace(/\\/g, '\\textbackslash{}')
+        .replace(/&/g, '\\&')
+        .replace(/%/g, '\\%')
+        .replace(/#/g, '\\#')
+        .replace(/_/g, '\\_')
+        .replace(/\$/g, '\\$')
+        .replace(/~/g, '\\textasciitilde{}')
+        .replace(/\^/g, '\\textasciicircum{}')
+        .replace(/</g, '\\textless{}')
+        .replace(/>/g, '\\textgreater{}');
+    }
+
+    function publicationLine(pub, nameToBold) {
+      const parsed = parseBibTeXEntry(pub.bibtex);
+      if (!parsed) return '';
+      const f = parsed.fields;
+      const authors = splitAuthors(f.author).map(a => formatAuthor(a, nameToBold));
+      const authorText = joinAuthors(authors);
+      const year = pub.status === 'to_appear' ? `To appear in ${f.year || ''}`.trim() : (f.year || 'n.d.');
+      const title = f.title || 'Untitled';
+      const venue = bibVenue(f, parsed.entryType);
+      const volumeIssue = [f.volume, f.number ? `(${f.number})` : ''].filter(Boolean).join('');
+      const pages = formatPages(f);
+      const doi = pub.includeDoi && f.doi ? ` https://doi.org/${f.doi}` : '';
+
+      if (pub.genre === 'proceedings') {
+        if (pub.status === 'to_appear') {
+          return `${authorText} (${year}). ${latexEscape(title)}. To appear in ${latexEscape(venue)}.`;
+        }
+        return `${authorText} (${year}). ${latexEscape(title)}. In ${latexEscape(venue)}${latexEscape(pages)}.${doi}`;
+      }
+
+      if (pub.genre === 'refereed') {
+        const volPart = volumeIssue ? `, ${volumeIssue}` : '';
+        const pagePart = f.pages ? `, ${f.pages.replace(/--/g, '–')}` : '';
+        return `${authorText} (${year}). ${latexEscape(title)}. ${latexEscape(venue)}${latexEscape(volPart)}${latexEscape(pagePart)}.${doi}`;
+      }
+
+      if (pub.genre === 'nonrefereed') {
+        return `${authorText} (${year}). ${latexEscape(title)}. ${latexEscape(venue)}.`;
+      }
+
+      if (pub.genre === 'thesis') {
+        return `${authorText} (${f.year || 'n.d.'}). ${latexEscape(title)}. ${latexEscape(f.school || venue)}.`;
+      }
+
+      if (pub.genre === 'patent') {
+        return `${authorText} (${f.year || 'n.d.'}). ${latexEscape(title)}.`;
+      }
+
+      return `${authorText} (${f.year || 'n.d.'}). ${latexEscape(title)}. ${latexEscape(venue)}.`;
+    }
+
+    function talkLine(talk) {
+      const rolePrefix = talk.role ? `${talk.role}${talk.title ? ' ' : ''}` : '';
+      const titlePart = talk.title ? `“${talk.title}”` : '';
+      const atPart = talk.event ? `${talk.preposition || 'at'} ${talk.event}` : '';
+      const locationPart = talk.location ? `, ${talk.location}` : '';
+      const datePart = talk.date ? ` (${talk.date})` : '';
+      const notePart = talk.note ? `. ${talk.note}` : '';
+      return `${rolePrefix}${titlePart}${titlePart && atPart ? ' ' : ''}${atPart}${locationPart}${datePart}${notePart}`.trim();
+    }
+
+    function grantLine(grant) {
+      const parts = [grant.title, grant.sponsor].filter(Boolean).join(', ');
+      const amountPart = grant.amount ? `, ${grant.amount}` : '';
+      const yearPart = grant.years ? `, ${grant.years}` : '';
+      const rolePart = grant.role ? ` (${grant.role})` : '';
+      const notePart = grant.note ? `. ${grant.note}` : '';
+      return `${parts}${amountPart}${yearPart}${rolePart}${notePart}`.trim();
+    }
+
+    function serviceLine(service) {
+      const rolePart = service.role || '';
+      const orgPart = service.organization ? `: ${service.organization}` : '';
+      const yearsPart = service.years ? ` ${service.years}` : '';
+      const notePart = service.note ? `. ${service.note}` : '';
+      return `${rolePart}${orgPart}${yearsPart}${notePart}`.trim();
+    }
+
+    function sectionToLatex(title, items) {
+      return [`\\section{\\sc ${title}}`, ...items.filter(Boolean), ''].join('\n\n');
+    }
+
+    function downloadText(filename, text) {
+      const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function updateOutput() {
+      state.nameToBold = document.getElementById('nameToBold').value;
+      state.miscSectionTitle = document.getElementById('miscSectionTitle').value;
+      state.bulkBibtex = document.getElementById('bulkBibtex').value;
+
+      const proceedings = state.publications.filter(p => p.genre === 'proceedings').map(p => publicationLine(p, state.nameToBold));
+      const refereed = state.publications.filter(p => p.genre === 'refereed').map(p => publicationLine(p, state.nameToBold));
+      const nonrefereed = state.publications.filter(p => p.genre === 'nonrefereed').map(p => publicationLine(p, state.nameToBold));
+      const thesis = state.publications.filter(p => p.genre === 'thesis').map(p => publicationLine(p, state.nameToBold));
+      const patents = state.publications.filter(p => p.genre === 'patent').map(p => publicationLine(p, state.nameToBold));
+      const talksLatex = state.talks.map(t => talkLine(t));
+      const grantsLatex = state.grants.map(g => grantLine(g));
+      const serviceLatex = state.serviceItems.map(s => serviceLine(s));
+
+      const latex = [
+        sectionToLatex('Proceedings (Rigorously Reviewed)', proceedings),
+        sectionToLatex('Refereed Publications', refereed),
+        sectionToLatex(state.miscSectionTitle, nonrefereed),
+        sectionToLatex('Thesis', thesis),
+        sectionToLatex('Patents', patents),
+        sectionToLatex('Grants and Awards', grantsLatex),
+        sectionToLatex('Talks, Presentations, and Attendance', talksLatex),
+        sectionToLatex('Service', serviceLatex),
+      ].join('\n');
+
+      document.getElementById('outputLatex').value = latex;
+    }
+
+    function createPublicationCard(pub, index) {
+      const parsed = parseBibTeXEntry(pub.bibtex);
+      const preview = parsed && !parsed.error ? `
+        <div class="preview-grid">
+          <div><strong>Type:</strong> ${parsed.entryType || '—'}</div>
+          <div><strong>Key:</strong> ${escapeHtml(parsed.citationKey || '—')}</div>
+          <div style="grid-column: 1 / -1;"><strong>Title:</strong> ${escapeHtml(parsed.fields.title || '—')}</div>
+          <div style="grid-column: 1 / -1;"><strong>Authors:</strong> ${escapeHtml(parsed.fields.author || '—')}</div>
+          <div><strong>Year:</strong> ${escapeHtml(parsed.fields.year || '—')}</div>
+          <div><strong>Venue:</strong> ${escapeHtml(bibVenue(parsed.fields, parsed.entryType) || '—')}</div>
+        </div>` : `<p class="muted">${parsed && parsed.error ? escapeHtml(parsed.error) : 'Paste a BibTeX entry to preview it.'}</p>`;
+
+      return `
+        <div class="item-card">
+          <div class="item-header">
+            <h3>Publication ${index + 1}</h3>
+            <button class="button-danger" onclick="removePublication(${index})">Remove</button>
+          </div>
+          <div>
+            <label>BibTeX</label>
+            <textarea class="mono big-textarea" oninput="updatePublicationField(${index}, 'bibtex', this.value)">${escapeHtml(pub.bibtex)}</textarea>
+          </div>
+          <div class="grid grid-3" style="margin-top: 12px;">
+            <div>
+              <label>Genre</label>
+              <select onchange="updatePublicationField(${index}, 'genre', this.value)">
+                ${option(pub.genre, 'proceedings', 'Proceedings (Rigorously Reviewed)')}
+                ${option(pub.genre, 'refereed', 'Refereed Publications')}
+                ${option(pub.genre, 'nonrefereed', 'Non-Refereed Publications')}
+                ${option(pub.genre, 'thesis', 'Thesis')}
+                ${option(pub.genre, 'patent', 'Patent')}
+              </select>
+            </div>
+            <div>
+              <label>Status</label>
+              <select onchange="updatePublicationField(${index}, 'status', this.value)">
+                ${option(pub.status, 'published', 'Published')}
+                ${option(pub.status, 'to_appear', 'To appear')}
+                ${option(pub.status, 'forthcoming', 'Forthcoming')}
+              </select>
+            </div>
+            <div>
+              <label>Include DOI</label>
+              <select onchange="updatePublicationField(${index}, 'includeDoi', this.value === 'true')">
+                ${option(String(pub.includeDoi), 'false', 'No')}
+                ${option(String(pub.includeDoi), 'true', 'Yes')}
+              </select>
+            </div>
+          </div>
+          <div class="preview" style="margin-top: 12px;">
+            <div style="font-weight: 600; margin-bottom: 8px;">Parsed preview</div>
+            ${preview}
+          </div>
+        </div>`;
+    }
+
+    function createTalkCard(talk, index) {
+      return `
+        <div class="item-card">
+          <div class="item-header">
+            <h3>Talk ${index + 1}</h3>
+            <button class="button-danger" onclick="removeTalk(${index})">Remove</button>
+          </div>
+          <div class="grid grid-2">
+            <div><label>Role label</label><input value="${escapeAttr(talk.role)}" oninput="updateTalkField(${index}, 'role', this.value)" /></div>
+            <div><label>Date</label><input value="${escapeAttr(talk.date)}" oninput="updateTalkField(${index}, 'date', this.value)" /></div>
+            <div style="grid-column: 1 / -1;"><label>Talk title</label><input value="${escapeAttr(talk.title)}" oninput="updateTalkField(${index}, 'title', this.value)" /></div>
+            <div style="grid-column: 1 / -1;"><label>Event / venue</label><input value="${escapeAttr(talk.event)}" oninput="updateTalkField(${index}, 'event', this.value)" /></div>
+            <div><label>Preposition</label>
+              <select onchange="updateTalkField(${index}, 'preposition', this.value)">
+                ${option(talk.preposition, 'at', 'at')}
+                ${option(talk.preposition, 'for', 'for')}
+                ${option(talk.preposition, 'in', 'in')}
+                ${option(talk.preposition, 'organized by', 'organized by')}
+              </select>
+            </div>
+            <div><label>Location</label><input value="${escapeAttr(talk.location)}" oninput="updateTalkField(${index}, 'location', this.value)" /></div>
+            <div style="grid-column: 1 / -1;"><label>Optional note</label><textarea oninput="updateTalkField(${index}, 'note', this.value)">${escapeHtml(talk.note)}</textarea></div>
+          </div>
+        </div>`;
+    }
+
+    function createGrantCard(grant, index) {
+      return `
+        <div class="item-card">
+          <div class="item-header">
+            <h3>Grant or award ${index + 1}</h3>
+            <button class="button-danger" onclick="removeGrant(${index})">Remove</button>
+          </div>
+          <div class="grid grid-2">
+            <div><label>Title</label><input value="${escapeAttr(grant.title)}" oninput="updateGrantField(${index}, 'title', this.value)" /></div>
+            <div><label>Sponsor</label><input value="${escapeAttr(grant.sponsor)}" oninput="updateGrantField(${index}, 'sponsor', this.value)" /></div>
+            <div><label>Amount</label><input value="${escapeAttr(grant.amount)}" oninput="updateGrantField(${index}, 'amount', this.value)" /></div>
+            <div><label>Years</label><input value="${escapeAttr(grant.years)}" oninput="updateGrantField(${index}, 'years', this.value)" /></div>
+            <div><label>Role</label><input value="${escapeAttr(grant.role)}" oninput="updateGrantField(${index}, 'role', this.value)" /></div>
+            <div style="grid-column: 1 / -1;"><label>Optional note</label><textarea oninput="updateGrantField(${index}, 'note', this.value)">${escapeHtml(grant.note)}</textarea></div>
+          </div>
+        </div>`;
+    }
+
+    function createServiceCard(service, index) {
+      return `
+        <div class="item-card">
+          <div class="item-header">
+            <h3>Service item ${index + 1}</h3>
+            <button class="button-danger" onclick="removeService(${index})">Remove</button>
+          </div>
+          <div class="grid grid-2">
+            <div><label>Role</label><input value="${escapeAttr(service.role)}" oninput="updateServiceField(${index}, 'role', this.value)" /></div>
+            <div><label>Organization</label><input value="${escapeAttr(service.organization)}" oninput="updateServiceField(${index}, 'organization', this.value)" /></div>
+            <div><label>Years</label><input value="${escapeAttr(service.years)}" oninput="updateServiceField(${index}, 'years', this.value)" /></div>
+            <div style="grid-column: 1 / -1;"><label>Optional note</label><textarea oninput="updateServiceField(${index}, 'note', this.value)">${escapeHtml(service.note)}</textarea></div>
+          </div>
+        </div>`;
+    }
+
+    function option(current, value, label) {
+      return `<option value="${escapeAttr(value)}" ${current === value ? 'selected' : ''}>${escapeHtml(label)}</option>`;
+    }
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function escapeAttr(str) {
+      return escapeHtml(str).replace(/`/g, '&#96;');
+    }
+
+    function render() {
+      document.getElementById('nameToBold').value = state.nameToBold;
+      document.getElementById('miscSectionTitle').value = state.miscSectionTitle;
+      document.getElementById('bulkBibtex').value = state.bulkBibtex;
+      document.getElementById('publicationsList').innerHTML = state.publications.map(createPublicationCard).join('');
+      document.getElementById('talksList').innerHTML = state.talks.map(createTalkCard).join('');
+      document.getElementById('grantsList').innerHTML = state.grants.map(createGrantCard).join('');
+      document.getElementById('serviceList').innerHTML = state.serviceItems.map(createServiceCard).join('');
+      updateOutput();
+    }
+
+    function updatePublicationField(index, field, value) {
+      state.publications[index][field] = value;
+      render();
+    }
+    function updateTalkField(index, field, value) {
+      state.talks[index][field] = value;
+      render();
+    }
+    function updateGrantField(index, field, value) {
+      state.grants[index][field] = value;
+      render();
+    }
+    function updateServiceField(index, field, value) {
+      state.serviceItems[index][field] = value;
+      render();
+    }
+
+    function removePublication(index) {
+      state.publications.splice(index, 1);
+      render();
+    }
+    function removeTalk(index) {
+      state.talks.splice(index, 1);
+      render();
+    }
+    function removeGrant(index) {
+      state.grants.splice(index, 1);
+      render();
+    }
+    function removeService(index) {
+      state.serviceItems.splice(index, 1);
+      render();
+    }
+
+    window.updatePublicationField = updatePublicationField;
+    window.updateTalkField = updateTalkField;
+    window.updateGrantField = updateGrantField;
+    window.updateServiceField = updateServiceField;
+    window.removePublication = removePublication;
+    window.removeTalk = removeTalk;
+    window.removeGrant = removeGrant;
+    window.removeService = removeService;
+
+    document.querySelectorAll('.tab-button').forEach(button => {
+      button.addEventListener('click', () => {
+        document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        button.classList.add('active');
+        document.getElementById(button.dataset.tab).classList.add('active');
+      });
+    });
+
+    document.getElementById('nameToBold').addEventListener('input', e => {
+      state.nameToBold = e.target.value;
+      updateOutput();
+    });
+
+    document.getElementById('miscSectionTitle').addEventListener('input', e => {
+      state.miscSectionTitle = e.target.value;
+      updateOutput();
+    });
+
+    document.getElementById('bulkBibtex').addEventListener('input', e => {
+      state.bulkBibtex = e.target.value;
+    });
+
+    document.getElementById('uploadBibButton').addEventListener('click', () => {
+      document.getElementById('bibFileInput').click();
+    });
+
+    document.getElementById('bibFileInput').addEventListener('change', async e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const text = await file.text();
+      state.bulkBibtex = text;
+      const entries = parseBibTeXEntries(text);
+      entries.forEach(entry => {
+        state.publications.push({ bibtex: entry, genre: 'refereed', status: 'published', includeDoi: false });
+      });
+      render();
+      e.target.value = '';
+    });
+
+    document.getElementById('importBibButton').addEventListener('click', () => {
+      const entries = parseBibTeXEntries(state.bulkBibtex);
+      entries.forEach(entry => {
+        state.publications.push({ bibtex: entry, genre: 'refereed', status: 'published', includeDoi: false });
+      });
+      state.bulkBibtex = '';
+      render();
+    });
+
+    document.getElementById('addPublicationButton').addEventListener('click', () => {
+      state.publications.push({ bibtex: '', genre: 'refereed', status: 'published', includeDoi: false });
+      render();
+    });
+
+    document.getElementById('addTalkButton').addEventListener('click', () => {
+      state.talks.push({ role: 'Speaker', title: '', event: '', preposition: 'at', location: '', date: '', note: '' });
+      render();
+    });
+
+    document.getElementById('addGrantButton').addEventListener('click', () => {
+      state.grants.push({ title: '', sponsor: '', amount: '', years: '', role: '', note: '' });
+      render();
+    });
+
+    document.getElementById('addServiceButton').addEventListener('click', () => {
+      state.serviceItems.push({ role: '', organization: '', years: '', note: '' });
+      render();
+    });
+
+    document.getElementById('copyOutputButton').addEventListener('click', async () => {
+      await navigator.clipboard.writeText(document.getElementById('outputLatex').value);
+    });
+
+    document.getElementById('downloadOutputButton').addEventListener('click', () => {
+      downloadText('cv_sections.tex', document.getElementById('outputLatex').value);
+    });
+
+    render();
+  </script>
+</body>
+</html>
