@@ -434,10 +434,17 @@
         .replace(/>/g, '\\textgreater{}');
     }
 
+    function getPublicationSortKey(pub) {
+      const parsed = parseBibTeXEntry(pub.bibtex);
+      if (!parsed || !parsed.fields) return '';
+      const f = parsed.fields;
+      return String(f.date || f.year || '').trim();
+    }
+
     function getPublicationYear(pub) {
       const parsed = parseBibTeXEntry(pub.bibtex);
       if (!parsed) return -9999;
-      const rawYear = extractYear(parsed.fields) || '';
+      const rawYear = extractYear(parsed.fields);
       const match = rawYear.match(/[0-9]{4}/);
       return match ? parseInt(match[0], 10) : -9999;
     }
@@ -445,6 +452,12 @@
     function comparePublicationsByYearDesc(a, b) {
       const yearDiff = getPublicationYear(b) - getPublicationYear(a);
       if (yearDiff !== 0) return yearDiff;
+
+      const sortKeyA = getPublicationSortKey(a);
+      const sortKeyB = getPublicationSortKey(b);
+      if (sortKeyA !== sortKeyB) {
+        return sortKeyB.localeCompare(sortKeyA);
+      }
 
       const parsedA = parseBibTeXEntry(a.bibtex);
       const parsedB = parseBibTeXEntry(b.bibtex);
@@ -797,6 +810,7 @@
         state.publications.push({ bibtex: entry, genre: 'refereed', status: 'published', includeDoi: false });
       });
       state.bulkBibtex = '';
+      document.getElementById('bulkBibtex').value = '';
       render();
     });
 
