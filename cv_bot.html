@@ -421,6 +421,25 @@
         .replace(/>/g, '\\textgreater{}');
     }
 
+    function getPublicationYear(pub) {
+      const parsed = parseBibTeXEntry(pub.bibtex);
+      if (!parsed) return -9999;
+      const rawYear = parsed.fields.year || '';
+      const match = rawYear.match(/[0-9]{4}/);
+      return match ? parseInt(match[0], 10) : -9999;
+    }
+
+    function comparePublicationsByYearDesc(a, b) {
+      const yearDiff = getPublicationYear(b) - getPublicationYear(a);
+      if (yearDiff !== 0) return yearDiff;
+
+      const parsedA = parseBibTeXEntry(a.bibtex);
+      const parsedB = parseBibTeXEntry(b.bibtex);
+      const titleA = ((parsedA && parsedA.fields && parsedA.fields.title) || '').toLowerCase();
+      const titleB = ((parsedB && parsedB.fields && parsedB.fields.title) || '').toLowerCase();
+      return titleA.localeCompare(titleB);
+    }
+
     function publicationLine(pub, nameToBold) {
       const parsed = parseBibTeXEntry(pub.bibtex);
       if (!parsed) return '';
@@ -508,11 +527,11 @@
       state.miscSectionTitle = document.getElementById('miscSectionTitle').value;
       state.bulkBibtex = document.getElementById('bulkBibtex').value;
 
-      const proceedings = state.publications.filter(p => p.genre === 'proceedings').map(p => publicationLine(p, state.nameToBold));
-      const refereed = state.publications.filter(p => p.genre === 'refereed').map(p => publicationLine(p, state.nameToBold));
-      const nonrefereed = state.publications.filter(p => p.genre === 'nonrefereed').map(p => publicationLine(p, state.nameToBold));
-      const thesis = state.publications.filter(p => p.genre === 'thesis').map(p => publicationLine(p, state.nameToBold));
-      const patents = state.publications.filter(p => p.genre === 'patent').map(p => publicationLine(p, state.nameToBold));
+      const proceedings = state.publications.filter(p => p.genre === 'proceedings').slice().sort(comparePublicationsByYearDesc).map(p => publicationLine(p, state.nameToBold));
+      const refereed = state.publications.filter(p => p.genre === 'refereed').slice().sort(comparePublicationsByYearDesc).map(p => publicationLine(p, state.nameToBold));
+      const nonrefereed = state.publications.filter(p => p.genre === 'nonrefereed').slice().sort(comparePublicationsByYearDesc).map(p => publicationLine(p, state.nameToBold));
+      const thesis = state.publications.filter(p => p.genre === 'thesis').slice().sort(comparePublicationsByYearDesc).map(p => publicationLine(p, state.nameToBold));
+      const patents = state.publications.filter(p => p.genre === 'patent').slice().sort(comparePublicationsByYearDesc).map(p => publicationLine(p, state.nameToBold));
       const talksLatex = state.talks.map(t => talkLine(t));
       const grantsLatex = state.grants.map(g => grantLine(g));
       const serviceLatex = state.serviceItems.map(s => serviceLine(s));
